@@ -335,10 +335,11 @@
   initInterval = setInterval(() => {
     let num = GM_getValue('wallpaperImage');
     wallpaper(num);
-    if (signIn) signIn.click();
-    else if (!buttonCalendar) init();
-    else { init(); clearInterval(initInterval);
-    wallpaper(num); }
+    clearInterval(initInterval);
+    //if (signIn) signIn.click();
+    //else if (!buttonCalendar) init();
+    //else { init(); clearInterval(initInterval);
+    //wallpaper(num); }
   }, openInterval);
 
   GM_addStyle(''+
