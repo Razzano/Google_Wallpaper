@@ -205,8 +205,8 @@
 
   function init() {
     window.removeEventListener('load', () => init());
-    body.id = 'gWP1';
     try {
+      body.id = 'gWP1';
       body.appendChild(logoGoogle);
       div1.insertBefore(howworks, div1.firstChild);
       div1.style = 'background: rgba(0, 0, 0, .3) !important; border-radius: 16px !important; padding: 0 4px 0 0 !important; text-shadow: 1px 1px 2px #000 !important;';
@@ -215,11 +215,11 @@
       dateTime.title = addRemoveText + ' (' + GM_getValue('dateFormat') + ')';
       dateTimeContainer.appendChild(buttonCalendar);
       dateTimeContainer.appendChild(dateTime);
-      body.appendChild(dateTimeContainer);
       divThemer.appendChild(btnThemer);
       divThemer.appendChild(inpThemer);
       divThemer.appendChild(btnDown);
       div1.insertBefore(divThemer, div1.firstChild);
+      div1.insertBefore(dateTimeContainer, div1.firstChild);
       searchButton.id = 'gSearch';
       placeHolder.placeholder = placeHolderText;
       btnSearchLinks.textContent = GM_getValue('linksWhere') === '_self' ? linksCurrentText : linksNewText;
@@ -339,14 +339,10 @@
     '  display: inline-flex !important;'+
     '  left: 13px !important;'+
     '  position: absolute !important;'+
-    '  top: 13px !important;'+
-    '  z-index: 999 !important;'+
     '}'+
     '#gWP1 #buttonCalendar {'+
     '  cursor: pointer !important;'+
-    '  height: 29px !important;'+
-    '  margin: 1px 4px 0 0 !important;'+
-    '  width: 29px !important;'+
+    '  margin-top: -3px !important;'+
     '}'+
     '#gWP1 #dateTimeContainer > #dateTime {'+
     '  background: rgba(0, 0, 0, .3) !important;'+
@@ -355,14 +351,8 @@
     '  box-shadow: none !important;'+
     '  color: #FFF !important;'+
     '  cursor: pointer !important;'+
-    '  font: 16px monospace !important;'+
-    '  height: 16px !important;'+
-    '  margin: 0 4px 0 0 !important;'+
-    '  min-width: 100px !important;'+
-    '  padding: 2px 8px 10px 8px !important;'+
-    '  position: relative !important;'+
-    '  text-shadow: 1px 1px 2px #000 !important;'+
-    '  top: 1px !important;'+
+    '  font: 14px monospace !important;'+
+    '  padding: 2px 8px 0 8px !important;'+
     '}'+
     '#gWP1 #buttonCalendar:hover + #dateTime {'+
     '  background: #900 !important;'+
@@ -379,6 +369,54 @@
     '  top: 4px !important;'+
     '  width: 256px !important;'+
     '}'+
+    '#gWP1 #themerDiv {'+
+    '  margin: -2px 0 0 0 !important;'+
+    '}'+
+    '#gWP1 #buttonThemer,'+
+    '#gWP1 #inputThemer {'+
+    '  border: none !important;'+
+    '  color: #FFF !important;'+
+    '  opacity: .7 !important;'+
+    '}'+
+    '#gWP1 #buttonThemer {'+
+    '  background-repeat: no-repeat !important;'+
+    '  background-position: right !important;'+
+    '  margin-right: -12px !important;'+
+    '  position: relative !important;'+
+    '  width: 160px !important;'+
+    '  z-index: 2 !important;'+
+    '}'+
+    '#gWP1 #inputThemer {'+
+    '  text-align: center !important;'+
+    '}'+
+    '#gWP1 #buttonUp,'+
+    '#gWP1 #buttonDown {'+
+    '  background: transparent !important;'+
+    '  color: #FFF !important;'+
+    '  opacity: .7 !important;'+
+    '  cursor: pointer !important;'+
+    '  position: relative !important;'+
+    '  top: 6px !important;'+
+    '}'+
+    '#gWP1 #buttonUp {'+
+    '  margin: 0 -12px 0 0 !important;'+
+    '  z-index: 2 !important;'+
+    '}'+
+    '#gWP1 #buttonDown {'+
+    '  margin: 0 0 0 -12px !important;'+
+    '}'+
+    '#gWP1 #buttonThemer:hover,'+
+    '#gWP1 #buttonUp:hover,'+
+    '#gWP1 #buttonDown:hover {'+
+    '  opacity: 1 !important;'+
+    '  cursor: pointer !important;'+
+    '}'+
+    '#gWP1 #inputThemer::-webkit-inner-spin-button,'+
+    '#gWP1 #inputThemer::-webkit-outer-spin-button,'+
+    '#gWP1 #inputThemer::-webkit-inner-spin-button,'+
+    '#gWP1 #inputThemer::-webkit-outer-spin-button {'+
+    '  display: none !important;'+
+    '}'+
     '#gWP1 .om7nvf {'+
     '  padding: 0 !important;'+
     '}'+
@@ -394,21 +432,6 @@
     '  background: rgba(0, 0, 0, .3) !important;'+
     '  border-radius: 10px !important;'+
     '  padding-left: 0 !important;'+
-    '}'+
-    '#gWP1 #divLinksWallpaper {'+
-    '  background: rgba(0, 0, 0, .3) !important;'+
-    '  border-radius: 10px !important;'+
-    '  padding: 7px 12px 7px 14px !important;'+
-    '  position: relative !important;'+
-    '  top: -58px !important;'+
-    '  z-index: 999 !important;'+
-    '}'+
-    '#gWP1 #divLinks button {'+
-    '  color: #AAA !important;'+
-    '}'+
-    '#gWP1 #divLinks:hover button {'+
-    '  color: #FFF !important;'+
-    '  cursor: pointer !important;'+
     '}'+
     '#gWP1 .gb_A:hover > .gb_Ue {'+
     '  color: #FFF !important;'+
@@ -554,60 +577,6 @@
     '}'+
     '#gWP1 .xtSCL {'+
     '  margin: 0 !important;'+
-    '}'+
-    '#gWP1 #themerDiv {'+
-    '  margin: -2px 0 0 0 !important;'+
-    '}'+
-    '#gWP1 #themerDiv > input[type=image] {'+
-    '}'+
-    '#gWP1 #buttonThemer,'+
-    '#gWP1 #inputThemer {'+
-    '  background: none !important;'+
-    '  border: none !important;'+
-    '  color: #FFF !important;'+
-    '  opacity: .7 !important;'+
-    '}'+
-    '#gWP1 #buttonThemer {'+
-    '  background-repeat: no-repeat !important;'+
-    '  background-position: right !important;'+
-    '  margin-right: -12px !important;'+
-    '  position: relative !important;'+
-    '  width: 160px !important;'+
-    '  z-index: 2 !important;'+
-    '}'+
-    '#gWP1 #inputThemer {'+
-    '  border: none !important;'+
-    '  text-align: center !important;'+
-    '}'+
-    '#gWP1 #inputThemer::-webkit-inner-spin-button,'+
-    '#gWP1 #inputThemer::-webkit-outer-spin-button,'+
-    '#gWP1 #inputThemer::-webkit-inner-spin-button,'+
-    '#gWP1 #inputThemer::-webkit-outer-spin-button {'+
-    '  display: none !important;'+
-    '}'+
-    '#gWP1 #buttonUp,'+
-    '#gWP1 #buttonDown {'+
-    '  background: transparent !important;'+
-    '  color: #FFF !important;'+
-    '  margin: 0 !important;'+
-    '  opacity: .7 !important;'+
-    '  cursor: pointer !important;'+
-    '  position: relative !important;'+
-    '  top: 6px !important;'+
-    '}'+
-    '#gWP1 #buttonUp {'+
-    '  margin-right: -12px !important;'+
-    '  position: relative !important;'+
-    '  z-index: 2 !important;'+
-    '}'+
-    '#gWP1 #buttonDown {'+
-    '  margin-left: -12px !important;'+
-    '}'+
-    '#gWP1 #buttonThemer:hover,'+
-    '#gWP1 #buttonUp:hover,'+
-    '#gWP1 #buttonDown:hover {'+
-    '  opacity: 1 !important;'+
-    '  cursor: pointer !important;'+
     '}'+
     '#gWP1 .o3j99.n1xJcf.Ne6nSd a,'+
     '#gWP1 .o3j99.n1xJcf.Ne6nSd svg {'+
