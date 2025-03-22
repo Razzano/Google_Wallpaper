@@ -35,7 +35,7 @@
         slash = '/',
         space = ' ',
         watch = '\u231A', // '⌚'
-        addRemoveText = bullet + ' Left-click to Add/Remove :seconds\n' + bullet + ' Shift + Left-click to Add/Remove AM/PM\n' + bullet + ' Ctrl + Left-click to change Date format 1 - 9\n' + bullet + ' Alt + Left-click toggles link target between _blank & _self',
+        addRemoveText = bullet + ' Left-click to Add/Remove :seconds\n' + bullet + ' Shift + Left-click to Add/Remove AM/PM\n' + bullet + ' Ctrl + Left-click to change Date format 1 - 9\n' + bullet + ' Alt + Left-click toggle link target to ',
         changeWallpaperTooltip = 'Change Wallpaper',
         wallpaperImageText = 'Wallpaper image',
         customFormatText = 'Add a custom format in script line ',
@@ -159,7 +159,7 @@
   function dateTimeDefault() {
     dateTime.hidden = false;
     dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
-    dateTime.title = addRemoveText;
+    dateTime.title = getText();
     dateTimeTimer();
   }
 
@@ -198,8 +198,14 @@
       target = GM_getValue('linkTarget') !== '_blank' ? GM_setValue('linkTarget', '_blank') : GM_setValue('linkTarget', '_self');
       searchLinksWhere(GM_getValue('linkTarget'));
     }
-    dateTime.title = addRemoveText;
+    dateTime.title = getText();
     dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
+  }
+
+  function getText() {
+    let target;
+    target = GM_getValue('linkTarget') !== '_blank' ? target ='_blank' : target = '_self';
+    return addRemoveText + target
   }
 
   function init() {
@@ -210,7 +216,7 @@
       body.appendChild(logoGoogle);
       if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
       else { dateTime.hidden = true; clearInterval(clockInterval) }
-      dateTime.title = addRemoveText;
+      dateTime.title = getText();
       dateTimeContainer.appendChild(buttonCalendar);
       dateTimeContainer.appendChild(dateTime);
       divThemer.appendChild(btnThemer);
@@ -243,6 +249,7 @@
   function searchLinksWhere() {
     let links = $q('body#gWP1 a', true);
     for (let i = 0; i < links.length; i++) links[i].setAttribute('target', GM_getValue('linkTarget'));
+    getText();
   }
 
   function wallpaper(e) {
