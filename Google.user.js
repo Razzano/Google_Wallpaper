@@ -15,7 +15,7 @@
 
   'use strict';
 
-  const openInterval = 200,
+  const openInterval = 20,
         themerInterval = 30000,
         timerLong = 10000,
         timerShort = 1000,
@@ -36,11 +36,11 @@
         space = ' ',
         watch = '\u231A', // '⌚'
         addRemoveText = bullet + ' Left-click to Add/Remove :seconds\n' + bullet + ' Shift + Left-click to Add/Remove AM/PM\n' + bullet + ' Ctrl + Left-click to change Date format',
-        changeWallpaperTooltip = 'Change Wallpaper\n' + bullet + ' Images 0 - 49',
+        changeWallpaperTooltip = 'Change Wallpaper',
         wallpaperImageText = 'Wallpaper image',
         customFormatText = 'Add a custom format in script line ',
         hideShowText = bullet + ' Left-click to Hide/Show Date/Time',
-        inputTooltip = '0 - 49',
+        inputTooltip = '0 - 50',
         linksCurrentText = 'Header links in current tab: True',
         linksNewText = 'Header links in new tab: True',
         linksTooltip = 'Header links in current tab or in new tab',
@@ -78,13 +78,12 @@
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upButton + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
-        inpThemer = $c('input', {id: 'inputThemer', type: 'number', min: 0, max: 43, value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
+        inpThemer = $c('input', {id: 'inputThemer', type: 'number', min: 0, max: 49, value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
         btnDown = $c('input', {id: 'buttonDown', type: 'image', src: downButton, title: '', onclick: e => wallpaperButtonChanger(e)}),
         body = $q('html[itemtype="http://schema.org/WebPage"] > body'),
         signIn = $q('html[itemtype="http://schema.org/WebPage"] a.gb_1.gb_2.gb_8d.gb_8c'),
         div1 = $q('html[itemtype="http://schema.org/WebPage"] #gb > div'),
         //div1 = $q('html[itemtype="http://schema.org/WebPage"] #gb > .gb_vd.gb_9a.gb_kd'),
-        howworks = $q('html[itemtype="http://schema.org/WebPage"] .pHiOh:last-of-type'),
         center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
         searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
@@ -209,8 +208,6 @@
       body.id = 'gWP1';
       searchButton.id = 'gSearch';
       body.appendChild(logoGoogle);
-      div1.insertBefore(howworks, div1.firstChild);
-      div1.style = 'background: rgba(0, 0, 0, .3) !important; border-radius: 16px !important; padding: 0 4px 0 0 !important; text-shadow: 1px 1px 2px #000 !important;';
       if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
       else { dateTime.hidden = true; clearInterval(clockInterval) }
       dateTime.title = addRemoveText + ' (' + GM_getValue('dateFormat') + ')';
@@ -270,12 +267,12 @@
         sub = parseInt(num1 - 1);
     switch (e.target.id) {
       case 'buttonThemer':
-        if (inp.value > 48) inp.value = 0;
+        if (inp.value > 49) inp.value = 0;
         else inp.value = sum;
         break;
       case 'buttonDown':
         if (inp.value > 0) inp.value = sub;
-        else inp.value = 49;
+        else inp.value = 50;
     }
     GM_setValue('wallpaperImage', inp.value);
     wallpaper(inp.value);
@@ -283,7 +280,7 @@
 
   function wallpaperInputChanger(e) {
     let inp = $q('#inputThemer');
-    if (inp.value > 49) inp.value = 49;
+    if (inp.value > 50) inp.value = 50;
     else if (inp.value < 0) inp.value = 0;
     else inp.value = inp.value;
     GM_setValue('wallpaperImage', inp.value);
@@ -317,6 +314,12 @@
     '}'+
     '#gWP1 #gb {'+
     '  background: transparent !important;'+
+    '}'+
+    '#gWP1 #gb > div {'+
+    '  background: rgba(0, 0, 0, .3) !important;'+
+    '  border-radius: 16px !important;'+
+    '  padding: 0 4px 0 0 !important;'+
+    '  text-shadow: 1px 1px 2px #000 !important;'+
     '}'+
     '#gWP1 #gb > div > a,'+
     '#gWP1 #gb > div > div.gb_Qe > div.gb_3c > div.gb_cd.gb_0.gb_I,'+
