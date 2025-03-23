@@ -147,7 +147,7 @@
       case 5: return w + space + bullet + space + mm + hyphen + dd + hyphen + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03-01-2021 • 12:34 AM
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
-      // Delete "customFormatText + 155" or "customFormatText + 156" text below and add RETURN OPTIONS with desired format and special characters.
+      // Delete "customFormatText + 151" or "customFormatText + 152" text below and add RETURN OPTIONS with desired format and special characters.
       case 8: return customFormatText + 151;
       case 9: return customFormatText + 152;
   } }
