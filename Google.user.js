@@ -68,17 +68,17 @@
         monthno = MonthNo.split(','),
         MonthNum = '1,2,3,4,5,6,7,8,9,10,11,12',
         monthnum = MonthNum.split(','),
-        logoGoogle = $c('img', {id: 'logoGoogle', src: googleImage}),
-        dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
+        body = $q('html[itemtype="http://schema.org/WebPage"] > body'),
+        //div1 = $q('html[itemtype="http://schema.org/WebPage"] #gb > .gb_vd.gb_9a.gb_kd'),
+        div1 = $q('html[itemtype="http://schema.org/WebPage"] #gb > div'),
         buttonCalendar = $c('img', {id: 'buttonCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
+        dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
+        logoGoogle = $c('img', {id: 'logoGoogle', src: googleImage}),
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upButton + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', min: 0, max: 50, value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
         btnDown = $c('input', {id: 'buttonDown', type: 'image', src: downButton, title: '', onclick: e => wallpaperButtonChanger(e)}),
-        body = $q('html[itemtype="http://schema.org/WebPage"] > body'),
-        //div1 = $q('html[itemtype="http://schema.org/WebPage"] #gb > .gb_vd.gb_9a.gb_kd'),
-        div1 = $q('html[itemtype="http://schema.org/WebPage"] #gb > div'),
         center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
         searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
@@ -307,9 +307,8 @@
   window.addEventListener('unload', () => onClose());
 
   initInterval = setInterval(() => {
-    let num = GM_getValue('wallpaperImage');
-    wallpaper(num);
-    clearInterval(initInterval);
+    if (!dateTimeContainer || !divThemer || !logoGoogle) init();
+    else clearInterval(initInterval);
   }, openInterval);
 
   GM_addStyle(''+
@@ -487,7 +486,6 @@
     '}'+
     '#gWP1 .RNNXgb textarea.gLFyf {'+
     '  color: #FFF !important;'+
-    '  filter: brightness(1.5) !important;'+
     '  max-width: 130px !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
     '}'+
@@ -495,9 +493,10 @@
     '#gWP1 .RNNXgb:focus-within,'+
     '#gWP1 .RNNXgb:hover .gLFyf,'+
     '#gWP1 .RNNXgb:focus-within .gLFyf {'+
-    '  text-align: left !important;'+
+    '  filter: brightness(1.5) !important;'+
     '  margin-left: 0 !important;'+
     '  max-width: 584px !important;'+
+    '  text-align: left !important;'+
     '}'+
     '#gWP1 .RNNXgb:hover .iblpc,'+
     '#gWP1 .RNNXgb:focus-within .iblpc {'+
@@ -535,7 +534,7 @@
     '  background: rgba(0, 0, 0, .3) !important;'+
     '  border: 1px solid transparent !important;'+
     '  border-radius: 4px !important;'+
-    '  color: #AAA !important;'+
+    '  color: #999 !important;'+
     '  cursor: pointer !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
     '  width: auto !important;'+
@@ -573,7 +572,7 @@
     '  padding: 0 4px !important;'+
     '}'+
     '#gWP1 .ayzqOc.pHiOh {'+
-    '  color: #AAA !important;'+
+    '  color: #999 !important;'+
     '  padding-right: 15px !important;'+
     '  text-decoration: none !important;'+
     '}'+
