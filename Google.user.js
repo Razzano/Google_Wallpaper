@@ -387,7 +387,7 @@
     '#gWP1 #buttonThemer {'+
     '  background-repeat: no-repeat !important;'+
     '  background-position: right !important;'+
-    '  margin-right: -12px !important;'+
+    '  margin: 0 -8px !important;'+
     '  position: relative !important;'+
     '  width: 160px !important;'+
     '  z-index: 2 !important;'+
@@ -396,25 +396,17 @@
     '  background: transparent !important;'+
     '  text-align: center !important;'+
     '}'+
-    '#gWP1 #buttonUp,'+
     '#gWP1 #buttonDown {'+
     '  background: transparent !important;'+
     '  color: #FFF !important;'+
     '  opacity: .7 !important;'+
     '  cursor: pointer !important;'+
+    '  margin: 0 0 0 -8px !important;'+
     '  position: relative !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
     '  top: 6px !important;'+
     '}'+
-    '#gWP1 #buttonUp {'+
-    '  margin: 0 -12px 0 0 !important;'+
-    '  z-index: 2 !important;'+
-    '}'+
-    '#gWP1 #buttonDown {'+
-    '  margin: 0 0 0 -12px !important;'+
-    '}'+
     '#gWP1 #buttonThemer:hover,'+
-    '#gWP1 #buttonUp:hover,'+
     '#gWP1 #buttonDown:hover {'+
     '  opacity: 1 !important;'+
     '  cursor: pointer !important;'+
@@ -430,11 +422,6 @@
     '}'+
     '#gWP1 form {'+
     '  margin-top: 156px !important;'+
-    '}'+
-    '#gWP1 #divWallpaper {'+
-    '  display: inline-flex !important;'+
-    '  position: relative !important;'+
-    '  top: -4px !important;'+
     '}'+
     '#gWP1 .gb_Vd.gb_Xa.gb_Kd {'+
     '  background: rgba(0, 0, 0, .3) !important;'+
