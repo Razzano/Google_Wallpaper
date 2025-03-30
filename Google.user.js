@@ -396,6 +396,7 @@
     '#gWP1 #inputThemer {'+
     '  background: transparent !important;'+
     '  text-align: center !important;'+
+    '  width: 42px !important;'+
     '}'+
     '#gWP1 #buttonDown {'+
     '  background: transparent !important;'+
