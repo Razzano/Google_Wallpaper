@@ -20,7 +20,6 @@
         timerLong = 10000,
         timerShort = 1000,
         dateTimeFormatCount = 9,
-        githubSite = 'https://raw.githubusercontent.com/Razzano/MyWallpaper/master/image',
         am = 'AM',
         pm = 'PM',
         arrow = '\u21D2',
@@ -42,6 +41,7 @@
         hideShowText = bullet + ' Left-click to Hide/Show Date/Time',
         inputTooltip = '0 - 51',
         placeHolderText = 'Search Look-up',
+        githubSite = 'https://raw.githubusercontent.com/Razzano/MyWallpaper/master/image',
         downButton = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageDownArrow.png',
         upButton = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageUpArrow.png',
         googleImage = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageGoogle.png',
@@ -67,20 +67,19 @@
         MonthNum = '1,2,3,4,5,6,7,8,9,10,11,12',
         monthnum = MonthNum.split(','),
         body = $q('html[itemtype="http://schema.org/WebPage"] > body'),
-        //div1 = $q('html[itemtype="http://schema.org/WebPage"] #gb > .gb_vd.gb_9a.gb_kd'),
         div1 = $q('html[itemtype="http://schema.org/WebPage"] #gb > div'),
-        buttonCalendar = $c('img', {id: 'buttonCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
+        center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
+        placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
+        searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
+        settingsBtn = $q('html[itemtype="http://schema.org/WebPage"] body > div.L3eUgb > div:nth-child(6) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
+        imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
         logoGoogle = $c('img', {id: 'logoGoogle', src: googleImage}),
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upButton + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
-        btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url(' + downButton + ') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
-        center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
-        placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
-        searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
-        settingsBtn = $q('html[itemtype="http://schema.org/WebPage"] body > div.L3eUgb > div:nth-child(6) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span');
+        btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url(' + downButton + ') !important;', title: '', onclick: e => wallpaperButtonChanger(e)});
 
   let clockInterval,
       initInterval,
@@ -145,15 +144,15 @@
       case 5: return w + space + bullet + space + mm + hyphen + dd + hyphen + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03-01-2021 • 12:34 AM
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
-      // Delete "customFormatText + 149" or "customFormatText + 150" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 149;
-      case 9: return customFormatText + 150;
+      // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
+      case 8: return customFormatText + 148;
+      case 9: return customFormatText + 149;
   } }
 
   function dateTimeDefault() {
     dateTime.hidden = false;
     dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
-    dateTime.title = getText();
+    dateTime.title = setTarget();
     dateTimeTimer();
   }
 
@@ -192,14 +191,8 @@
       target = GM_getValue('linkTarget') !== '_blank' ? GM_setValue('linkTarget', '_blank') : GM_setValue('linkTarget', '_self');
       searchLinksWhere(GM_getValue('linkTarget'));
     }
-    dateTime.title = getText();
+    dateTime.title = setTarget();
     dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
-  }
-
-  function getText() {
-    let target;
-    target = GM_getValue('linkTarget') !== '_blank' ? target = '_blank' : target = '_self';
-    return addRemoveText + '"' + target + '"';
   }
 
   function init() {
@@ -209,8 +202,8 @@
       searchButton.id = 'gSearch';
       if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
       else { dateTime.hidden = true; clearInterval(clockInterval) }
-      dateTime.title = getText();
-      dateTimeContainer.appendChild(buttonCalendar);
+      dateTime.title = setTarget();
+      dateTimeContainer.appendChild(imageCalendar);
       dateTimeContainer.appendChild(dateTime);
       divThemer.appendChild(btnThemer);
       divThemer.appendChild(inpThemer);
@@ -243,7 +236,13 @@
   function searchLinksWhere() {
     let links = $q('body#gWP1 a', true);
     for (let i = 0; i < links.length; i++) links[i].setAttribute('target', GM_getValue('linkTarget'));
-    getText();
+    setTarget();
+  }
+
+  function setTarget() {
+    let target;
+    target = GM_getValue('linkTarget') !== '_blank' ? target = '_blank' : target = '_self';
+    return addRemoveText + '"' + target + '"';
   }
 
   function wallpaper(e) {
@@ -346,7 +345,7 @@
     '  left: 13px !important;'+
     '  position: absolute !important;'+
     '}'+
-    '#gWP1 #buttonCalendar {'+
+    '#gWP1 #imageCalendar {'+
     '  cursor: pointer !important;'+
     '  margin-top: -3px !important;'+
     '}'+
@@ -360,7 +359,7 @@
     '  font: 14px monospace !important;'+
     '  padding: 2px 8px 0 8px !important;'+
     '}'+
-    '#gWP1 #buttonCalendar:hover + #dateTime {'+
+    '#gWP1 #imageCalendar:hover + #dateTime {'+
     '  background: #900 !important;'+
     '  border-color: #C00 !important;'+
     '  color: #FFF !important;'+
