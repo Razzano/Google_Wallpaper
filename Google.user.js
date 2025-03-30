@@ -76,7 +76,8 @@
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upButton + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
-        btnDown = $c('input', {id: 'buttonDown', type: 'image', src: downButton, title: '', onclick: e => wallpaperButtonChanger(e)}),
+        //btnDown = $c('input', {id: 'buttonDown', type: 'image', src: downButton, title: '', onclick: e => wallpaperButtonChanger(e)}),
+        btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url(' + downButton + ') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
         center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
         searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
@@ -388,7 +389,7 @@
     '#gWP1 #buttonThemer {'+
     '  background-repeat: no-repeat !important;'+
     '  background-position: right !important;'+
-    '  margin: 0 -8px !important;'+
+    '  margin: 0 !important;'+
     '  position: relative !important;'+
     '  width: 160px !important;'+
     '  z-index: 2 !important;'+
@@ -396,17 +397,20 @@
     '#gWP1 #inputThemer {'+
     '  background: transparent !important;'+
     '  text-align: center !important;'+
-    '  width: 42px !important;'+
+    '  width: 22px !important;'+
     '}'+
     '#gWP1 #buttonDown {'+
     '  background: transparent !important;'+
+    '  border: none !important;'+
     '  color: #FFF !important;'+
     '  opacity: .7 !important;'+
     '  cursor: pointer !important;'+
-    '  margin: 0 0 0 -8px !important;'+
+    '  height: 16px !important;'+
+    '  margin: 0 !important;'+
     '  position: relative !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
-    '  top: 6px !important;'+
+    '  top: 2px !important;'+
+    '  width: 16px !important;'+
     '}'+
     '#gWP1 #buttonThemer:hover,'+
     '#gWP1 #buttonDown:hover {'+
