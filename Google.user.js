@@ -34,11 +34,11 @@
         slash = '/',
         space = ' ',
         watch = '\u231A', // '⌚'
-        addRemoveText = bullet + ' Left-click to Add/Remove :seconds\n' + bullet + ' Shift + Left-click to Add/Remove AM/PM\n' + bullet + ' Ctrl + Left-click to change Date format 1 - 9\n' + bullet + ' Alt + Left-click toggle link target to ',
+        addRemoveText = bullet + ' Left-click to Add/Remove :seconds\n' + bullet + ' Shift + Left-click to Add/Remove AM/PM\n' + bullet + ' Ctrl + Left-click to change Date format 1 - 9',
         changeWallpaperTooltip = 'Change Wallpaper',
         wallpaperImageText = 'Wallpaper image',
         customFormatText = 'Add a custom format in script line ',
-        hideShowText = bullet + ' Left-click to Hide/Show Date/Time',
+        hideShowText = bullet + ' Left-click to Hide/Show Date/Time\n' + bullet + ' Shift + Left-click or Middle-click to change link targets to ',
         inputTooltip = '0 - 51',
         placeHolderText = 'Search Look-up',
         githubSite = 'https://raw.githubusercontent.com/Razzano/MyWallpaper/master/image',
@@ -152,7 +152,7 @@
   function dateTimeDefault() {
     dateTime.hidden = false;
     dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
-    dateTime.title = setTarget();
+    dateTime.title = addRemoveText;
     dateTimeTimer();
   }
 
@@ -164,13 +164,17 @@
   }
 
   function dateTimeToggle(e) {
-    let bool;
+    let bool, target;
     if (!e.shiftKey && !e.ctrlKey && !e.altKey && e.button === 0) {
       bool = dateTime.hidden !== true ? true : false;
       dateTime.hidden = bool;
       GM_setValue('defaultDateTimeView', !bool);
       if (bool) clearInterval(clockInterval);
       else { dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat')); dateTimeTimer() }
+    } else if (e.button === 1 || e.shiftKey && e.button === 0) {
+      target = GM_getValue('linkTarget') !== '_blank' ? GM_setValue('linkTarget', '_blank') : GM_setValue('linkTarget', '_self');
+      searchLinksWhere(GM_getValue('linkTarget'));
+      imageCalendar.title = setTargetText();
   } }
 
   function dateTimeToggleSecondsAmPm(e) {
@@ -187,11 +191,8 @@
     } else if (!e.shiftKey && e.ctrlKey && !e.altKey && e.button === 0) {
       int = GM_getValue('dateFormat') + 1;
       int < dateTimeFormatCount + 1 ? GM_setValue('dateFormat', int) : GM_setValue('dateFormat', 1);
-    } else if (!e.shiftKey && !e.ctrlKey && e.altKey && e.button === 0) {
-      target = GM_getValue('linkTarget') !== '_blank' ? GM_setValue('linkTarget', '_blank') : GM_setValue('linkTarget', '_self');
-      searchLinksWhere(GM_getValue('linkTarget'));
     }
-    dateTime.title = setTarget();
+    dateTime.title = addRemoveText;
     dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
   }
 
@@ -202,7 +203,8 @@
       searchButton.id = 'gSearch';
       if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
       else { dateTime.hidden = true; clearInterval(clockInterval) }
-      dateTime.title = setTarget();
+      dateTime.title = addRemoveText;
+      imageCalendar.title = setTargetText();
       dateTimeContainer.appendChild(imageCalendar);
       dateTimeContainer.appendChild(dateTime);
       divThemer.appendChild(btnThemer);
@@ -236,13 +238,13 @@
   function searchLinksWhere() {
     let links = $q('body#gWP1 a', true);
     for (let i = 0; i < links.length; i++) links[i].setAttribute('target', GM_getValue('linkTarget'));
-    setTarget();
+    setTargetText();
   }
 
-  function setTarget() {
+  function setTargetText() {
     let target;
     target = GM_getValue('linkTarget') !== '_blank' ? target = '_blank' : target = '_self';
-    return addRemoveText + '"' + target + '"';
+    return hideShowText + '"' + target + '"';
   }
 
   function wallpaper(e) {
@@ -375,7 +377,7 @@
     '  width: 256px !important;'+
     '}'+
     '#gWP1 #themerDiv {'+
-    '  margin: -2px 0 0 0 !important;'+
+    '  margin: -2px 8px 0 0 !important;'+
     '}'+
     '#gWP1 #buttonThemer,'+
     '#gWP1 #inputThemer {'+
