@@ -76,7 +76,6 @@
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upButton + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
-        //btnDown = $c('input', {id: 'buttonDown', type: 'image', src: downButton, title: '', onclick: e => wallpaperButtonChanger(e)}),
         btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url(' + downButton + ') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
         center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
