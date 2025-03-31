@@ -38,7 +38,7 @@
         changeWallpaperTooltip = 'Change Wallpaper',
         wallpaperImageText = 'Wallpaper image',
         customFormatText = 'Add a custom format in script line ',
-        hideShowText = bullet + ' Left-click to Hide/Show Date/Time\n' + bullet + ' Shift + Left-click or Middle-click to change link targets to ',
+        hideShowText = bullet + ' Left-click to Hide/Show Date/Time\n' + bullet + ' Shift + Left-click for link targets of "_blank"\n' + bullet + ' Ctrl + Left-click for link targets of "_self"',
         inputTooltip = '0 - 51',
         placeHolderText = 'Search Look-up',
         githubSite = 'https://raw.githubusercontent.com/Razzano/MyWallpaper/master/image',
@@ -171,10 +171,12 @@
       GM_setValue('defaultDateTimeView', !bool);
       if (bool) clearInterval(clockInterval);
       else { dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat')); dateTimeTimer() }
-    } else if (e.button === 1 || e.shiftKey && e.button === 0) {
-      target = GM_getValue('linkTarget') !== '_blank' ? GM_setValue('linkTarget', '_blank') : GM_setValue('linkTarget', '_self');
-      searchLinksWhere(GM_getValue('linkTarget'));
-      imageCalendar.title = setTargetText();
+    } else if (e.shiftKey && !e.ctrlKey && !e.altKey && e.button === 0) {
+      GM_setValue('linkTarget', "_blank");
+      searchLinksWhere()
+    } else if (!e.shiftKey && e.ctrlKey && !e.altKey && e.button === 0) {
+      GM_setValue('linkTarget', "_self");
+      searchLinksWhere()
   } }
 
   function dateTimeToggleSecondsAmPm(e) {
@@ -204,7 +206,6 @@
       if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
       else { dateTime.hidden = true; clearInterval(clockInterval) }
       dateTime.title = addRemoveText;
-      imageCalendar.title = setTargetText();
       dateTimeContainer.appendChild(imageCalendar);
       dateTimeContainer.appendChild(dateTime);
       divThemer.appendChild(btnThemer);
@@ -238,13 +239,6 @@
   function searchLinksWhere() {
     let links = $q('body#gWP1 a', true);
     for (let i = 0; i < links.length; i++) links[i].setAttribute('target', GM_getValue('linkTarget'));
-    setTargetText();
-  }
-
-  function setTargetText() {
-    let target;
-    target = GM_getValue('linkTarget') !== '_blank' ? target = '_blank' : target = '_self';
-    return hideShowText + '"' + target + '"';
   }
 
   function wallpaper(e) {
