@@ -343,7 +343,9 @@
     '}'+
     '#gWP1 #imageCalendar {'+
     '  cursor: pointer !important;'+
-    '  margin-top: -3px !important;'+
+    '  margin: 0 !important;'+
+    '  position: relative !important;'+
+    '  top: -3px !important;'+
     '}'+
     '#gWP1 #dateTimeContainer > #dateTime {'+
     '  background: rgba(0, 0, 0, .3) !important;'+
@@ -353,7 +355,9 @@
     '  color: #FFF !important;'+
     '  cursor: pointer !important;'+
     '  font: 14px monospace !important;'+
-    '  padding: 2px 8px 0 8px !important;'+
+    '  padding: 4px 8px 0 8px !important;'+
+    '  position: relative !important;'+
+    '  top: -1px !important;'+
     '}'+
     '#gWP1 #imageCalendar:hover + #dateTime {'+
     '  background: #900 !important;'+
@@ -371,7 +375,7 @@
     '  width: 256px !important;'+
     '}'+
     '#gWP1 #themerDiv {'+
-    '  margin: -2px 8px 0 0 !important;'+
+    '  margin: -2px 8px 0 -8px !important;'+
     '}'+
     '#gWP1 #buttonThemer,'+
     '#gWP1 #inputThemer {'+
@@ -385,7 +389,7 @@
     '  background-position: right !important;'+
     '  margin: 0 !important;'+
     '  position: relative !important;'+
-    '  width: 160px !important;'+
+    '  width: 150px !important;'+
     '  z-index: 2 !important;'+
     '}'+
     '#gWP1 #inputThemer {'+
