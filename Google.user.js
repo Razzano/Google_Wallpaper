@@ -42,9 +42,9 @@
         inputTooltip = '0 - 51',
         placeHolderText = 'Search Look-up',
         githubSite = 'https://raw.githubusercontent.com/Razzano/MyWallpaper/master/image',
-        downButton = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageDownArrow.png',
-        upButton = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageUpArrow.png',
-        googleImage = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageGoogle.png',
+        downArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/downArrow.png',
+        upArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/upArrow.png',
+        googleImage = 'https://raw.githubusercontent.com/Razzano/My_Images/master/logoGoogle.png',
         imgCalendar = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageCalendar.png',
         imgClock16 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock16.png',
         imgClock32 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock32.png',
@@ -77,9 +77,9 @@
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
         logoGoogle = $c('img', {id: 'logoGoogle', src: googleImage}),
         divThemer = $c('div', {id: 'themerDiv'}),
-        btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upButton + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
+        btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
-        btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url(' + downButton + ') !important;', title: '', onclick: e => wallpaperButtonChanger(e)});
+        btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url(' + downArrow + ') !important;', title: '', onclick: e => wallpaperButtonChanger(e)});
 
   let clockInterval,
       initInterval,
@@ -345,7 +345,7 @@
     '  cursor: pointer !important;'+
     '  margin: 0 !important;'+
     '  position: relative !important;'+
-    '  top: -3px !important;'+
+    '  top: -1px !important;'+
     '}'+
     '#gWP1 #dateTimeContainer > #dateTime {'+
     '  background: rgba(0, 0, 0, .3) !important;'+
@@ -355,7 +355,7 @@
     '  color: #FFF !important;'+
     '  cursor: pointer !important;'+
     '  font: 14px monospace !important;'+
-    '  padding: 4px 8px 0 8px !important;'+
+    '  padding: 5px 8px 0 8px !important;'+
     '  position: relative !important;'+
     '  top: -1px !important;'+
     '}'+
@@ -369,13 +369,11 @@
     '  border: 1px solid #000 !important;'+
     '}'+
     '#gWP1 #logoGoogle {'+
-    '  height: 82px !important;'+
     '  position: absolute !important;'+
     '  top: 0 !important;'+
-    '  width: 256px !important;'+
     '}'+
     '#gWP1 #themerDiv {'+
-    '  margin: -2px 8px 0 -8px !important;'+
+    '  margin: 0 2px 0 10px !important;'+
     '}'+
     '#gWP1 #buttonThemer,'+
     '#gWP1 #inputThemer {'+
@@ -388,9 +386,7 @@
     '  background-repeat: no-repeat !important;'+
     '  background-position: right !important;'+
     '  margin: 0 !important;'+
-    '  position: relative !important;'+
-    '  width: 150px !important;'+
-    '  z-index: 2 !important;'+
+    '  width: 110px !important;'+
     '}'+
     '#gWP1 #inputThemer {'+
     '  background: transparent !important;'+
@@ -399,16 +395,17 @@
     '}'+
     '#gWP1 #buttonDown {'+
     '  background: transparent !important;'+
+    '  background-repeat: no-repeat !important;'+
     '  border: none !important;'+
     '  color: #FFF !important;'+
     '  opacity: .7 !important;'+
     '  cursor: pointer !important;'+
-    '  height: 16px !important;'+
-    '  margin: 0 !important;'+
+    '  height: 10px !important;'+
+    '  margin: 0 0 0 3px !important;'+
     '  position: relative !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
-    '  top: 2px !important;'+
-    '  width: 16px !important;'+
+    '  top: 1px !important;'+
+    '  width: 11px !important;'+
     '}'+
     '#gWP1 #buttonThemer:hover,'+
     '#gWP1 #buttonDown:hover {'+
