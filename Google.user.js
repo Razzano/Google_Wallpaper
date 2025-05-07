@@ -377,7 +377,7 @@
     '  margin-top: 12px !important;'+
     '}'+
     '#gWP1 #themerDiv {'+
-    '  display: inline-flex !important;'+
+    '  display: inline-block !important;'+
     '  margin: 0 2px 0 10px !important;'+
     '}'+
     '#gWP1 #buttonThemer,'+
@@ -409,7 +409,6 @@
     '  margin: 0 0 0 3px !important;'+
     '  position: relative !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
-    '  top: 5px !important;'+
     '  width: 11px !important;'+
     '}'+
     '#gWP1 #buttonThemer:hover,'+
