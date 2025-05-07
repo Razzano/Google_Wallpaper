@@ -340,7 +340,7 @@
     '  display: inline-flex !important;'+
     '  left: 13px !important;'+
     '  position: absolute !important;'+
-    '  top: 10px !important;'+
+    '  top: 12px !important;'+
     '}'+
     '#gWP1 #imageCalendar {'+
     '  cursor: pointer !important;'+
@@ -374,7 +374,7 @@
     '  top: 0 !important;'+
     '}'+
     '#gb > div.gb_M.gb_0.gb_Mf.gb_Tf {'+
-    '  margin-top: 10px !important;'+
+    '  margin-top: 12px !important;'+
     '}'+
     '#gWP1 #themerDiv {'+
     '  display: inline-flex !important;'+
