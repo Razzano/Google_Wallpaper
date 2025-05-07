@@ -25,7 +25,7 @@
         arrow = '\u21D2',
         asterisk = '\u002A', // '*'
         bullet = '\u2022', // '•'
-        clock = '\u23F0', // '⏰'
+        clock = '\u23F0', // '⏰' or '\u23F2',
         colon = ':',
         colons = '::',
         comma = ',',
@@ -35,7 +35,7 @@
         space = ' ',
         watch = '\u231A', // '⌚'
         addRemoveText = bullet + ' Left-click to Add/Remove :seconds\n' + bullet + ' Shift + Left-click to Add/Remove AM/PM\n' + bullet + ' Ctrl + Left-click to change Date format 1 - 9',
-        changeWallpaperTooltip = 'Change Wallpaper',
+        changeWallpaperTooltip = 'Left-click to change wallpaper',
         wallpaperImageText = 'Wallpaper image',
         customFormatText = 'Add a custom format in script line ',
         hideShowText = bullet + ' Left-click to Hide/Show Date/Time\n' + bullet + ' Shift + Left-click for link targets of "_blank"\n' + bullet + ' Ctrl + Left-click for link targets of "_self"',
@@ -237,7 +237,7 @@
   }
 
   function searchLinksWhere() {
-    let links = $q('body#gWP1 a', true);
+    let links = $q('a', true);
     for (let i = 0; i < links.length; i++) links[i].setAttribute('target', GM_getValue('linkTarget'));
   }
 
@@ -340,6 +340,7 @@
     '  display: inline-flex !important;'+
     '  left: 13px !important;'+
     '  position: absolute !important;'+
+    '  top: 10px !important;'+
     '}'+
     '#gWP1 #imageCalendar {'+
     '  cursor: pointer !important;'+
@@ -372,7 +373,11 @@
     '  position: absolute !important;'+
     '  top: 0 !important;'+
     '}'+
+    '#gb > div.gb_M.gb_0.gb_Mf.gb_Tf {'+
+    '  margin-top: 10px !important;'+
+    '}'+
     '#gWP1 #themerDiv {'+
+    '  display: inline-flex !important;'+
     '  margin: 0 2px 0 10px !important;'+
     '}'+
     '#gWP1 #buttonThemer,'+
@@ -404,13 +409,17 @@
     '  margin: 0 0 0 3px !important;'+
     '  position: relative !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
-    '  top: 1px !important;'+
+    '  top: 5px !important;'+
     '  width: 11px !important;'+
     '}'+
     '#gWP1 #buttonThemer:hover,'+
     '#gWP1 #buttonDown:hover {'+
     '  opacity: 1 !important;'+
     '  cursor: pointer !important;'+
+    '}'+
+    '#gWP1 #inputThemer:hover,'+
+    '#gWP1 #inputThemer:focus-within {'+
+    '  opacity: 1 !important;'+
     '}'+
     '#gWP1 #inputThemer::-webkit-inner-spin-button,'+
     '#gWP1 #inputThemer::-webkit-outer-spin-button,'+
