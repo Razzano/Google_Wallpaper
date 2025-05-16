@@ -378,7 +378,7 @@
     '}'+
     '#gWP1 #themerDiv {'+
     '  display: inline-block !important;'+
-    '  margin: 0 2px 0 10px !important;'+
+    '  margin: 14px 2px 0 10px !important;'+
     '}'+
     '#gWP1 #buttonThemer,'+
     '#gWP1 #inputThemer {'+
