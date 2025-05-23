@@ -647,6 +647,9 @@
     '  position: relative !important;'+
     '  top: 3px !important;'+
     '}'+
+    '#gWP1 .lJ9FBc {'+
+    '  background: transparent !important;'+
+    '}'+
   '');
 
 })();
