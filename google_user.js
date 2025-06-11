@@ -71,7 +71,6 @@
         center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
         searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
-        //settingsBtn = $q(' > div.L3eUgb > div:nth-child(6) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
         settingsBtn = $q('body > div.L3eUgb > div:nth-child(6) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
