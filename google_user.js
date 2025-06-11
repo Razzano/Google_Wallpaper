@@ -71,7 +71,8 @@
         center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
         searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
-        settingsBtn = $q('html[itemtype="http://schema.org/WebPage"] body > div.L3eUgb > div:nth-child(6) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
+        //settingsBtn = $q(' > div.L3eUgb > div:nth-child(6) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
+        settingsBtn = $q('body > div.L3eUgb > div:nth-child(6) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
@@ -202,7 +203,7 @@
     window.removeEventListener('load', () => init());
     try {
       body.id = 'gWP1';
-      searchButton.id = 'gSearch';
+      //searchButton.id = 'gSearch';
       if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
       else { dateTime.hidden = true; clearInterval(clockInterval) }
       dateTime.title = addRemoveText;
@@ -490,7 +491,7 @@
     '#gWP1 .RNNXgb:hover .gLFyf,'+
     '#gWP1 .RNNXgb:focus-within .gLFyf {'+
     '  filter: brightness(1.5) !important;'+
-    '  margin-left: 0 !important;'+
+    '  margin: auto !important;'+
     '  max-width: 584px !important;'+
     '  text-align: left !important;'+
     '}'+
@@ -649,6 +650,12 @@
     '}'+
     '#gWP1 .lJ9FBc {'+
     '  background: transparent !important;'+
+    '}'+
+    '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div.SDkEP {'+
+    '  min-width: 300px !important;'+
+    '}'+
+    '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div.SDkEP > div.fM33ce.dRYYxd > button {'+
+    '  display: none !important;'+
     '}'+
   '');
 
