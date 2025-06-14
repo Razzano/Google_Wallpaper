@@ -651,7 +651,6 @@
     '  background: transparent !important;'+
     '}'+
     '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div.SDkEP {'+
-    '  min-width: 300px !important;'+
     '}'+
     '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div.SDkEP > div.fM33ce.dRYYxd > button {'+
     '  display: none !important;'+
