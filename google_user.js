@@ -67,7 +67,7 @@
         MonthNum = '1,2,3,4,5,6,7,8,9,10,11,12',
         monthnum = MonthNum.split(','),
         body = $q('html[itemtype="http://schema.org/WebPage"] > body'),
-        div1 = $q('html[itemtype="http://schema.org/WebPage"] #gb > div'),
+        header = $q('html[itemtype="http://schema.org/WebPage"] #gb'),
         center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
         searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
@@ -202,7 +202,7 @@
     window.removeEventListener('load', () => init());
     try {
       body.id = 'gWP1';
-      //searchButton.id = 'gSearch';
+      searchButton.id = 'gSearch';
       if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
       else { dateTime.hidden = true; clearInterval(clockInterval) }
       dateTime.title = addRemoveText;
@@ -211,7 +211,7 @@
       divThemer.appendChild(btnThemer);
       divThemer.appendChild(inpThemer);
       divThemer.appendChild(btnDown);
-      div1.insertBefore(dateTimeContainer, div1.firstChild);
+      header.insertBefore(dateTimeContainer, header.firstChild);
       insertAfter(logoGoogle, dateTimeContainer);
       insertAfter(divThemer, logoGoogle);
       placeHolder.placeholder = placeHolderText;
@@ -593,7 +593,6 @@
     '#gWP1 .UjBGL.pkWBse.iRQHZe {'+
     '  background: transparent !important;'+
     '  margin: 0 0 0 36px !important;'+
-    '  top: 1107px !important;'+
     '}'+
     '#gWP1 .cF4V5c.yTik0.wplJBd.PBn44e.iQXTJe {'+
     '  background: rgb(26, 28, 29) !important;'+
