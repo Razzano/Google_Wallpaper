@@ -71,7 +71,7 @@
         center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
         searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
-        settingsBtn = $q('body > div.L3eUgb > div:nth-child(6) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
+        settingsBtn = $q('body > div.L3eUgb > div:nth-child(7) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span > span'),
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
@@ -314,13 +314,14 @@
     '#gWP1 #gb {'+
     '  background: transparent !important;'+
     '}'+
-    '#gWP1 #gb > div {'+
+    /*'#gWP1 #gb > div {'+
     '  background: rgba(0, 0, 0, .3) !important;'+
     '  border-radius: 16px !important;'+
     '  padding: 0 4px 0 0 !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
-    '}'+
-    '#gWP1 #gb > div > a,'+
+    '}'+*/
+    /*'#gWP1 #gb > div > a,'+*/
+    '#gWP1 > div:nth-child(9) > div,'+
     '#gWP1 #gb > div > div.gb_Qe > div.gb_3c > div.gb_cd.gb_0.gb_I,'+
     '#gWP1 .o3j99.LLD4me.LS8OJ,'+
     '#gWP1 .vcVZ7d,'+
