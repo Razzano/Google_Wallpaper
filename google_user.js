@@ -71,7 +71,8 @@
         center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
         searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
-        settingsBtn = $q('body > div.L3eUgb > div:nth-child(7) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span > span'),
+        //settingsBtn = $q('body > div.L3eUgb > div:nth-child(7) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span > span'),
+        settingsBtn = $q('body > div.L3eUgb > div:nth-child(8) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
@@ -301,7 +302,7 @@
 
   initInterval = setInterval(() => {
     if (!dateTimeContainer || !divThemer || !logoGoogle) init();
-    else clearInterval(initInterval);
+    else {onResize(); clearInterval(initInterval)}
   }, openInterval);
 
   GM_addStyle(''+
@@ -328,9 +329,12 @@
     '#gWP1 input[name="btnI"],'+
     '#gWP1 .nDcEnd,'+
     '#gWP1 .goxjub,'+
-    '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf.emcav > div.RNNXgb > div > div.dRYYxd > div.XDyW0e,'+
+    '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div > div.dRYYxd > div.XDyW0e,'+
+    '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div.SDkEP > div.fM33ce.dRYYxd,'+
     '#gWP1 promo-middle-slot > div,'+
-    '#gWP1 .KxwPGc {'+
+    '#gWP1 .KxwPGc,'+
+    '#gWP1 > div.L3eUgb > div:nth-child(8) {'+
+    /*'#gWP1 > div.L3eUgb > div:nth-child(7) {'+*/
     '  display: none !important;'+
     '}'+
     '#gWP1 > .gb_l,'+
