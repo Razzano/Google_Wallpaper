@@ -39,11 +39,11 @@
         wallpaperImageText = 'Wallpaper Image',
         customFormatText = 'Add a custom format in script line ',
         hideShowText = bullet + ' Left-click to Hide/Show Date/Time\n' + bullet + ' Shift + Left-click for link targets of "_blank"\n' + bullet + ' Ctrl + Left-click for link targets of "_self"',
-        inputTooltip = '0 - 51',
+        inputTooltip = '0 - 52',
         placeHolderText = 'Search Look-up',
         githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
-        downArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/downArrow3.png',
-        upArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/upArrow3.png',
+        downArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/downArrow5.png',
+        upArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/upArrow5.png',
         googleImage = 'https://raw.githubusercontent.com/Razzano/My_Images/master/logoGoogle.png',
         imgCalendar = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageCalendar.png',
         imgClock16 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock16.png',
@@ -77,9 +77,9 @@
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
         logoGoogle = $c('img', {id: 'logoGoogle', src: googleImage}),
         divThemer = $c('div', {id: 'themerDiv'}),
-        btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background: url(' + upArrow + ') no-repeat right !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
+        btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upArrow + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
-        btnDown = $c('button', {id: 'buttonDown', style: 'background: url(' + downArrow + ') no-repeat center !important;', title: '', onclick: e => wallpaperButtonChanger(e)});
+        btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url(' + downArrow + ') !important;', title: '', onclick: e => wallpaperButtonChanger(e)});
 
   let clockInterval,
       initInterval,
@@ -265,12 +265,12 @@
         sub = parseInt(num1 - 1);
     switch (e.target.id) {
       case 'buttonThemer':
-        if (inp.value > 50) inp.value = 0;
+        if (inp.value > 51) inp.value = 0;
         else inp.value = sum;
         break;
       case 'buttonDown':
         if (inp.value > 0) inp.value = sub;
-        else inp.value = 51;
+        else inp.value = 52;
     }
     GM_setValue('wallpaperImage', inp.value);
     wallpaper(inp.value);
@@ -278,7 +278,7 @@
 
   function wallpaperInputChanger(e) {
     let inp = $q('#inputThemer');
-    if (inp.value > 51) inp.value = 51;
+    if (inp.value > 51) inp.value = 52;
     else if (inp.value < 0) inp.value = 0;
     else inp.value = inp.value;
     GM_setValue('wallpaperImage', inp.value);
@@ -388,6 +388,8 @@
     '  text-shadow: 1px 1px 2px #000 !important;'+
     '}'+
     '#gWP1 #buttonThemer {'+
+    '  background-position: bottom 6px right !important;'+
+    '  background-repeat: no-repeat !important;'+
     '  width: 224px !important;'+
     '}'+
     '#gWP1 #inputThemer {'+
@@ -395,12 +397,14 @@
     '  width: 34px !important;'+
     '}'+
     '#gWP1 #buttonDown {'+
+    '  background-position: center !important;'+
+    '  background-repeat: no-repeat !important;'+
     '  cursor: pointer !important;'+
-    '  height: 14px !important;'+
+    '  height: 15px !important;'+
     '  margin-left: 0 !important;'+
     '  margin-right: 14px !important;'+
     '  position: relative !important;'+
-    '  top: 1px !important;'+
+    '  top: 2px !important;'+
     '  width: 21px !important;'+
     '}'+
     '#gWP1 #buttonThemer:hover,'+
