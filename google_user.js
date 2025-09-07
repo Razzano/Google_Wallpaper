@@ -317,6 +317,7 @@
     '#gWP1 #gb {'+
     '  background: transparent !important;'+
     '}'+
+    '#gWP1 #gb > div.gb_td.gb_0.gb_I,'+
     '#gWP1 > div:nth-child(9) > div,'+
     '#gWP1 #gb > div > div.gb_Qe > div.gb_3c > div.gb_cd.gb_0.gb_I,'+
     '#gWP1 .o3j99.LLD4me.LS8OJ,'+
@@ -388,6 +389,7 @@
     '#gWP1 #buttonThemer {'+
     '  background-repeat: no-repeat !important;'+
     '  background-position: right !important;'+
+    '  background-size: 11px 10px !important;'+
     '  margin: 0 !important;'+
     '  width: 210px !important;'+
     '}'+
@@ -399,11 +401,13 @@
     '#gWP1 #buttonDown {'+
     '  background: transparent !important;'+
     '  background-repeat: no-repeat !important;'+
+    '  background-size: 11px 10px !important;'+
     '  cursor: pointer !important;'+
     '  height: 10px !important;'+
+    '  margin-right: 14px !important;'+
     '  position: relative !important;'+
     '  top: -1px !important;'+
-    '  width: 10px !important;'+
+    '  width: 11px !important;'+
     '}'+
     '#gWP1 #buttonThemer:hover,'+
     '#gWP1 #buttonDown:hover {'+
