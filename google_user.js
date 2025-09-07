@@ -42,8 +42,8 @@
         inputTooltip = '0 - 51',
         placeHolderText = 'Search Look-up',
         githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
-        downArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/downArrow.png',
-        upArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/upArrow.png',
+        downArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/downArrow3.png',
+        upArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/upArrow3.png',
         googleImage = 'https://raw.githubusercontent.com/Razzano/My_Images/master/logoGoogle.png',
         imgCalendar = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageCalendar.png',
         imgClock16 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock16.png',
@@ -77,9 +77,9 @@
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
         logoGoogle = $c('img', {id: 'logoGoogle', src: googleImage}),
         divThemer = $c('div', {id: 'themerDiv'}),
-        btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upArrow + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
+        btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background: url(' + upArrow + ') no-repeat right !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
-        btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url(' + downArrow + ') !important;', title: '', onclick: e => wallpaperButtonChanger(e)});
+        btnDown = $c('button', {id: 'buttonDown', style: 'background: url(' + downArrow + ') no-repeat center !important;', title: '', onclick: e => wallpaperButtonChanger(e)});
 
   let clockInterval,
       initInterval,
@@ -380,6 +380,7 @@
     '  margin-top: 10px !important;'+
     '}'+
     '#gWP1 #themerDiv * {'+
+    '  background: transparent !important;'+
     '  border: none !important;'+
     '  color: #FFF !important;'+
     '  font: 20px monospace !important;'+
@@ -387,27 +388,20 @@
     '  text-shadow: 1px 1px 2px #000 !important;'+
     '}'+
     '#gWP1 #buttonThemer {'+
-    '  background-repeat: no-repeat !important;'+
-    '  background-position: right !important;'+
-    '  background-size: 11px 10px !important;'+
-    '  margin: 0 !important;'+
-    '  width: 210px !important;'+
+    '  width: 224px !important;'+
     '}'+
     '#gWP1 #inputThemer {'+
-    '  background: transparent !important;'+
     '  text-align: center !important;'+
     '  width: 34px !important;'+
     '}'+
     '#gWP1 #buttonDown {'+
-    '  background: transparent !important;'+
-    '  background-repeat: no-repeat !important;'+
-    '  background-size: 11px 10px !important;'+
     '  cursor: pointer !important;'+
-    '  height: 10px !important;'+
+    '  height: 14px !important;'+
+    '  margin-left: 0 !important;'+
     '  margin-right: 14px !important;'+
     '  position: relative !important;'+
-    '  top: -1px !important;'+
-    '  width: 11px !important;'+
+    '  top: 1px !important;'+
+    '  width: 21px !important;'+
     '}'+
     '#gWP1 #buttonThemer:hover,'+
     '#gWP1 #buttonDown:hover {'+
