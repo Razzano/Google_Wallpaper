@@ -36,7 +36,7 @@
         watch = '\u231A', // '⌚'
         addRemoveText = bullet + ' Left-click to Add/Remove :seconds\n' + bullet + ' Shift + Left-click to Add/Remove AM/PM\n' + bullet + ' Ctrl + Left-click to change Date format 1 - 9',
         changeWallpaperTooltip = 'Left-click to change wallpaper',
-        wallpaperImageText = 'Wallpaper image',
+        wallpaperImageText = 'Wallpaper Image',
         customFormatText = 'Add a custom format in script line ',
         hideShowText = bullet + ' Left-click to Hide/Show Date/Time\n' + bullet + ' Shift + Left-click for link targets of "_blank"\n' + bullet + ' Ctrl + Left-click for link targets of "_self"',
         inputTooltip = '0 - 51',
@@ -71,14 +71,13 @@
         center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
         searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
-        //settingsBtn = $q('body > div.L3eUgb > div:nth-child(7) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span > span'),
         settingsBtn = $q('body > div.L3eUgb > div:nth-child(8) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
         logoGoogle = $c('img', {id: 'logoGoogle', src: googleImage}),
         divThemer = $c('div', {id: 'themerDiv'}),
-        btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
+        btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upArrow + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
         btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url(' + downArrow + ') !important;', title: '', onclick: e => wallpaperButtonChanger(e)});
 
@@ -234,7 +233,9 @@
 
   function onResize() {
     let width = (window.innerWidth / 2) - (logoGoogle.clientWidth / 2) + 'px';
-    logoGoogle.style = 'left: ' + width;
+    try {
+      logoGoogle.style = 'left: ' + width;
+    } catch(ex) {}
   }
 
   function searchLinksWhere() {
@@ -302,7 +303,8 @@
 
   initInterval = setInterval(() => {
     if (!dateTimeContainer || !divThemer || !logoGoogle) init();
-    else {onResize(); clearInterval(initInterval)}
+    else clearInterval(initInterval);
+    onResize();
   }, openInterval);
 
   GM_addStyle(''+
@@ -360,8 +362,8 @@
     '  box-shadow: none !important;'+
     '  color: #FFF !important;'+
     '  cursor: pointer !important;'+
-    '  font: 14px monospace !important;'+
-    '  padding: 5px 8px 0 8px !important;'+
+    '  font: 20px monospace !important;'+
+    '  padding: 0 8px !important;'+
     '  position: relative !important;'+
     '  top: -1px !important;'+
     '}'+
@@ -383,12 +385,13 @@
     '}'+
     '#gWP1 #themerDiv {'+
     '  display: inline-block !important;'+
-    '  margin: 14px 2px 0 10px !important;'+
+    '  margin: 10px 2px 0 10px !important;'+
     '}'+
     '#gWP1 #buttonThemer,'+
     '#gWP1 #inputThemer {'+
     '  border: none !important;'+
     '  color: #FFF !important;'+
+    '  font: 20px monospace !important;'+
     '  opacity: .7 !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
     '}'+
@@ -396,12 +399,12 @@
     '  background-repeat: no-repeat !important;'+
     '  background-position: right !important;'+
     '  margin: 0 !important;'+
-    '  width: 110px !important;'+
+    '  width: 210px !important;'+
     '}'+
     '#gWP1 #inputThemer {'+
     '  background: transparent !important;'+
     '  text-align: center !important;'+
-    '  width: 22px !important;'+
+    '  width: 34px !important;'+
     '}'+
     '#gWP1 #buttonDown {'+
     '  background: transparent !important;'+
@@ -411,10 +414,9 @@
     '  opacity: .7 !important;'+
     '  cursor: pointer !important;'+
     '  height: 10px !important;'+
-    '  margin: 0 0 0 3px !important;'+
     '  position: relative !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
-    '  width: 11px !important;'+
+    '  width: 10px !important;'+
     '}'+
     '#gWP1 #buttonThemer:hover,'+
     '#gWP1 #buttonDown:hover {'+
