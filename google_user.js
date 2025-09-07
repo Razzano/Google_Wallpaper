@@ -317,13 +317,6 @@
     '#gWP1 #gb {'+
     '  background: transparent !important;'+
     '}'+
-    /*'#gWP1 #gb > div {'+
-    '  background: rgba(0, 0, 0, .3) !important;'+
-    '  border-radius: 16px !important;'+
-    '  padding: 0 4px 0 0 !important;'+
-    '  text-shadow: 1px 1px 2px #000 !important;'+
-    '}'+*/
-    /*'#gWP1 #gb > div > a,'+*/
     '#gWP1 > div:nth-child(9) > div,'+
     '#gWP1 #gb > div > div.gb_Qe > div.gb_3c > div.gb_cd.gb_0.gb_I,'+
     '#gWP1 .o3j99.LLD4me.LS8OJ,'+
@@ -336,7 +329,6 @@
     '#gWP1 promo-middle-slot > div,'+
     '#gWP1 .KxwPGc,'+
     '#gWP1 > div.L3eUgb > div:nth-child(8) {'+
-    /*'#gWP1 > div.L3eUgb > div:nth-child(7) {'+*/
     '  display: none !important;'+
     '}'+
     '#gWP1 > .gb_l,'+
@@ -384,11 +376,9 @@
     '  margin-top: 12px !important;'+
     '}'+
     '#gWP1 #themerDiv {'+
-    '  display: inline-block !important;'+
-    '  margin: 10px 2px 0 10px !important;'+
+    '  margin-top: 10px !important;'+
     '}'+
-    '#gWP1 #buttonThemer,'+
-    '#gWP1 #inputThemer {'+
+    '#gWP1 #themerDiv * {'+
     '  border: none !important;'+
     '  color: #FFF !important;'+
     '  font: 20px monospace !important;'+
@@ -409,13 +399,10 @@
     '#gWP1 #buttonDown {'+
     '  background: transparent !important;'+
     '  background-repeat: no-repeat !important;'+
-    '  border: none !important;'+
-    '  color: #FFF !important;'+
-    '  opacity: .7 !important;'+
     '  cursor: pointer !important;'+
     '  height: 10px !important;'+
     '  position: relative !important;'+
-    '  text-shadow: 1px 1px 2px #000 !important;'+
+    '  top: -1px !important;'+
     '  width: 10px !important;'+
     '}'+
     '#gWP1 #buttonThemer:hover,'+
