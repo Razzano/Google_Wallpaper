@@ -45,9 +45,11 @@
         downArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/downArrow5.png',
         upArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/upArrow5.png',
         googleImage = 'https://raw.githubusercontent.com/Razzano/My_Images/master/logoGoogle.png',
+        googleImageL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageGoogle.png',
         imgCalendar = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageCalendar.png',
         imgClock16 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock16.png',
         imgClock32 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock32.png',
+        star24 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/star24.png',
         DayNameAbbr = 'Sun.,Mon.,Tue.,Wed.,Thu.,Fri.,Sat.',
         daynameabbr = DayNameAbbr.split(','),
         DayName = 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
@@ -71,11 +73,13 @@
         center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
         searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
-        settingsBtn = $q('body > div.L3eUgb > div:nth-child(8) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
+        settingsBtn = $q('body > div.L3eUgb > div:nth-child(9) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
         logoGoogle = $c('img', {id: 'logoGoogle', src: googleImage}),
+        logoGoogleL = $c('img', {id: 'logoGoogle', src: googleImageL}),
+        divLogo = $c('button', {id: 'buttonLogo', style: 'background: url(' + star24 + ') no-repeat center !important;', title: '', onclick: function() { logoClick()}}),
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upArrow + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
@@ -145,8 +149,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 148;
-      case 9: return customFormatText + 149;
+      case 8: return customFormatText + 152;
+      case 9: return customFormatText + 153;
   } }
 
   function dateTimeDefault() {
@@ -212,15 +216,50 @@
       divThemer.appendChild(inpThemer);
       divThemer.appendChild(btnDown);
       header.insertBefore(dateTimeContainer, header.firstChild);
-      insertAfter(logoGoogle, dateTimeContainer);
-      insertAfter(divThemer, logoGoogle);
+      //insertAfter(logoGoogle, dateTimeContainer);
+      //insertAfter(divThemer, logoGoogle);
+      insertAfter(logoGoogleL, dateTimeContainer);
+      insertAfter(divThemer, logoGoogleL);
+      insertAfter(divLogo, divThemer);
       placeHolder.placeholder = placeHolderText;
       center.appendChild(settingsBtn);
       inpThemer.value = GM_getValue('wallpaperImage');
+      logoChange(GM_getValue('logoImage'));
       onResize();
       searchLinksWhere();
       wallpaper(GM_getValue('wallpaperImage'));
     } catch(ex) {}
+  }
+
+  function logoChange(bool) {
+    if (bool) {
+      GM_addStyle(''+
+        '#gWP1 #logoGoogle {'+
+        '  display: none !important;'+
+        '}'+
+        '#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ {'+
+        '  display: block !important;'+
+        '  height: calc(0% - 560px) !important;'+
+        '  margin-top: -50px !important;'+
+        '  pointer-events: none !important;'+
+        '}'+
+      '');
+    } else {
+      GM_addStyle(''+
+        '#gWP1 #logoGoogle {'+
+        '  display: block !important;'+
+        '}'+
+        '#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ {'+
+        '  display: none !important;'+
+        '}'+
+      '');
+  } }
+
+  function logoClick() {
+    let bool = GM_getValue('logoImage');
+    bool = GM_getValue('logoImage') !== true ? true : false;
+    GM_setValue('logoImage', bool);
+    logoChange(bool);
   }
 
   function onClose() {
@@ -232,9 +271,10 @@
   }
 
   function onResize() {
-    let width = (window.innerWidth / 2) - (logoGoogle.clientWidth / 2) + 'px';
+    let getLogo = $q('#logoGoogle'),
+        setLeft = (window.innerWidth / 2) - (getLogo.width / 2) + 'px';
     try {
-      logoGoogle.style = 'left: ' + width;
+      getLogo.style = 'left: ' + setLeft;
     } catch(ex) {}
   }
 
@@ -256,7 +296,7 @@
          '  background:  url('+ githubSite + e + '.jpg) no-repeat center / cover !important;'+
         '}'+
       '');
-  } }
+    } }
 
   function wallpaperButtonChanger(e) {
     let inp = $q('#inputThemer'),
@@ -295,6 +335,7 @@
   if (!GM_getValue('defaultDateTimeView')) GM_setValue('defaultDateTimeView', false);
   if (!GM_getValue('defaultSecondsView')) GM_setValue('defaultSecondsView', false);
   if (!GM_getValue('linkTarget')) GM_setValue('linkTarget', '_blank');
+  if (!GM_getValue('logoImage')) GM_setValue('logoImage', 0);
   if (!GM_getValue('wallpaperImage')) GM_setValue('wallpaperImage', 0);
 
   window.addEventListener('load', () => init());
@@ -302,7 +343,7 @@
   window.addEventListener('unload', () => onClose());
 
   initInterval = setInterval(() => {
-    if (!dateTimeContainer || !divThemer || !logoGoogle) init();
+    if (!dateTimeContainer || !divThemer) init();
     else clearInterval(initInterval);
     onResize();
   }, openInterval);
@@ -320,7 +361,6 @@
     '#gWP1 #gb > div.gb_td.gb_0.gb_I,'+
     '#gWP1 > div:nth-child(9) > div,'+
     '#gWP1 #gb > div > div.gb_Qe > div.gb_3c > div.gb_cd.gb_0.gb_I,'+
-    '#gWP1 .o3j99.LLD4me.LS8OJ,'+
     '#gWP1 .vcVZ7d,'+
     '#gWP1 input[name="btnI"],'+
     '#gWP1 .nDcEnd,'+
@@ -370,6 +410,8 @@
     '  border: 1px solid #000 !important;'+
     '}'+
     '#gWP1 #logoGoogle {'+
+    '  max-height: 100% !important;'+
+    '  max-width: 100% !important;'+
     '  position: absolute !important;'+
     '  top: 0 !important;'+
     '}'+
@@ -421,6 +463,11 @@
     '#gWP1 #inputThemer::-webkit-inner-spin-button,'+
     '#gWP1 #inputThemer::-webkit-outer-spin-button {'+
     '  display: none !important;'+
+    '}'+
+    '#gWP1 #buttonLogo {'+
+    '  height: 24px !important;'+
+    '  margin-top: 10px !important;'+
+    '  width: 24px !important;'+
     '}'+
     '#gWP1 .om7nvf {'+
     '  padding: 0 !important;'+
@@ -648,6 +695,9 @@
     '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div.SDkEP {'+
     '}'+
     '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div.SDkEP > div.fM33ce.dRYYxd > button {'+
+    '  display: none !important;'+
+    '}'+
+    '#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ > div > div.IzOpfd {'+
     '  display: none !important;'+
     '}'+
   '');
