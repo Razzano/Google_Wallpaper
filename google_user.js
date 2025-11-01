@@ -216,10 +216,8 @@
       divThemer.appendChild(inpThemer);
       divThemer.appendChild(btnDown);
       header.insertBefore(dateTimeContainer, header.firstChild);
-      //insertAfter(logoGoogle, dateTimeContainer);
-      //insertAfter(divThemer, logoGoogle);
-      insertAfter(logoGoogleL, dateTimeContainer);
-      insertAfter(divThemer, logoGoogleL);
+      insertAfter(logoGoogleL, dateTimeContainer); //insertAfter(logoGoogle, dateTimeContainer);
+      insertAfter(divThemer, logoGoogleL); //insertAfter(divThemer, logoGoogle);
       insertAfter(divLogo, divThemer);
       placeHolder.placeholder = placeHolderText;
       center.appendChild(settingsBtn);
@@ -243,6 +241,9 @@
         '  margin-top: -50px !important;'+
         '  pointer-events: none !important;'+
         '}'+
+        '#gWP1 form {'+
+        '  margin-top: 126px !important;'+
+        '}'+
       '');
     } else {
       GM_addStyle(''+
@@ -251,6 +252,9 @@
         '}'+
         '#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ {'+
         '  display: none !important;'+
+        '}'+
+        '#gWP1 form {'+
+        '  margin-top: 226px !important;'+
         '}'+
       '');
   } }
@@ -473,7 +477,7 @@
     '  padding: 0 !important;'+
     '}'+
     '#gWP1 form {'+
-    '  margin-top: 156px !important;'+
+    /*'  margin-top: 156px !important;'+*/
     '}'+
     '#gWP1 .gb_Vd.gb_Xa.gb_Kd {'+
     '  background: rgba(0, 0, 0, .3) !important;'+
