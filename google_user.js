@@ -44,12 +44,15 @@
         githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
         downArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/downArrow5.png',
         upArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/upArrow5.png',
-        googleImage = 'https://raw.githubusercontent.com/Razzano/My_Images/master/logoGoogle.png',
+        googleImageS = 'https://raw.githubusercontent.com/Razzano/My_Images/master/logoGoogle.png',
         googleImageL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageGoogle.png',
+        googleImageW = 'https://raw.githubusercontent.com/Razzano/My_Images/master/World.png',
         imgCalendar = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageCalendar.png',
         imgClock16 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock16.png',
         imgClock32 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock32.png',
+        gear24 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/gear.png',
         star24 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/star24.png',
+        star24w = 'https://raw.githubusercontent.com/Razzano/My_Images/master/star24w.png',
         DayNameAbbr = 'Sun.,Mon.,Tue.,Wed.,Thu.,Fri.,Sat.',
         daynameabbr = DayNameAbbr.split(','),
         DayName = 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
@@ -77,9 +80,10 @@
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
-        logoGoogle = $c('img', {id: 'logoGoogle', src: googleImage}),
+        logoGoogleS = $c('img', {id: 'logoGoogle', src: googleImageS}),
         logoGoogleL = $c('img', {id: 'logoGoogle', src: googleImageL}),
-        divLogo = $c('button', {id: 'buttonLogo', style: 'background: url(' + star24 + ') no-repeat center !important;', title: '', onclick: function() { logoClick()}}),
+        logoGoogleW = $c('img', {id: 'logoGoogle', src: googleImageW}),
+        divLogo = $c('button', {id: 'buttonLogo', style: 'background: url(' + star24w + ') no-repeat center !important;', title: '', onclick: function() { logoClick()}}),
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upArrow + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
@@ -216,8 +220,8 @@
       divThemer.appendChild(inpThemer);
       divThemer.appendChild(btnDown);
       header.insertBefore(dateTimeContainer, header.firstChild);
-      insertAfter(logoGoogleL, dateTimeContainer); //insertAfter(logoGoogle, dateTimeContainer);
-      insertAfter(divThemer, logoGoogleL); //insertAfter(divThemer, logoGoogle);
+      insertAfter(logoGoogleL, dateTimeContainer); //insertAfter(logoGoogleS, dateTimeContainer); insertAfter(logoGoogleW, dateTimeContainer);
+      insertAfter(divThemer, logoGoogleL); //insertAfter(divThemer, logoGoogleS); insertAfter(divThemer, logoGoogleW);
       insertAfter(divLogo, divThemer);
       placeHolder.placeholder = placeHolderText;
       center.appendChild(settingsBtn);
@@ -339,7 +343,7 @@
   if (!GM_getValue('defaultDateTimeView')) GM_setValue('defaultDateTimeView', false);
   if (!GM_getValue('defaultSecondsView')) GM_setValue('defaultSecondsView', false);
   if (!GM_getValue('linkTarget')) GM_setValue('linkTarget', '_blank');
-  if (!GM_getValue('logoImage')) GM_setValue('logoImage', 0);
+  if (!GM_getValue('logoImage')) GM_setValue('logoImage', false);
   if (!GM_getValue('wallpaperImage')) GM_setValue('wallpaperImage', 0);
 
   window.addEventListener('load', () => init());
