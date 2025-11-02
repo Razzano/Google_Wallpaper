@@ -39,6 +39,8 @@
         wallpaperImageText = 'Wallpaper Image',
         customFormatText = 'Add a custom format in script line ',
         hideShowText = bullet + ' Left-click to Hide/Show Date/Time\n' + bullet + ' Shift + Left-click for link targets of "_blank"\n' + bullet + ' Ctrl + Left-click for link targets of "_self"',
+        switchLogoCustom = 'Switch to Custom Logo',
+        switchLogoDefault = 'Switch to Default Logo',
         inputTooltip = '0 - 52',
         placeHolderText = 'Search Look-up',
         githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
@@ -80,7 +82,8 @@
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
-        divLogo = $c('button', {id: 'buttonLogo', style: 'background: url(' + star24w + ') no-repeat center !important;', title: '', onclick: function() { logoClick()}}),
+        //divLogo = $c('button', {id: 'buttonLogo', style: 'background: url(' + star24w + ') no-repeat center !important;', title: switchLogoText, onclick: function() { logoClick()}}),
+        divLogo = $c('button', {id: 'buttonLogo', style: 'background: url(' + star24w + ') no-repeat center !important;', title: GM_getValue('logoImage') ? switchLogoDefault : switchLogoCustom, onclick: function() { logoClick()}}),
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upArrow + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
@@ -154,8 +157,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 157;
-      case 9: return customFormatText + 158;
+      case 8: return customFormatText + 160;
+      case 9: return customFormatText + 161;
   } }
 
   function dateTimeDefault() {
@@ -236,6 +239,7 @@
 
   function logoChange(bool) {
     if (bool) {
+      divLogo.title = switchLogoDefault;
       GM_addStyle(''+
         '#gWP1 #logoGoogle {'+
         '  display: block !important;'+
@@ -248,6 +252,7 @@
         '}'+
       '');
     } else {
+      divLogo.title = switchLogoCustom;
       GM_addStyle(''+
         '#gWP1 #logoGoogle {'+
         '  display: none !important;'+
