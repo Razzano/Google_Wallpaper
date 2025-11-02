@@ -239,6 +239,18 @@
     if (bool) {
       GM_addStyle(''+
         '#gWP1 #logoGoogle {'+
+        '  display: block !important;'+
+        '}'+
+        '#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ {'+
+        '  display: none !important;'+
+        '}'+
+        '#gWP1 form {'+
+        '  margin-top: 226px !important;'+
+        '}'+
+      '');
+    } else {
+      GM_addStyle(''+
+        '#gWP1 #logoGoogle {'+
         '  display: none !important;'+
         '}'+
         '#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ {'+
@@ -249,18 +261,6 @@
         '}'+
         '#gWP1 form {'+
         '  margin-top: 126px !important;'+
-        '}'+
-      '');
-    } else {
-      GM_addStyle(''+
-        '#gWP1 #logoGoogle {'+
-        '  display: block !important;'+
-        '}'+
-        '#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ {'+
-        '  display: none !important;'+
-        '}'+
-        '#gWP1 form {'+
-        '  margin-top: 226px !important;'+
         '}'+
       '');
   } }
