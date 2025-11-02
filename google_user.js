@@ -82,7 +82,6 @@
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
-        //divLogo = $c('button', {id: 'buttonLogo', style: 'background: url(' + star24w + ') no-repeat center !important;', title: switchLogoText, onclick: function() { logoClick()}}),
         divLogo = $c('button', {id: 'buttonLogo', style: 'background: url(' + star24w + ') no-repeat center !important;', title: GM_getValue('logoImage') ? switchLogoDefault : switchLogoCustom, onclick: function() { logoClick()}}),
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upArrow + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
@@ -157,8 +156,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 160;
-      case 9: return customFormatText + 161;
+      case 8: return customFormatText + 159;
+      case 9: return customFormatText + 160;
   } }
 
   function dateTimeDefault() {
