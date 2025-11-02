@@ -49,6 +49,9 @@
         googleImage1 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/logoGoogle.png',
         googleImage2 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageGoogle.png',
         googleImage3 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/World.png',
+        googleImage4 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/search8.png',
+        googleImage5 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/googleLogo11.png',
+        googleImage6 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/googleLogo12.png',
         imgCalendar = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageCalendar.png',
         imgClock16 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock16.png',
         imgClock32 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock32.png',
@@ -90,7 +93,10 @@
         logoGoogle1 = $c('img', {id: 'logoGoogle', src: googleImage1}),
         logoGoogle2 = $c('img', {id: 'logoGoogle', src: googleImage2}),
         logoGoogle3 = $c('img', {id: 'logoGoogle', src: googleImage3}),
-        getLogo = logoGoogle2; // logoGoogle1 = Small Google Image, logoGoogle2 = Large Google Image, logoGoogle3 = World Image
+        logoGoogle4 = $c('img', {id: 'logoGoogle', src: googleImage4}),
+        logoGoogle5 = $c('img', {id: 'logoGoogle', src: googleImage5}),
+        logoGoogle6 = $c('img', {id: 'logoGoogle', src: googleImage6}),
+        getLogo = logoGoogle2; // logoGoogle1 = Small Google Image, logoGoogle2 = Large Google Image, logoGoogle3 = World Image, logoGoogle3 = Search Image
 
   let clockInterval,
       initInterval,
@@ -156,8 +162,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 159;
-      case 9: return customFormatText + 160;
+      case 8: return customFormatText + 165;
+      case 9: return customFormatText + 166;
   } }
 
   function dateTimeDefault() {
@@ -391,17 +397,18 @@
     '#gWP1 .MV3Tnb {'+
     '  display: none !important;'+
     '}'+
-    '#gWP1 #dateTimeContainer {'+
-    '  display: inline-flex !important;'+
-    '  left: 13px !important;'+
-    '  position: absolute !important;'+
-    '  top: 12px !important;'+
-    '}'+
     '#gWP1 #imageCalendar {'+
     '  cursor: pointer !important;'+
     '  margin: 0 !important;'+
     '  position: relative !important;'+
     '  top: -1px !important;'+
+    '}'+
+    '#gWP1 #dateTimeContainer {'+
+    '  display: inline-flex !important;'+
+    '  font: 20px monospace !important;'+
+    '  left: 13px !important;'+
+    '  position: absolute !important;'+
+    '  top: 12px !important;'+
     '}'+
     '#gWP1 #dateTimeContainer > #dateTime {'+
     '  background: rgba(0, 0, 0, .3) !important;'+
@@ -410,10 +417,7 @@
     '  box-shadow: none !important;'+
     '  color: #FFF !important;'+
     '  cursor: pointer !important;'+
-    '  font: 20px monospace !important;'+
     '  padding: 0 8px !important;'+
-    '  position: relative !important;'+
-    '  top: -1px !important;'+
     '}'+
     '#gWP1 #imageCalendar:hover + #dateTime {'+
     '  background: #900 !important;'+
@@ -538,7 +542,7 @@
     '  box-shadow: none !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
     '}'+
-    '#gWP1 .RNNXgb textarea.gLFyf {'+
+    '#gWP1 form .RNNXgb textarea.gLFyf {'+
     '  color: #FFF !important;'+
     '  max-width: 130px !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
@@ -716,7 +720,7 @@
     '  display: none !important;'+
     '}'+
     '#gWP1 > div.L3eUgb > div.o3j99.LLD4me.yr19Zb.LS8OJ > div > svg > path {'+
-    '  fill: #FFF !important;'+
+    '  fill: rgba(255, 255, 255, .5) !important;'+
     '}'+
   '');
 
