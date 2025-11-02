@@ -44,9 +44,9 @@
         githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
         downArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/downArrow5.png',
         upArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/upArrow5.png',
-        googleImageS = 'https://raw.githubusercontent.com/Razzano/My_Images/master/logoGoogle.png',
-        googleImageL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageGoogle.png',
-        googleImageW = 'https://raw.githubusercontent.com/Razzano/My_Images/master/World.png',
+        googleImage1 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/logoGoogle.png',
+        googleImage2 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageGoogle.png',
+        googleImage3 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/World.png',
         imgCalendar = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageCalendar.png',
         imgClock16 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock16.png',
         imgClock32 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock32.png',
@@ -80,9 +80,9 @@
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
-        logoGoogleS = $c('img', {id: 'logoGoogle', src: googleImageS}),
-        logoGoogleL = $c('img', {id: 'logoGoogle', src: googleImageL}),
-        logoGoogleW = $c('img', {id: 'logoGoogle', src: googleImageW}),
+        logoGoogle1 = $c('img', {id: 'logoGoogle', src: googleImage1}),
+        logoGoogle2 = $c('img', {id: 'logoGoogle', src: googleImage2}),
+        logoGoogle3 = $c('img', {id: 'logoGoogle', src: googleImage3}),
         divLogo = $c('button', {id: 'buttonLogo', style: 'background: url(' + star24w + ') no-repeat center !important;', title: '', onclick: function() { logoClick()}}),
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upArrow + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
@@ -153,8 +153,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 152;
-      case 9: return customFormatText + 153;
+      case 8: return customFormatText + 156;
+      case 9: return customFormatText + 157;
   } }
 
   function dateTimeDefault() {
@@ -220,8 +220,10 @@
       divThemer.appendChild(inpThemer);
       divThemer.appendChild(btnDown);
       header.insertBefore(dateTimeContainer, header.firstChild);
-      insertAfter(logoGoogleL, dateTimeContainer); //insertAfter(logoGoogleS, dateTimeContainer); insertAfter(logoGoogleW, dateTimeContainer);
-      insertAfter(divThemer, logoGoogleL); //insertAfter(divThemer, logoGoogleS); insertAfter(divThemer, logoGoogleW);
+    // logoGoogle1 for Small Image, logoGoogle2 for Large Image, logoGoogle3 for World Image
+      insertAfter(logoGoogle2, dateTimeContainer); //insertAfter(logoGoogleS, dateTimeContainer); insertAfter(logoGoogleL, dateTimeContainer); insertAfter(logoGoogleW, dateTimeContainer);
+      insertAfter(divThemer, logoGoogle2); //insertAfter(divThemer, logoGoogleS); insertAfter(logoGoogleL, dateTimeContainer); insertAfter(divThemer, logoGoogleW);
+    // End Selection
       insertAfter(divLogo, divThemer);
       placeHolder.placeholder = placeHolderText;
       center.appendChild(settingsBtn);
@@ -265,9 +267,11 @@
 
   function logoClick() {
     let bool = GM_getValue('logoImage');
-    bool = GM_getValue('logoImage') !== true ? true : false;
-    GM_setValue('logoImage', bool);
-    logoChange(bool);
+    try {
+      bool = GM_getValue('logoImage') !== true ? true : false;
+      GM_setValue('logoImage', bool);
+      logoChange(bool);
+    } catch(ex) {}
   }
 
   function onClose() {
