@@ -54,6 +54,8 @@
         image4 = aURL + 'search8.png',
         image5 = aURL + 'googleLogo11.png',
         image6 = aURL + 'googleLogo12.png',
+        image7 = aURL + 'lightbulb.png',
+        image8 = aURL + 'manSearching.png',
         imgCalendar = aURL + 'imageCalendar.png',
         imgClock16 = aURL + 'imageClock16.png',
         imgClock32 = aURL + 'imageClock32.png',
@@ -99,7 +101,9 @@
         logo3 = $c('img', {id: 'logoGoogle', class: 'logo', src: image3}), // World Image
         logo4 = $c('img', {id: 'logoGoogle', class: 'logo', src: image4}), // Search Image
         logo5 = $c('img', {id: 'logoGoogle', class: 'logo', src: image5}), // Silver G Image
-        logo6 = $c('img', {id: 'logoGoogle', class: 'logo', src: image6}); // Red-Green-Blue G Image
+        logo6 = $c('img', {id: 'logoGoogle', class: 'logo', src: image6}), // Red-Green-Blue G Image
+        logo7 = $c('img', {id: 'logoGoogle', class: 'logo', src: image7}), // Lightbulb Image
+        logo8 = $c('img', {id: 'logoGoogle', class: 'logo', src: image8}); // Man Searching Image
 
   let clockInterval,
       initInterval,
@@ -239,6 +243,8 @@
         case 4: getLogo = logo4; break;
         case 5: getLogo = logo5; break;
         case 6: getLogo = logo6; break;
+        case 7: getLogo = logo7; break;
+        case 8: getLogo = logo8; break;
       }
       dateTime.title = addRemoveText;
       dateTimeContainer.appendChild(imageCalendar);
@@ -303,7 +309,7 @@
 
   function logo2Click(e) {
     e = e + 1;
-    if (e > 6) e = 1;
+    if (e > 8) e = 1;
     else e = e;
     GM_setValue('logoImageNum', e);
     switch (e) {
@@ -313,6 +319,8 @@
       case 4: getLogo = logo4; break;
       case 5: getLogo = logo5; break;
       case 6: getLogo = logo6; break;
+      case 7: getLogo = logo7; break;
+      case 8: getLogo = logo8; break;
     }
     init();
     removeDupes('logo');
