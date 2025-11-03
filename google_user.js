@@ -585,7 +585,7 @@
     '#gWP1 form .RNNXgb textarea.gLFyf {'+
     '  color: #FFF !important;'+
     '  max-width: 130px !important;'+
-    '  padding: 10px 0px 4px !important;'+
+    '  padding: 14px 0px 4px !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
     '}'+
     '#gWP1 .RNNXgb:hover,'+
