@@ -44,21 +44,22 @@
         inputTooltip = '0 - 52',
         placeHolderText = 'Search Look-up',
         githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
-        downArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/downArrow5.png',
-        upArrow = 'https://raw.githubusercontent.com/Razzano/My_Images/master/upArrow5.png',
-        googleImage1 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/logoGoogle.png',
-        googleImage2 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageGoogle.png',
-        googleImage3 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/World.png',
-        googleImage4 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/search8.png',
-        googleImage5 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/googleLogo11.png',
-        googleImage6 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/googleLogo12.png',
-        imgCalendar = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageCalendar.png',
-        imgClock16 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock16.png',
-        imgClock32 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock32.png',
-        gear24 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/gear.png',
-        smiley24 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/smiley24.png',
-        star24 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/star24.png',
-        star24w = 'https://raw.githubusercontent.com/Razzano/My_Images/master/star24w.png',
+        aURL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/',
+        downArrow = aURL + 'downArrow5.png',
+        upArrow = aURL + 'upArrow5.png',
+        image1 = aURL + 'logoGoogle.png',
+        image2 = aURL + 'imageGoogle.png',
+        image3 = aURL + 'World.png',
+        image4 = aURL + 'search8.png',
+        image5 = aURL + 'googleLogo11.png',
+        image6 = aURL + 'googleLogo12.png',
+        imgCalendar = aURL + 'imageCalendar.png',
+        imgClock16 = aURL + 'imageClock16.png',
+        imgClock32 = aURL + 'imageClock32.png',
+        gear24 = aURL + 'gear.png',
+        smiley24 = aURL + 'smiley24.png',
+        star24 = aURL + 'star24.png',
+        star24w = aURL + 'star24w.png',
         DayNameAbbr = 'Sun.,Mon.,Tue.,Wed.,Thu.,Fri.,Sat.',
         daynameabbr = DayNameAbbr.split(','),
         DayName = 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
@@ -91,12 +92,12 @@
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
         btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
-        logo1 = $c('img', {id: 'logoGoogle', src: googleImage1}), // Google Image Small
-        logo2 = $c('img', {id: 'logoGoogle', src: googleImage2}), // Google Image Large
-        logo3 = $c('img', {id: 'logoGoogle', src: googleImage3}), // World Image
-        logo4 = $c('img', {id: 'logoGoogle', src: googleImage4}), // Search Image
-        logo5 = $c('img', {id: 'logoGoogle', src: googleImage5}), // Silver G Image
-        logo6 = $c('img', {id: 'logoGoogle', src: googleImage6}), // Red-Green-Blue G Image
+        logo1 = $c('img', {id: 'logoGoogle', src: image1}), // Google Image Small
+        logo2 = $c('img', {id: 'logoGoogle', src: image2}), // Google Image Large
+        logo3 = $c('img', {id: 'logoGoogle', src: image3}), // World Image
+        logo4 = $c('img', {id: 'logoGoogle', src: image4}), // Search Image
+        logo5 = $c('img', {id: 'logoGoogle', src: image5}), // Silver G Image
+        logo6 = $c('img', {id: 'logoGoogle', src: image6}), // Red-Green-Blue G Image
         getLogo = logo4;
 
   let clockInterval,
@@ -163,8 +164,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 166;
-      case 9: return customFormatText + 167;
+      case 8: return customFormatText + 167;
+      case 9: return customFormatText + 168;
   } }
 
   function dateTimeDefault() {
