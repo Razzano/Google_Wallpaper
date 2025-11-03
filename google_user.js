@@ -56,6 +56,7 @@
         imgClock16 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock16.png',
         imgClock32 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/imageClock32.png',
         gear24 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/gear.png',
+        smiley24 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/smiley24.png',
         star24 = 'https://raw.githubusercontent.com/Razzano/My_Images/master/star24.png',
         star24w = 'https://raw.githubusercontent.com/Razzano/My_Images/master/star24w.png',
         DayNameAbbr = 'Sun.,Mon.,Tue.,Wed.,Thu.,Fri.,Sat.',
@@ -85,18 +86,18 @@
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
-        divLogo = $c('button', {id: 'buttonLogo', style: 'background: url(' + star24w + ') no-repeat center !important;', title: GM_getValue('logoImage') ? switchLogoDefault : switchLogoCustom, onclick: function() { logoClick()}}),
+        divLogo = $c('button', {id: 'buttonLogo', style: 'background: url('+ smiley24 +') no-repeat center !important;', title: GM_getValue('logoImage') ? switchLogoDefault : switchLogoCustom, onclick: () => logoClick()}),
         divThemer = $c('div', {id: 'themerDiv'}),
-        btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url(' + upArrow + ') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
+        btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
-        btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url(' + downArrow + ') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
-        logoGoogle1 = $c('img', {id: 'logoGoogle', src: googleImage1}),
-        logoGoogle2 = $c('img', {id: 'logoGoogle', src: googleImage2}),
-        logoGoogle3 = $c('img', {id: 'logoGoogle', src: googleImage3}),
-        logoGoogle4 = $c('img', {id: 'logoGoogle', src: googleImage4}),
-        logoGoogle5 = $c('img', {id: 'logoGoogle', src: googleImage5}),
-        logoGoogle6 = $c('img', {id: 'logoGoogle', src: googleImage6}),
-        getLogo = logoGoogle2; // logoGoogle1 = Small Google Image, logoGoogle2 = Large Google Image, logoGoogle3 = World Image, logoGoogle3 = Search Image
+        btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
+        logo1 = $c('img', {id: 'logoGoogle', src: googleImage1}), // Google Image Small
+        logo2 = $c('img', {id: 'logoGoogle', src: googleImage2}), // Google Image Large
+        logo3 = $c('img', {id: 'logoGoogle', src: googleImage3}), // World Image
+        logo4 = $c('img', {id: 'logoGoogle', src: googleImage4}), // Search Image
+        logo5 = $c('img', {id: 'logoGoogle', src: googleImage5}), // Silver G Image
+        logo6 = $c('img', {id: 'logoGoogle', src: googleImage6}), // Red-Green-Blue G Image
+        getLogo = logo4;
 
   let clockInterval,
       initInterval,
@@ -127,8 +128,8 @@
         dy = date.getDay(),
         hr = date.getHours(),
         min = date.getMinutes(),
-        mth = date.getMonth(),
         sec = date.getSeconds(),
+        mth = date.getMonth(),
         yr = date.getFullYear(),
         d = daynum[dt],
         dd = dayno[dt],
@@ -162,8 +163,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 165;
-      case 9: return customFormatText + 166;
+      case 8: return customFormatText + 166;
+      case 9: return customFormatText + 167;
   } }
 
   function dateTimeDefault() {
@@ -275,8 +276,8 @@
   } }
 
   function logoClick() {
-    let bool = GM_getValue('logoImage');
     try {
+      let bool = GM_getValue('logoImage');
       bool = GM_getValue('logoImage') !== true ? true : false;
       GM_setValue('logoImage', bool);
       logoChange(bool);
@@ -292,9 +293,9 @@
   }
 
   function onResize() {
-    let getLogo = $q('#logoGoogle'),
-        setLeft = (window.innerWidth / 2) - (getLogo.width / 2) + 'px';
     try {
+      let getLogo = $q('#logoGoogle'),
+      setLeft = (window.innerWidth / 2) - (getLogo.width / 2) + 'px';
       getLogo.style = 'left: ' + setLeft;
     } catch(ex) {}
   }
