@@ -83,7 +83,7 @@
         center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
         searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
-        settingsBtn = $q('body > div.L3eUgb > div:nth-child(9) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
+        settingsBtn = $q('html[itemtype="http://schema.org/WebPage"] > body > div.L3eUgb > div:nth-child(9) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
@@ -98,8 +98,8 @@
         logo4 = $c('img', {id: 'logoGoogle', src: image4}), // Search Image
         logo5 = $c('img', {id: 'logoGoogle', src: image5}), // Silver G Image
         logo6 = $c('img', {id: 'logoGoogle', src: image6}), // Red-Green-Blue G Image
-        // Make Selection
-        getLogo = logo4; // logo1 - logo6
+        // Make Selection logo1 - logo6
+        getLogo = logo4;
 
   let clockInterval,
       initInterval,
@@ -493,9 +493,6 @@
     '}'+
     '#gWP1 .om7nvf {'+
     '  padding: 0 !important;'+
-    '}'+
-    '#gWP1 form {'+
-    /*'  margin-top: 156px !important;'+*/
     '}'+
     '#gWP1 .gb_Vd.gb_Xa.gb_Kd {'+
     '  background: rgba(0, 0, 0, .3) !important;'+
