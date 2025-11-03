@@ -232,12 +232,14 @@
       if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
       else { dateTime.hidden = true; clearInterval(clockInterval) }
       let int = GM_getValue('logoImageNum');
-      if (int === 1) getLogo = logo1;
-      else if (int === 2) getLogo = logo2;
-      else if (int === 3) getLogo = logo3;
-      else if (int === 4) getLogo = logo4;
-      else if (int === 5) getLogo = logo5;
-      else getLogo = logo6;
+      switch (int) {
+        case 1: getLogo = logo1; break;
+        case 2: getLogo = logo2; break;
+        case 3: getLogo = logo3; break;
+        case 4: getLogo = logo4; break;
+        case 5: getLogo = logo5; break;
+        case 6: getLogo = logo6; break;
+      }
       dateTime.title = addRemoveText;
       dateTimeContainer.appendChild(imageCalendar);
       dateTimeContainer.appendChild(dateTime);
@@ -294,28 +296,26 @@
   } }
 
   function logoClick(e) {
-    try {
-      e = GM_getValue('logoImage') !== true ? true : false;
-      GM_setValue('logoImage', e);
-      logoChange(e);
-    } catch(ex) {}
+    e = GM_getValue('logoImage') !== true ? true : false;
+    GM_setValue('logoImage', e);
+    logoChange(e);
   }
 
   function logo2Click(e) {
-    try {
-      e = e + 1;
-      if (e > 6) e = 1;
-      else e = e;
-      GM_setValue('logoImageNum', e);
-      if (e === 1) getLogo = logo1;
-      else if (e === 2) getLogo = logo2;
-      else if (e === 3) getLogo = logo3;
-      else if (e === 4) getLogo = logo4;
-      else if (e === 5) getLogo = logo5;
-      else getLogo = logo6;
-      init();
-      removeDupes('logo');
-    } catch(ex) {}
+    e = e + 1;
+    if (e > 6) e = 1;
+    else e = e;
+    GM_setValue('logoImageNum', e);
+    switch (e) {
+      case 1: getLogo = logo1; break;
+      case 2: getLogo = logo2; break;
+      case 3: getLogo = logo3; break;
+      case 4: getLogo = logo4; break;
+      case 5: getLogo = logo5; break;
+      case 6: getLogo = logo6; break;
+    }
+    init();
+    removeDupes('logo');
   }
 
   function onClose() {
@@ -585,6 +585,7 @@
     '#gWP1 form .RNNXgb textarea.gLFyf {'+
     '  color: #FFF !important;'+
     '  max-width: 130px !important;'+
+    '  padding: 10px 0px 4px !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
     '}'+
     '#gWP1 .RNNXgb:hover,'+
