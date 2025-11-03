@@ -41,6 +41,7 @@
         hideShowText = bullet + ' Left-click to Hide/Show Date/Time\n' + bullet + ' Shift + Left-click for link targets of "_blank"\n' + bullet + ' Ctrl + Left-click for link targets of "_self"',
         switchLogoCustom = 'Switch to Custom Logo',
         switchLogoDefault = 'Switch to Default Logo',
+        switchLogo2 = 'Switch Logo Images',
         inputTooltip = '0 - 52',
         placeHolderText = 'Search Look-up',
         githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
@@ -87,23 +88,23 @@
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
-        divLogo = $c('button', {id: 'buttonLogo', style: 'background: url('+ smiley24 +') no-repeat center !important;', title: GM_getValue('logoImage') ? switchLogoDefault : switchLogoCustom, onclick: () => logoClick()}),
+        divLogo = $c('button', {id: 'buttonLogo', title: GM_getValue('logoImage') ? switchLogoDefault : switchLogoCustom, onclick: e => logoClick(GM_getValue('logoImage'))}),
+        divLogo2 = $c('button', {id: 'buttonLogo2', title: switchLogo2, onclick: e => logo2Click(GM_getValue('logoImageNum'))}),
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
         btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
-        logo1 = $c('img', {id: 'logoGoogle', src: image1}), // Google Image Small
-        logo2 = $c('img', {id: 'logoGoogle', src: image2}), // Google Image Large
-        logo3 = $c('img', {id: 'logoGoogle', src: image3}), // World Image
-        logo4 = $c('img', {id: 'logoGoogle', src: image4}), // Search Image
-        logo5 = $c('img', {id: 'logoGoogle', src: image5}), // Silver G Image
-        logo6 = $c('img', {id: 'logoGoogle', src: image6}), // Red-Green-Blue G Image
-        // Make Selection logo1 - logo6
-        getLogo = logo4;
+        logo1 = $c('img', {id: 'logoGoogle', class: 'logo', src: image1}), // Google Image Small
+        logo2 = $c('img', {id: 'logoGoogle', class: 'logo', src: image2}), // Google Image Large
+        logo3 = $c('img', {id: 'logoGoogle', class: 'logo', src: image3}), // World Image
+        logo4 = $c('img', {id: 'logoGoogle', class: 'logo', src: image4}), // Search Image
+        logo5 = $c('img', {id: 'logoGoogle', class: 'logo', src: image5}), // Silver G Image
+        logo6 = $c('img', {id: 'logoGoogle', class: 'logo', src: image6}); // Red-Green-Blue G Image
 
   let clockInterval,
       initInterval,
-      wallpaperInterval;
+      wallpaperInterval,
+      getLogo;
 
   function $c(type, props) {
     let node = document.createElement(type);
@@ -121,6 +122,11 @@
   function insertAfter(newNode, refNode) {
     if (refNode.nextSibling) return refNode.parentNode.insertBefore(newNode, refNode.nextSibling);
     return refNode.parentNode.appendChild(newNode);
+  }
+
+  function removeDupes(className) {
+    let dupe = document.getElementsByClassName(className);
+    if(dupe.length > 1) for(let i = 1; i < dupe.length; i++) dupe[i].parentNode.removeChild(dupe[i]);
   }
 
   function dateTimeFormat(int) {
@@ -165,8 +171,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 168;
-      case 9: return customFormatText + 169;
+      case 8: return customFormatText + 174;
+      case 9: return customFormatText + 175;
   } }
 
   function dateTimeDefault() {
@@ -225,6 +231,13 @@
       searchButton.id = 'gSearch';
       if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
       else { dateTime.hidden = true; clearInterval(clockInterval) }
+      let int = GM_getValue('logoImageNum');
+      if (int === 1) getLogo = logo1;
+      else if (int === 2) getLogo = logo2;
+      else if (int === 3) getLogo = logo3;
+      else if (int === 4) getLogo = logo4;
+      else if (int === 5) getLogo = logo5;
+      else getLogo = logo6;
       dateTime.title = addRemoveText;
       dateTimeContainer.appendChild(imageCalendar);
       dateTimeContainer.appendChild(dateTime);
@@ -235,6 +248,7 @@
       insertAfter(getLogo, dateTimeContainer);
       insertAfter(divThemer, getLogo);
       insertAfter(divLogo, divThemer);
+      insertAfter(divLogo2, divLogo);
       placeHolder.placeholder = placeHolderText;
       center.appendChild(settingsBtn);
       inpThemer.value = GM_getValue('wallpaperImage');
@@ -248,6 +262,7 @@
   function logoChange(bool) {
     if (bool) {
       divLogo.title = switchLogoDefault;
+      divLogo2.style = 'pointer-events: all; opacity: 1;';
       GM_addStyle(''+
         '#gWP1 #logoGoogle {'+
         '  display: block !important;'+
@@ -256,11 +271,12 @@
         '  display: none !important;'+
         '}'+
         '#gWP1 form {'+
-        '  margin-top: 226px !important;'+
+        '  margin-top: 230px !important;'+
         '}'+
       '');
     } else {
       divLogo.title = switchLogoCustom;
+      divLogo2.style = 'pointer-events: none; opacity: .3;';
       GM_addStyle(''+
         '#gWP1 #logoGoogle {'+
         '  display: none !important;'+
@@ -272,17 +288,33 @@
         '  pointer-events: none !important;'+
         '}'+
         '#gWP1 form {'+
-        '  margin-top: 126px !important;'+
+        '  margin-top: 188px !important;'+
         '}'+
       '');
   } }
 
-  function logoClick() {
+  function logoClick(e) {
     try {
-      let bool = GM_getValue('logoImage');
-      bool = GM_getValue('logoImage') !== true ? true : false;
-      GM_setValue('logoImage', bool);
-      logoChange(bool);
+      e = GM_getValue('logoImage') !== true ? true : false;
+      GM_setValue('logoImage', e);
+      logoChange(e);
+    } catch(ex) {}
+  }
+
+  function logo2Click(e) {
+    try {
+      e = e + 1;
+      if (e > 6) e = 1;
+      else e = e;
+      GM_setValue('logoImageNum', e);
+      if (e === 1) getLogo = logo1;
+      else if (e === 2) getLogo = logo2;
+      else if (e === 3) getLogo = logo3;
+      else if (e === 4) getLogo = logo4;
+      else if (e === 5) getLogo = logo5;
+      else getLogo = logo6;
+      init();
+      removeDupes('logo');
     } catch(ex) {}
   }
 
@@ -360,6 +392,7 @@
   if (!GM_getValue('defaultSecondsView')) GM_setValue('defaultSecondsView', false);
   if (!GM_getValue('linkTarget')) GM_setValue('linkTarget', '_blank');
   if (!GM_getValue('logoImage')) GM_setValue('logoImage', false);
+  if (!GM_getValue('logoImageNum')) GM_setValue('logoImageNum', 1);
   if (!GM_getValue('wallpaperImage')) GM_setValue('wallpaperImage', 0);
 
   window.addEventListener('load', () => init());
@@ -487,8 +520,15 @@
     '  display: none !important;'+
     '}'+
     '#gWP1 #buttonLogo {'+
+    '  background: url('+ smiley24 +') no-repeat center !important;'+
     '  height: 24px !important;'+
     '  margin-top: 10px !important;'+
+    '  width: 24px !important;'+
+    '}'+
+    '#gWP1 #buttonLogo2 {'+
+    '  background: url('+ star24 +') no-repeat center !important;'+
+    '  height: 24px !important;'+
+    '  margin: 10px 0 0 16px !important;'+
     '  width: 24px !important;'+
     '}'+
     '#gWP1 .om7nvf {'+
