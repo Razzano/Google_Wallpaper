@@ -98,7 +98,8 @@
         logo4 = $c('img', {id: 'logoGoogle', src: image4}), // Search Image
         logo5 = $c('img', {id: 'logoGoogle', src: image5}), // Silver G Image
         logo6 = $c('img', {id: 'logoGoogle', src: image6}), // Red-Green-Blue G Image
-        getLogo = logo4;
+        // Make Selection
+        getLogo = logo4; // logo1 - logo6
 
   let clockInterval,
       initInterval,
@@ -164,8 +165,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 167;
-      case 9: return customFormatText + 168;
+      case 8: return customFormatText + 168;
+      case 9: return customFormatText + 169;
   } }
 
   function dateTimeDefault() {
