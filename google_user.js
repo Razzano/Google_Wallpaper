@@ -55,7 +55,7 @@
         image5 = aURL + 'googleLogo11.png',
         image6 = aURL + 'googleLogo12.png',
         image7 = aURL + 'lightbulb.png',
-        image8 = aURL + 'manSearching2.png',
+        image8 = aURL + 'manSearching3.png',
         imgCalendar = aURL + 'imageCalendar.png',
         imgClock16 = aURL + 'imageClock16.png',
         imgClock32 = aURL + 'imageClock32.png',
@@ -90,12 +90,6 @@
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
-        divLogo = $c('button', {id: 'buttonLogo', title: GM_getValue('logoImage') ? switchLogoDefault : switchLogoCustom, onclick: e => logoClick(GM_getValue('logoImage'))}),
-        divLogo2 = $c('button', {id: 'buttonLogo2', title: switchLogo2, onclick: e => logo2Click(GM_getValue('logoImageNum'))}),
-        divThemer = $c('div', {id: 'themerDiv'}),
-        btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
-        inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
-        btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
         logo1 = $c('img', {id: 'logoGoogle', class: 'logo', src: image1}), // Google Image Small
         logo2 = $c('img', {id: 'logoGoogle', class: 'logo', src: image2}), // Google Image Large
         logo3 = $c('img', {id: 'logoGoogle', class: 'logo', src: image3}), // World Image
@@ -103,7 +97,13 @@
         logo5 = $c('img', {id: 'logoGoogle', class: 'logo', src: image5}), // Silver G Image
         logo6 = $c('img', {id: 'logoGoogle', class: 'logo', src: image6}), // Red-Green-Blue G Image
         logo7 = $c('img', {id: 'logoGoogle', class: 'logo', src: image7}), // Lightbulb Image
-        logo8 = $c('img', {id: 'logoGoogle', class: 'logo', src: image8}); // Man Searching Image
+        logo8 = $c('img', {id: 'logoGoogle', class: 'logo', src: image8}), // Man Searching Image
+        divThemer = $c('div', {id: 'themerDiv'}),
+        btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
+        inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
+        btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
+        divLogo = $c('button', {id: 'buttonLogo', title: GM_getValue('logoImage') ? switchLogoDefault : switchLogoCustom, onclick: e => logoClick(GM_getValue('logoImage'))}),
+        divLogo2 = $c('button', {id: 'buttonLogo2', title: switchLogo2, onclick: e => logo2Click(GM_getValue('logoImageNum'))});
 
   let clockInterval,
       initInterval,
@@ -339,7 +339,7 @@
   function onResize() {
     try {
       let getLogo = $q('#logoGoogle'),
-      setLeft = (window.innerWidth / 2) - (getLogo.width / 2) + 'px';
+          setLeft = (window.innerWidth / 2) - (getLogo.width / 2) + 'px';
       getLogo.style = 'left: ' + setLeft;
     } catch(ex) {}
   }
@@ -362,7 +362,7 @@
          '  background:  url('+ githubSite + e + '.jpg) no-repeat center / cover !important;'+
         '}'+
       '');
-    } }
+  } }
 
   function wallpaperButtonChanger(e) {
     let inp = $q('#inputThemer'),
