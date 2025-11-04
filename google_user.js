@@ -55,7 +55,7 @@
         image5 = aURL + 'googleLogo11.png',
         image6 = aURL + 'googleLogo12.png',
         image7 = aURL + 'lightbulb.png',
-        image8 = aURL + 'manSearching.png',
+        image8 = aURL + 'manSearching2.png',
         imgCalendar = aURL + 'imageCalendar.png',
         imgClock16 = aURL + 'imageClock16.png',
         imgClock32 = aURL + 'imageClock32.png',
@@ -133,6 +133,45 @@
     if(dupe.length > 1) for(let i = 1; i < dupe.length; i++) dupe[i].parentNode.removeChild(dupe[i]);
   }
 
+  function init() {
+    window.removeEventListener('load', () => init());
+    try {
+      body.id = 'gWP1';
+      searchButton.id = 'gSearch';
+      if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
+      else { dateTime.hidden = true; clearInterval(clockInterval) }
+      let int = GM_getValue('logoImageNum');
+      switch (int) {
+        case 1: getLogo = logo1; break;
+        case 2: getLogo = logo2; break;
+        case 3: getLogo = logo3; break;
+        case 4: getLogo = logo4; break;
+        case 5: getLogo = logo5; break;
+        case 6: getLogo = logo6; break;
+        case 7: getLogo = logo7; break;
+        case 8: getLogo = logo8; break;
+      }
+      dateTime.title = addRemoveText;
+      dateTimeContainer.appendChild(imageCalendar);
+      dateTimeContainer.appendChild(dateTime);
+      divThemer.appendChild(btnThemer);
+      divThemer.appendChild(inpThemer);
+      divThemer.appendChild(btnDown);
+      header.insertBefore(dateTimeContainer, header.firstChild);
+      insertAfter(getLogo, dateTimeContainer);
+      insertAfter(divThemer, getLogo);
+      insertAfter(divLogo, divThemer);
+      insertAfter(divLogo2, divLogo);
+      placeHolder.placeholder = placeHolderText;
+      center.appendChild(settingsBtn);
+      inpThemer.value = GM_getValue('wallpaperImage');
+      logoChange(GM_getValue('logoImage'));
+      onResize();
+      searchLinksWhere();
+      wallpaper(GM_getValue('wallpaperImage'));
+    } catch(ex) {}
+  }
+
   function dateTimeFormat(int) {
     if (!GM_getValue('defaultDateTimeView')) return;
     let date = new Date(),
@@ -175,8 +214,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 178;
-      case 9: return customFormatText + 179;
+      case 8: return customFormatText + 217;
+      case 9: return customFormatText + 218;
   } }
 
   function dateTimeDefault() {
@@ -226,45 +265,6 @@
     }
     dateTime.title = addRemoveText;
     dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
-  }
-
-  function init() {
-    window.removeEventListener('load', () => init());
-    try {
-      body.id = 'gWP1';
-      searchButton.id = 'gSearch';
-      if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
-      else { dateTime.hidden = true; clearInterval(clockInterval) }
-      let int = GM_getValue('logoImageNum');
-      switch (int) {
-        case 1: getLogo = logo1; break;
-        case 2: getLogo = logo2; break;
-        case 3: getLogo = logo3; break;
-        case 4: getLogo = logo4; break;
-        case 5: getLogo = logo5; break;
-        case 6: getLogo = logo6; break;
-        case 7: getLogo = logo7; break;
-        case 8: getLogo = logo8; break;
-      }
-      dateTime.title = addRemoveText;
-      dateTimeContainer.appendChild(imageCalendar);
-      dateTimeContainer.appendChild(dateTime);
-      divThemer.appendChild(btnThemer);
-      divThemer.appendChild(inpThemer);
-      divThemer.appendChild(btnDown);
-      header.insertBefore(dateTimeContainer, header.firstChild);
-      insertAfter(getLogo, dateTimeContainer);
-      insertAfter(divThemer, getLogo);
-      insertAfter(divLogo, divThemer);
-      insertAfter(divLogo2, divLogo);
-      placeHolder.placeholder = placeHolderText;
-      center.appendChild(settingsBtn);
-      inpThemer.value = GM_getValue('wallpaperImage');
-      logoChange(GM_getValue('logoImage'));
-      onResize();
-      searchLinksWhere();
-      wallpaper(GM_getValue('wallpaperImage'));
-    } catch(ex) {}
   }
 
   function logoChange(bool) {
@@ -322,8 +322,10 @@
       case 7: getLogo = logo7; break;
       case 8: getLogo = logo8; break;
     }
-    init();
+    insertAfter(getLogo, dateTimeContainer);
+    insertAfter(divThemer, getLogo);
     removeDupes('logo');
+    onResize();
   }
 
   function onClose() {
