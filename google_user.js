@@ -773,7 +773,7 @@
     '  display: none !important;'+
     '}'+
     '#gWP1 > div.L3eUgb > div.o3j99.LLD4me.yr19Zb.LS8OJ > div > svg > path {'+
-    '  fill: rgba(255, 255, 255, .5) !important;'+
+    '  fill: #FFF !important;'+
     '}'+
   '');
 
