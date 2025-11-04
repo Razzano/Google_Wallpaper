@@ -106,9 +106,9 @@
         divLogo2 = $c('button', {id: 'buttonLogo2', title: switchLogo2, onclick: e => logo2Click(GM_getValue('logoImageNum'))});
 
   let clockInterval,
+      getLogo,
       initInterval,
-      wallpaperInterval,
-      getLogo;
+      wallpaperInterval;
 
   function $c(type, props) {
     let node = document.createElement(type);
@@ -323,7 +323,6 @@
       case 8: getLogo = logo8; break;
     }
     insertAfter(getLogo, dateTimeContainer);
-    insertAfter(divThemer, getLogo);
     removeDupes('logo');
     onResize();
   }
