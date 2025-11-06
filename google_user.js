@@ -15,7 +15,7 @@
 
   'use strict';
 
-  const openInterval = 20,
+  const openInterval = 200,
         themerInterval = 30000,
         timerLong = 10000,
         timerShort = 1000,
