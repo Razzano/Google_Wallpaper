@@ -56,6 +56,8 @@
         image6 = aURL + 'googleLogo12.png',
         image7 = aURL + 'lightbulb.png',
         image8 = aURL + 'manSearching3.png',
+        image9 = aURL + 'googleLogo15.png',
+        image10 = aURL + 'googleLogo17.png',
         imgCalendar = aURL + 'imageCalendar.png',
         imgClock16 = aURL + 'imageClock16.png',
         imgClock32 = aURL + 'imageClock32.png',
@@ -90,14 +92,16 @@
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
-        logo1 = $c('img', {id: 'logoGoogle', class: 'logo', src: image1}), // Google Image Small
-        logo2 = $c('img', {id: 'logoGoogle', class: 'logo', src: image2}), // Google Image Large
+        logo1 = $c('img', {id: 'logoGoogle', class: 'logo', src: image1}), // Google Text Image Small
+        logo2 = $c('img', {id: 'logoGoogle', class: 'logo', src: image2}), // Google Text Image Large
         logo3 = $c('img', {id: 'logoGoogle', class: 'logo', src: image3}), // World Image
-        logo4 = $c('img', {id: 'logoGoogle', class: 'logo', src: image4}), // Search Image
+        logo4 = $c('img', {id: 'logoGoogle', class: 'logo', src: image4}), // Man Search Image
         logo5 = $c('img', {id: 'logoGoogle', class: 'logo', src: image5}), // Silver G Image
         logo6 = $c('img', {id: 'logoGoogle', class: 'logo', src: image6}), // Red-Green-Blue G Image
         logo7 = $c('img', {id: 'logoGoogle', class: 'logo', src: image7}), // Lightbulb Image
-        logo8 = $c('img', {id: 'logoGoogle', class: 'logo', src: image8}), // Man Searching Image
+        logo8 = $c('img', {id: 'logoGoogle', class: 'logo', src: image8}), // Man Search Image
+        logo9 = $c('img', {id: 'logoGoogle', class: 'logo', src: image9}), // Google Logo Image Square
+        logo10 = $c('img', {id: 'logoGoogle', class: 'logo', src: image10}), // Google Logo Image Round
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
@@ -150,6 +154,8 @@
         case 6: getLogo = logo6; break;
         case 7: getLogo = logo7; break;
         case 8: getLogo = logo8; break;
+        case 9: getLogo = logo9; break;
+        case 10: getLogo = logo10; break;
       }
       dateTime.title = addRemoveText;
       dateTimeContainer.appendChild(imageCalendar);
@@ -214,8 +220,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 217;
-      case 9: return customFormatText + 218;
+      case 8: return customFormatText + 223;
+      case 9: return customFormatText + 224;
   } }
 
   function dateTimeDefault() {
@@ -317,7 +323,7 @@
 
   function logo2Click(e) {
     e = e + 1;
-    if (e > 8) e = 1;
+    if (e > 10) e = 1;
     else e = e;
     GM_setValue('logoImageNum', e);
     switch (e) {
@@ -329,6 +335,8 @@
       case 6: getLogo = logo6; break;
       case 7: getLogo = logo7; break;
       case 8: getLogo = logo8; break;
+      case 9: getLogo = logo9; break;
+      case 10: getLogo = logo10; break;
     }
     insertAfter(getLogo, dateTimeContainer);
     removeDupes('logo');
