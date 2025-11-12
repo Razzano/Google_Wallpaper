@@ -268,6 +268,7 @@
   }
 
   function logoChange(bool) {
+    let pic = $q('#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ > div > a > picture');
     if (bool) {
       divLogo.title = switchLogoDefault;
       divLogo2.style = 'pointer-events: all; opacity: 1;';
@@ -299,7 +300,14 @@
         '  margin-top: 188px !important;'+
         '}'+
       '');
-  } }
+    }
+    if (pic) {
+      GM_addStyle(''+
+        'body#gWP1 div.o3j99.LLD4me.LS8OJ {'+
+        '  margin-bottom: -58px !important;'+
+        '}'+
+      '');
+    } }
 
   function logoClick(e) {
     e = GM_getValue('logoImage') !== true ? true : false;
@@ -337,16 +345,8 @@
 
   function onResize() {
     try {
-      let pic = $q('#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ > div > a > picture'),
-          getLogo = $q('#logoGoogle'),
+      let getLogo = $q('#logoGoogle'),
           setLeft = (window.innerWidth / 2) - (getLogo.width / 2) + 'px';
-      if (pic) {
-        GM_addStyle(''+
-          'body#gWP1 div.o3j99.LLD4me.LS8OJ {'+
-          '  margin-bottom: -58px !important;'+
-          '}'+
-        '');
-      }
       getLogo.style = 'left: ' + setLeft;
     } catch(ex) {}
   }
