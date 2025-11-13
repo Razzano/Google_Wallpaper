@@ -62,9 +62,13 @@
         imgClock16 = aURL + 'imageClock16.png',
         imgClock32 = aURL + 'imageClock32.png',
         gear24 = aURL + 'gear.png',
+        gear32 = aURL + 'gear32.png',
+        google32 = aURL + 'google32.png',
         smiley24 = aURL + 'smiley24.png',
+        smiley32 = aURL + 'smiley32.png',
         star24 = aURL + 'star24.png',
         star24w = aURL + 'star24w.png',
+        star32 = aURL + 'star32.png',
         DayNameAbbr = 'Sun.,Mon.,Tue.,Wed.,Thu.,Fri.,Sat.',
         daynameabbr = DayNameAbbr.split(','),
         DayName = 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
@@ -106,8 +110,8 @@
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
         btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
-        divLogo = $c('button', {id: 'buttonLogo', title: GM_getValue('logoImage') ? switchLogoDefault : switchLogoCustom, onclick: e => logoClick(GM_getValue('logoImage'))}),
-        divLogo2 = $c('button', {id: 'buttonLogo2', title: switchLogo2, onclick: e => logo2Click(GM_getValue('logoImageNum'))});
+        divLogo = $c('img', {id: 'buttonLogo', src: google32, title: GM_getValue('logoImage') ? switchLogoDefault : switchLogoCustom, onclick: e => logoClick(GM_getValue('logoImage'))}),
+        divLogo2 = $c('img', {id: 'buttonLogo2', src: star32, title: switchLogo2, onclick: e => logo2Click(GM_getValue('logoImageNum'))});
 
   let clockInterval,
       getLogo,
@@ -220,8 +224,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 223;
-      case 9: return customFormatText + 224;
+      case 8: return customFormatText + 227;
+      case 9: return customFormatText + 228;
   } }
 
   function dateTimeDefault() {
@@ -544,19 +548,15 @@
     '#gWP1 #inputThemer::-webkit-outer-spin-button {'+
     '  display: none !important;'+
     '}'+
-    '#gWP1 #buttonLogo {'+
-    '  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAACfklEQVR4AbRTO2hUQRS9MwiR3UAaE1i/xSKLMaJuPo3fXU0TSCt2qY1iYWEhYtBatNNOSKmNRUylriFlXP/YKAmEdEnaTZHPm5wzvPd4b2Z2IYEsc5k755x7zr55u1o6fExzsGC+Dl3H/mSnWX0bNaufWeyJxVyhg4UEAzBcQN0xYlpGRV+wP1Uit2BUZ7EnFnMtq8WXAectL8B8v3gewzOoV566DUAtaoazriQXYB85Uj8h4jfFtqdVN5ilR3YqDWA6HzlL7qenB72SWRuAOywg/UUCuvtq648LSQhLRPSiJ882AM0Eaj/XgrHgohc9RTMJL6jtC537d0hu3FbSP/Y7dWJPjFwKOg096a3FqBGHyx27uo+JmK0cFu1sW6yr+2gO9w7w1qLMVY/IAOWeD3LpSkUqld4UPdNfsli5ZzbFgg28dSTmbJCMwb7iOXl2b1HevyzFiNieGLkUDDT01krkSIDLQSGjEJYbwoHeGvuBLm1E1kMJ0x9PheAg1k5Lb61F/XWnnr/ZlLWV/y7c9kwtZ1wBvfkznXeJ4Ztj0nvitNx/tORS3pkaajnjkUbNI8QsuMS1k59kYnRZBms1uftw0QbRyC1y1FDLGdcHf4EFrYa+bShRkx4JgIMjo3XpO+7/oYiRowZSb9GT3jpmprE3UN4qDwx4WAJ04OhFT7EBTFLaPEgGs/vl0qw8njxsr4vXkRQxcllt0tOLnjzbADaq+uOXMrrGPlS8imyFNMToQS/2rDSABzXcnEP6BfR8RGx7Wg3O0iM7lQsgwXS8oHFU8MVT4xa1qHHOupwXQAHvD/UaQ0X7yKKm8K98B45P1mAPbirmilaLXyN4b+0CAAD//63Fy6UAAAAGSURBVAMANMYJfjp2CRgAAAAASUVORK5CYII=) no-repeat center !important;'+
+    '#gWP1 #buttonLogo,'+
+    '#gWP1 #buttonLogo2 {'+
     '  cursor: pointer !important;'+
     '  height: 24px !important;'+
-    '  margin-top: 10px !important;'+
+    '  margin: 12px 0 0 0 !important;'+
     '  width: 24px !important;'+
     '}'+
     '#gWP1 #buttonLogo2 {'+
-    '  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAACCElEQVR4AZRUzW4TQQy2Z5uG0vaC4MZDtGnaB0Ha8o6ZI3ekCnFK4AR37nBAqtQf2LX57LKNktmfmWhnPPZ89pfx2BOo4CebhRbAHVpE4B6FUzYB/v2K5IRcFpBkEyBmzdUdRNlXQkDKbNFrm3JHNoES7lcaYp3lxnZcFgHyruxInCA0Rffgbk41MrV/TvHPt9CG32Snaes1QlDNf5OqOEJV6UB/+jpnmiRAelasFWIhPZjtUyzNbuupEQBUXS9VN2cqm3OV9SXk4r/unVvjenfi8JOhFnR232i/LDyGOYWw/MrKEklm5DfJf4lJSGnycOafjAbVwErR4tqmR4FyzVdrFjohO75tlA+lx+qYDi82bPE6fyfolNnFDd/xK6hltQ4Hejh4S0fnn3A7pm3HDoGZTxcfccI2MhJl+viAO9DAxJdnHxgy+YBIbGRHROfGdGff0hByavm+3t/p9F6CbnNaTrsPIqTSrG7lMI4bJGDZTangJW30KD2UDoZwbO/u7bf3yrolUKooqMbDy89mRM/gbQKhR8B0//3dU+thvf+FfYPpx7c/IODDD5AUq+X6ubatAMLVDeNNioJKg6T5veENmo6EAK2/aueP3sukLwYrxIlIo+CdMiLzS8NT+h5IeF1XEmIgHgzeBXISboFVpC30FkXowJ0M8svr35w725h8xgW8Zz3AfwAAAP//8lS6uwAAAAZJREFUAwCKHtPJapNfgwAAAABJRU5ErkJggg==) no-repeat center !important;'+
-    '  cursor: pointer !important;'+
-    '  height: 24px !important;'+
-    '  margin: 10px 0 0 16px !important;'+
-    '  width: 24px !important;'+
+    '  margin-left: 16px !important;'+
     '}'+
     '#gWP1 .om7nvf {'+
     '  padding: 0 !important;'+
