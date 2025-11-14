@@ -58,12 +58,15 @@
         image8 = aURL + 'manSearching3.png',
         image9 = aURL + 'googleLogo15.png',
         image10 = aURL + 'googleLogo17.png',
+        image11 = aURL + 'flag.png',
         imgCalendar = aURL + 'imageCalendar.png',
         imgClock16 = aURL + 'imageClock16.png',
         imgClock32 = aURL + 'imageClock32.png',
         gear24 = aURL + 'gear.png',
         gear32 = aURL + 'gear32.png',
         google32 = aURL + 'google32.png',
+        off32 = aURL + 'off32.png',
+        on32 = aURL + 'on32.png',
         smiley24 = aURL + 'smiley24.png',
         smiley32 = aURL + 'smiley32.png',
         star24 = aURL + 'star24.png',
@@ -106,11 +109,12 @@
         logo8 = $c('img', {id: 'logoGoogle', class: 'logo', src: image8}), // Man Search Image
         logo9 = $c('img', {id: 'logoGoogle', class: 'logo', src: image9}), // Google Logo Image Square
         logo10 = $c('img', {id: 'logoGoogle', class: 'logo', src: image10}), // Google Logo Image Round
+        logo11 = $c('img', {id: 'logoGoogle', class: 'logo', src: image11}), // Flag Image
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
         btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
-        divLogo = $c('img', {id: 'buttonLogo', src: google32, title: GM_getValue('logoImage') ? switchLogoDefault : switchLogoCustom, onclick: e => logoClick(GM_getValue('logoImage'))}),
+        divLogo = $c('img', {id: 'buttonLogo', title: GM_getValue('logoImage') ? switchLogoDefault : switchLogoCustom, onclick: e => logoClick(GM_getValue('logoImage'))}),
         divLogo2 = $c('img', {id: 'buttonLogo2', src: star32, title: switchLogo2, onclick: e => logo2Click(GM_getValue('logoImageNum'))});
 
   let clockInterval,
@@ -160,6 +164,7 @@
         case 8: getLogo = logo8; break;
         case 9: getLogo = logo9; break;
         case 10: getLogo = logo10; break;
+        case 11: getLogo = logo11; break;
       }
       dateTime.title = addRemoveText;
       dateTimeContainer.appendChild(imageCalendar);
@@ -224,8 +229,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 227;
-      case 9: return customFormatText + 228;
+      case 8: return customFormatText + 232;
+      case 9: return customFormatText + 233;
   } }
 
   function dateTimeDefault() {
@@ -281,6 +286,7 @@
     let pic = $q('#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ > div > a > picture');
     if (bool) {
       divLogo.title = switchLogoDefault;
+      divLogo.src = on32;
       divLogo2.style = 'pointer-events: all; opacity: 1;';
       GM_addStyle(''+
         '#gWP1 #logoGoogle {'+
@@ -295,6 +301,7 @@
       '');
     } else {
       divLogo.title = switchLogoCustom;
+      divLogo.src = off32;
       divLogo2.style = 'pointer-events: none; opacity: .3;';
       GM_addStyle(''+
         '#gWP1 #logoGoogle {'+
@@ -327,7 +334,7 @@
 
   function logo2Click(e) {
     e = e + 1;
-    if (e > 10) e = 1;
+    if (e > 11) e = 1;
     else e = e;
     GM_setValue('logoImageNum', e);
     switch (e) {
@@ -341,6 +348,7 @@
       case 8: getLogo = logo8; break;
       case 9: getLogo = logo9; break;
       case 10: getLogo = logo10; break;
+      case 11: getLogo = logo11; break;
     }
     insertAfter(getLogo, dateTimeContainer);
     removeDupes('logo');
@@ -551,9 +559,9 @@
     '#gWP1 #buttonLogo,'+
     '#gWP1 #buttonLogo2 {'+
     '  cursor: pointer !important;'+
-    '  height: 24px !important;'+
-    '  margin: 12px 0 0 0 !important;'+
-    '  width: 24px !important;'+
+    '  height: 28px !important;'+
+    '  margin: 10px 0 0 0 !important;'+
+    '  width: 28px !important;'+
     '}'+
     '#gWP1 #buttonLogo2 {'+
     '  margin-left: 16px !important;'+
