@@ -463,7 +463,8 @@
     '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div.SDkEP > div.fM33ce.dRYYxd,'+
     '#gWP1 promo-middle-slot > div,'+
     '#gWP1 .KxwPGc,'+
-    '#gWP1 > div.L3eUgb > div:nth-child(8) {'+
+    '#gWP1 > div.L3eUgb > div:nth-child(8),'+
+    '#gWP1 #gb > div.gb_ud.gb_1.gb_I {'+
     '  display: none !important;'+
     '}'+
     '#gWP1 > .gb_l,'+
@@ -565,6 +566,7 @@
     '}'+
     '#gWP1 #buttonLogo2 {'+
     '  margin-left: 16px !important;'+
+    '  margin-right: 10px !important;'+
     '}'+
     '#gWP1 .om7nvf {'+
     '  padding: 0 !important;'+
