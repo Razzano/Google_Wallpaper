@@ -95,7 +95,7 @@
         center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
         searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
-        settingsBtn = $q('html[itemtype="http://schema.org/WebPage"] > body > div.L3eUgb > div:nth-child(9) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
+        settingsBtn = $q('html[itemtype="http://schema.org/WebPage"] div.KxwPGc.iTjxkf > span'),
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
@@ -464,6 +464,7 @@
     '#gWP1 promo-middle-slot > div,'+
     '#gWP1 .KxwPGc,'+
     '#gWP1 > div.L3eUgb > div:nth-child(8),'+
+    '#gWP1 #gb > div.gb_vd.gb_1.gb_I,'+
     '#gWP1 #gb > div.gb_ud.gb_1.gb_I {'+
     '  display: none !important;'+
     '}'+
