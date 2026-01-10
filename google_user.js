@@ -65,13 +65,18 @@
         gear24 = aURL + 'gear.png',
         gear32 = aURL + 'gear32.png',
         google32 = aURL + 'google32.png',
+        logoOff32 = aURL + 'logoOff32.png',
+        logoOn32 = aURL + 'logoOn32.png',
         off32 = aURL + 'off32.png',
         on32 = aURL + 'on32.png',
+        off40 = aURL + 'off40.png',
+        on40 = aURL + 'on40.png',
         smiley24 = aURL + 'smiley24.png',
         smiley32 = aURL + 'smiley32.png',
         star24 = aURL + 'star24.png',
         star24w = aURL + 'star24w.png',
         star32 = aURL + 'star32.png',
+        star46 = aURL + 'star46.png',
         DayNameAbbr = 'Sun.,Mon.,Tue.,Wed.,Thu.,Fri.,Sat.',
         daynameabbr = DayNameAbbr.split(','),
         DayName = 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
@@ -283,16 +288,16 @@
   }
 
   function logoChange(bool) {
-    let pic = $q('#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ > div > a > picture');
+    let pic = $q('#gWP1 div.o3j99.LLD4me.LS8OJ picture');
     if (bool) {
       divLogo.title = switchLogoDefault;
-      divLogo.src = on32;
+      divLogo.src = logoOn32;
       divLogo2.style = 'pointer-events: all; opacity: 1;';
       GM_addStyle(''+
         '#gWP1 #logoGoogle {'+
         '  display: block !important;'+
         '}'+
-        '#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ {'+
+        '#gWP1 div.o3j99.LLD4me.LS8OJ {'+
         '  display: none !important;'+
         '}'+
         '#gWP1 form {'+
@@ -301,15 +306,16 @@
       '');
     } else {
       divLogo.title = switchLogoCustom;
-      divLogo.src = off32;
+      divLogo.src = logoOff32;
       divLogo2.style = 'pointer-events: none; opacity: .3;';
       GM_addStyle(''+
         '#gWP1 #logoGoogle {'+
         '  display: none !important;'+
         '}'+
-        '#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ {'+
+        '#gWP1 div.o3j99.LLD4me.LS8OJ {'+
         '  display: block !important;'+
         '  height: calc(0% - 560px) !important;'+
+        '  margin-bottom: 0 !important;'+
         '  margin-top: -50px !important;'+
         '  pointer-events: none !important;'+
         '}'+
@@ -320,7 +326,7 @@
     }
     if (pic) {
       GM_addStyle(''+
-        'body#gWP1 div.o3j99.LLD4me.LS8OJ {'+
+        '#gWP1 div.o3j99.LLD4me.LS8OJ {'+
         '  margin-bottom: -58px !important;'+
         '}'+
       '');
@@ -597,7 +603,7 @@
     '  margin-right: -10px !important;'+
     '}'+
     '#gWP1 .o3j99.LLD4me.yr19Zb.LS8OJ {'+
-    '  margin-top: -90px !important;'+
+    /*'  margin-top: -90px !important;'+*/
     '}'+
     '#gWP1 .k1zIA.rSk4se {'+
     '  margin: auto !important;'+
@@ -791,6 +797,7 @@
     '  background: transparent !important;'+
     '}'+
     '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div.SDkEP {'+
+    '  max-height: 28px !important;'+
     '}'+
     '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div.SDkEP > div.fM33ce.dRYYxd > button {'+
     '  display: none !important;'+
