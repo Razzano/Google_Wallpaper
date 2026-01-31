@@ -59,6 +59,7 @@
         image9 = aURL + 'googleLogo15.png',
         image10 = aURL + 'googleLogo17.png',
         image11 = aURL + 'flag.png',
+        image12 = aURL + 'look.png',
         imgCalendar = aURL + 'imageCalendar.png',
         imgClock16 = aURL + 'imageClock16.png',
         imgClock32 = aURL + 'imageClock32.png',
@@ -115,6 +116,7 @@
         logo9 = $c('img', {id: 'logoGoogle', class: 'logo', src: image9}), // Google Logo Image Square
         logo10 = $c('img', {id: 'logoGoogle', class: 'logo', src: image10}), // Google Logo Image Round
         logo11 = $c('img', {id: 'logoGoogle', class: 'logo', src: image11}), // Flag Image
+        logo12 = $c('img', {id: 'logoGoogle', class: 'logo', src: image12}), // Look Image
         divThemer = $c('div', {id: 'themerDiv'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
@@ -170,6 +172,7 @@
         case 9: getLogo = logo9; break;
         case 10: getLogo = logo10; break;
         case 11: getLogo = logo11; break;
+        case 12: getLogo = logo12; break;
       }
       dateTime.title = addRemoveText;
       dateTimeContainer.appendChild(imageCalendar);
@@ -340,7 +343,7 @@
 
   function logo2Click(e) {
     e = e + 1;
-    if (e > 11) e = 1;
+    if (e > 12) e = 1;
     else e = e;
     GM_setValue('logoImageNum', e);
     switch (e) {
@@ -355,6 +358,7 @@
       case 9: getLogo = logo9; break;
       case 10: getLogo = logo10; break;
       case 11: getLogo = logo11; break;
+      case 12: getLogo = logo12; break;
     }
     insertAfter(getLogo, dateTimeContainer);
     removeDupes('logo');
