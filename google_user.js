@@ -39,9 +39,7 @@
         wallpaperImageText = 'Wallpaper Image',
         customFormatText = 'Add a custom format in script line ',
         hideShowText = bullet + ' Left-click to Hide/Show Date/Time\n' + bullet + ' Shift + Left-click for link targets of "_blank"\n' + bullet + ' Ctrl + Left-click for link targets of "_self"',
-        switchLogoCustom = 'Switch to Custom Logo',
-        switchLogoDefault = 'Switch to Default Logo',
-        switchLogo2 = 'Switch Logo Images',
+        switchLogo = 'Switch Logo Images',
         inputTooltip = '0 - 52',
         placeHolderText = 'Search Look-up',
         githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
@@ -59,7 +57,7 @@
         image9 = aURL + 'googleLogo15.png',
         image10 = aURL + 'googleLogo17.png',
         image11 = aURL + 'flag.png',
-        image12 = aURL + 'look.png',
+        image12 = aURL + 'face.png',
         imgCalendar = aURL + 'imageCalendar.png',
         imgClock16 = aURL + 'imageClock16.png',
         imgClock32 = aURL + 'imageClock32.png',
@@ -98,10 +96,9 @@
         monthnum = MonthNum.split(','),
         body = $q('html[itemtype="http://schema.org/WebPage"] > body'),
         header = $q('html[itemtype="http://schema.org/WebPage"] #gb'),
-        center = $q('html[itemtype="http://schema.org/WebPage"] .FPdoLc.lJ9FBc > center'),
+        center = $q('html[itemtype="http://schema.org/WebPage"] body > div.L3eUgb > div.o3j99.ikrT4e.KEY6ib > form > div:nth-child(1) > div > div.FPdoLc.T14B5e.iThwld > center'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
-        searchButton = $q('html[itemtype="http://schema.org/WebPage"] input[name="btnK"]'),
-        settingsBtn = $q('html[itemtype="http://schema.org/WebPage"] div.KxwPGc.iTjxkf > span'),
+        settingsBtn = $q('html[itemtype="http://schema.org/WebPage"] > body > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span'),
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
@@ -121,8 +118,7 @@
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
         btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
-        divLogo = $c('img', {id: 'buttonLogo', title: GM_getValue('logoImage') ? switchLogoDefault : switchLogoCustom, onclick: e => logoClick(GM_getValue('logoImage'))}),
-        divLogo2 = $c('img', {id: 'buttonLogo2', src: star32, title: switchLogo2, onclick: e => logo2Click(GM_getValue('logoImageNum'))});
+        divLogo = $c('img', {id: 'buttonLogo', src: gear32, title: switchLogo, onclick: e => logoClick(GM_getValue('logoImageNum'))});
 
   let clockInterval,
       getLogo,
@@ -154,9 +150,9 @@
 
   function init() {
     window.removeEventListener('load', () => init());
-    try {
+    if (body) {
       body.id = 'gWP1';
-      searchButton.id = 'gSearch';
+      settingsBtn.id = 'gSettings';
       if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
       else { dateTime.hidden = true; clearInterval(clockInterval) }
       let int = GM_getValue('logoImageNum');
@@ -181,19 +177,17 @@
       divThemer.appendChild(inpThemer);
       divThemer.appendChild(btnDown);
       header.insertBefore(dateTimeContainer, header.firstChild);
+      insertAfter(divThemer, dateTimeContainer);
       insertAfter(getLogo, dateTimeContainer);
       insertAfter(divThemer, getLogo);
       insertAfter(divLogo, divThemer);
-      insertAfter(divLogo2, divLogo);
-      placeHolder.placeholder = placeHolderText;
       center.appendChild(settingsBtn);
+      placeHolder.placeholder = placeHolderText;
       inpThemer.value = GM_getValue('wallpaperImage');
-      logoChange(GM_getValue('logoImage'));
       onResize();
       searchLinksWhere();
       wallpaper(GM_getValue('wallpaperImage'));
-    } catch(ex) {}
-  }
+  } }
 
   function dateTimeFormat(int) {
     if (!GM_getValue('defaultDateTimeView')) return;
@@ -237,8 +231,8 @@
       case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
       case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
       // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 232;
-      case 9: return customFormatText + 233;
+      case 8: return customFormatText + 240;
+      case 9: return customFormatText + 241;
   } }
 
   function dateTimeDefault() {
@@ -290,61 +284,8 @@
     dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
   }
 
-  function logoChange(bool) {
-    let pic = $q('#gWP1 div.o3j99.LLD4me.LS8OJ picture');
-    if (bool) {
-      divLogo.title = switchLogoDefault;
-      divLogo.src = logoOn32;
-      divLogo2.style = 'pointer-events: all; opacity: 1;';
-      GM_addStyle(''+
-        '#gWP1 #logoGoogle {'+
-        '  display: block !important;'+
-        '}'+
-        '#gWP1 div.o3j99.LLD4me.LS8OJ {'+
-        '  display: none !important;'+
-        '}'+
-        '#gWP1 form {'+
-        '  margin-top: 230px !important;'+
-        '}'+
-      '');
-    } else {
-      divLogo.title = switchLogoCustom;
-      divLogo.src = logoOff32;
-      divLogo2.style = 'pointer-events: none; opacity: .3;';
-      GM_addStyle(''+
-        '#gWP1 #logoGoogle {'+
-        '  display: none !important;'+
-        '}'+
-        '#gWP1 div.o3j99.LLD4me.LS8OJ {'+
-        '  display: block !important;'+
-        '  height: calc(0% - 560px) !important;'+
-        '  margin-bottom: 0 !important;'+
-        '  margin-top: -50px !important;'+
-        '  pointer-events: none !important;'+
-        '}'+
-        '#gWP1 form {'+
-        '  margin-top: 188px !important;'+
-        '}'+
-      '');
-    }
-    if (pic) {
-      GM_addStyle(''+
-        '#gWP1 div.o3j99.LLD4me.LS8OJ {'+
-        '  margin-bottom: -58px !important;'+
-        '}'+
-      '');
-    } }
-
   function logoClick(e) {
-    e = GM_getValue('logoImage') !== true ? true : false;
-    GM_setValue('logoImage', e);
-    logoChange(e);
-  }
-
-  function logo2Click(e) {
-    e = e + 1;
-    if (e > 12) e = 1;
-    else e = e;
+    e = e % 12 + 1;
     GM_setValue('logoImageNum', e);
     switch (e) {
       case 1: getLogo = logo1; break;
@@ -421,9 +362,7 @@
 
   function wallpaperInputChanger(e) {
     let inp = $q('#inputThemer');
-    if (inp.value > 51) inp.value = 52;
-    else if (inp.value < 0) inp.value = 0;
-    else inp.value = inp.value;
+    inp.value = inp.value % 52;
     GM_setValue('wallpaperImage', inp.value);
     wallpaper(inp.value);
   }
@@ -438,7 +377,6 @@
   if (!GM_getValue('defaultDateTimeView')) GM_setValue('defaultDateTimeView', false);
   if (!GM_getValue('defaultSecondsView')) GM_setValue('defaultSecondsView', false);
   if (!GM_getValue('linkTarget')) GM_setValue('linkTarget', '_blank');
-  if (!GM_getValue('logoImage')) GM_setValue('logoImage', false);
   if (!GM_getValue('logoImageNum')) GM_setValue('logoImageNum', 1);
   if (!GM_getValue('wallpaperImage')) GM_setValue('wallpaperImage', 0);
 
@@ -449,37 +387,16 @@
   initInterval = setInterval(() => {
     if (!dateTimeContainer || !divThemer) init();
     else clearInterval(initInterval);
-    onResize();
+    //onResize();
   }, openInterval);
 
   GM_addStyle(''+
-    'html, body#gWP1 {'+
-    '  width: 99.9% !important;'+
+    '* {'+
+    '  text-decoration: none !important;'+
     '}'+
-    'body#gWP1 {'+
-    '  background:  url(' + githubSite + GM_getValue('wallpaperImage') +'.jpg) no-repeat center / cover fixed !important;'+
-    '}'+
-    '#gWP1 #gb {'+
-    '  background: transparent !important;'+
-    '}'+
-    '#gWP1 #gb > div.gb_td.gb_0.gb_I,'+
-    '#gWP1 > div:nth-child(9) > div,'+
-    '#gWP1 #gb > div > div.gb_Qe > div.gb_3c > div.gb_cd.gb_0.gb_I,'+
-    '#gWP1 .vcVZ7d,'+
-    '#gWP1 input[name="btnI"],'+
-    '#gWP1 .nDcEnd,'+
-    '#gWP1 .goxjub,'+
-    '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div > div.dRYYxd > div.XDyW0e,'+
-    '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div.SDkEP > div.fM33ce.dRYYxd,'+
-    '#gWP1 promo-middle-slot > div,'+
-    '#gWP1 .KxwPGc,'+
-    '#gWP1 > div.L3eUgb > div:nth-child(8),'+
-    '#gWP1 #gb > div.gb_vd.gb_1.gb_I,'+
-    '#gWP1 #gb > div.gb_ud.gb_1.gb_I {'+
-    '  display: none !important;'+
-    '}'+
-    '#gWP1 > .gb_l,'+
-    '#gWP1 .MV3Tnb {'+
+    '#gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,'+
+    '#gWP1 #LS8OJ,'+
+    '#gWP1 > div.L3eUgb div.c93Gbe {'+
     '  display: none !important;'+
     '}'+
     '#gWP1 #imageCalendar {'+
@@ -493,7 +410,7 @@
     '  font: 20px monospace !important;'+
     '  left: 13px !important;'+
     '  position: absolute !important;'+
-    '  top: 12px !important;'+
+    '  top: 10px !important;'+
     '}'+
     '#gWP1 #dateTimeContainer > #dateTime {'+
     '  background: rgba(0, 0, 0, .3) !important;'+
@@ -502,7 +419,8 @@
     '  box-shadow: none !important;'+
     '  color: #FFF !important;'+
     '  cursor: pointer !important;'+
-    '  padding: 0 8px !important;'+
+    '  margin-left: 3px !important;'+
+    '  padding: 0 6px !important;'+
     '}'+
     '#gWP1 #imageCalendar:hover + #dateTime {'+
     '  background: #900 !important;'+
@@ -519,8 +437,18 @@
     '  position: absolute !important;'+
     '  top: 0 !important;'+
     '}'+
-    '#gb > div.gb_M.gb_0.gb_Mf.gb_Tf {'+
-    '  margin-top: 12px !important;'+
+    '#gWP1 #buttonLogo {'+
+    '  cursor: pointer !important;'+
+    '  height: 28px !important;'+
+    '  margin: 10px !important;'+
+    '  opacity: .7 !important;'+
+    '  width: 28px !important;'+
+    '}'+
+    '#gWP1 #buttonLogo:hover {'+
+    '  opacity: 1 !important;'+
+    '}'+
+    '#gWP1 form {'+
+    '  margin-top: 210px !important;'+
     '}'+
     '#gWP1 #themerDiv {'+
     '  margin-top: 10px !important;'+
@@ -568,249 +496,27 @@
     '#gWP1 #inputThemer::-webkit-outer-spin-button {'+
     '  display: none !important;'+
     '}'+
-    '#gWP1 #buttonLogo,'+
-    '#gWP1 #buttonLogo2 {'+
-    '  cursor: pointer !important;'+
-    '  height: 28px !important;'+
-    '  margin: 10px 0 0 0 !important;'+
-    '  width: 28px !important;'+
-    '}'+
-    '#gWP1 #buttonLogo2 {'+
-    '  margin-left: 16px !important;'+
-    '  margin-right: 10px !important;'+
-    '}'+
-    '#gWP1 .om7nvf {'+
-    '  padding: 0 !important;'+
-    '}'+
-    '#gWP1 .gb_Vd.gb_Xa.gb_Kd {'+
-    '  background: rgba(0, 0, 0, .3) !important;'+
-    '  border-radius: 10px !important;'+
-    '  padding-left: 0 !important;'+
-    '}'+
-    '#gWP1 .gb_A:hover > .gb_Ue {'+
-    '  color: #FFF !important;'+
-    '}'+
-    '#gWP1 .gb_Ma.gb_gd.gb_lg.gb_f.gb_zf {'+
-    '  left: -4px !important;'+
-    '  margin-right: 6px !important;'+
-    '  padding: 0 !important;'+
-    '  position: relative !important;'+
-    '}'+
-    '#gWP1 .gb_Vd {'+
-    '  padding: 0 8px 0 4px !important;'+
-    '}'+
-    '#gWP1 #gbwa {'+
-    '  margin: 0 -4px 0 -11px !important;'+
-    '  padding: 0 !important;'+
-    '}'+
-    '#gWP1 .gb_0c {'+
-    '  margin-right: -10px !important;'+
-    '}'+
-    '#gWP1 .o3j99.LLD4me.yr19Zb.LS8OJ {'+
-    /*'  margin-top: -90px !important;'+*/
-    '}'+
-    '#gWP1 .k1zIA.rSk4se {'+
-    '  margin: auto !important;'+
-    '  text-align: center !important;'+
-    '}'+
-    '#gWP1 .iblpc {'+
-    '  opacity: 0 !important;'+
-    '}'+
-    '#gWP1 .ACRAdd {'+
-    '  border: none !important;'+
-    '}'+
-    '#gWP1 .RNNXgb {'+
-    '  background: rgba(0, 0, 0, .3) !important;'+
-    '  max-width: 200px !important;'+
-    '  text-align: center !important;'+
-    '}'+
-    '#gWP1 .RNNXgb,'+
-    '#gWP1 #gSearch {'+
-    '  border: 1px solid transparent !important;'+
-    '  box-shadow: none !important;'+
-    '  text-shadow: 1px 1px 2px #000 !important;'+
-    '}'+
-    '#gWP1 form .RNNXgb textarea.gLFyf {'+
-    '  color: #FFF !important;'+
-    '  max-width: 130px !important;'+
-    '  padding: 14px 0px 4px !important;'+
-    '  text-shadow: 1px 1px 2px #000 !important;'+
-    '}'+
-    '#gWP1 .RNNXgb:hover,'+
-    '#gWP1 .RNNXgb:focus-within,'+
-    '#gWP1 .RNNXgb:hover .gLFyf,'+
-    '#gWP1 .RNNXgb:focus-within .gLFyf {'+
-    '  filter: brightness(1.5) !important;'+
-    '  margin: auto !important;'+
-    '  max-width: 584px !important;'+
-    '  text-align: left !important;'+
-    '}'+
-    '#gWP1 .RNNXgb:hover .iblpc,'+
-    '#gWP1 .RNNXgb:focus-within .iblpc {'+
-    '  opacity: 1 !important;'+
-    '}'+
-    '#gWP1 .RNNXgb:hover,'+
-    '#gWP1 .RNNXgb:focus-within,'+
-    '#gWP1 #gSearch:hover,'+
-    '#gWP1 #submit:hover,'+
-    '#gWP1 center > input:hover {'+
-    '  background: rgba(0, 0, 0, .5) !important;'+
-    '  border-color: #777 !important;'+
-    '  color: #FFF !important;'+
-    '  text-shadow: 1px 1px 2px #000 !important;'+
-    '}'+
-    '#gWP1 .RNNXgb:hover .iblpc,'+
-    '#gWP1 .RNNXgb:focus-within .iblpc {'+
-    '  opacity: 1 !important;'+
-    '}'+
-    '#gWP1 .RNNXgb .Gdd5U {'+
-    '  display: none !important;'+
-    '}'+
-    '#gWP1 .RNNXgb:hover .Gdd5U,'+
-    '#gWP1 .RNNXgb:focus-within .Gdd5U {'+
-    '  display: block !important;'+
-    '}'+
-    '#gWP1 #gSearch {'+
-    '  border-radius: 8px !important;'+
-    '  max-height: 36px !important;'+
+    'a {'+
     '  text-decoration: none !important;'+
-    '  text-shadow: 1px 1px 2px #000 !important;'+
     '}'+
-    '#gWP1 center > input,'+
-    '#gWP1 center > span {'+
-    '  background: rgba(0, 0, 0, .3) !important;'+
-    '  border: 1px solid transparent !important;'+
-    '  border-radius: 4px !important;'+
-    '  color: #999 !important;'+
+    '#gWP1 #gSettings {'+
+    '  background-color: #f8f9fa !important;'+ /* #f8f9fa #1b1e1f */
+    '  border: 1px solid #ccc !important;'+ /*#323638*/
+    '  border-radius: 8px !important;'+
+    '  color: #c0bab2 !important;'+
     '  cursor: pointer !important;'+
+    '  margin-left: 6px !important;'+
+    '  max-height: 36px !important;'+
+    '  opacity: .9 !important;'+
+    '  padding: 7px 0 !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
     '  width: auto !important;'+
     '}'+
-    '#gWP1 center > input {'+
-    '  height: 32px  !important;'+
-    '  padding: 0 15px !important;'+
+    '#gWP1 #gSettings:hover {'+
+    '  opacity: 1 !important;'+
     '}'+
-    '#gWP1 center > span {'+
-    '  padding: 7px 0 !important;'+
-    '}'+
-    '#gWP1 center > span:hover {'+
-    '  border: 1px solid #666 !important;'+
-    '}'+
-    '#gWP1 #gbqfbb,'+
-    '#gWP1 .XDyW0e,'+
-    '#gWP1 .cF4V5c g-menu-item:nth-child(8) {'+
-    '  display: none !important;'+
-    '}'+
-    '#gWP1 .RNNXgb:hover .XDyW0e,'+
-    '#gWP1 .RNNXgb:focus-within .XDyW0e {'+
-    '  display: block !important;'+
-    '}'+
-    '#gWP1 .ErsxPb.dPaec,'+
-    '#gWP1 .EpPYLd.GZnQqe.LGiluc {'+
-    '  border: none !important;'+
-    '}'+
-    '#gWP1 .o3j99.c93Gbe {'+
-    '  display: none !important;'+
-    '}'+
-    '#gWP1 .KxwPGc.SSwjIe > div {'+
-    '  background: rgba(0, 0, 0, .3) !important;'+
-    '  border-radius: 10px !important;'+
-    '  min-width: 32px !important;'+
-    '  padding: 0 4px !important;'+
-    '}'+
-    '#gWP1 .ayzqOc.pHiOh {'+
-    '  color: #999 !important;'+
-    '  padding-right: 15px !important;'+
-    '  text-decoration: none !important;'+
-    '}'+
-    '#gWP1 .ayzqOc.pHiOh:hover {'+
-    '  color: #FFF !important;'+
-    '}'+
-    '#gWP1 .EwsJzb.sAKBe.B8Kd8d {'+
-    '  border: 1px solid #666 !important;'+
-    '  margin: 5px 0 0 79px !important;'+
-    '}'+
-    '#gWP1 .xtSCL {'+
-    '  margin: 0 !important;'+
-    '}'+
-    '#gWP1 .o3j99.n1xJcf.Ne6nSd a,'+
-    '#gWP1 .o3j99.n1xJcf.Ne6nSd svg {'+
-    '  color: #CCC !important;'+
-    '}'+
-    '#gWP1 .o3j99.n1xJcf.Ne6nSd a:hover,'+
-    '#gWP1 .o3j99.n1xJcf.Ne6nSd svg:hover {'+
-    '  color: #FFF !important;'+
-    '}'+
-    '#gWP1 .UjBGL.pkWBse.iRQHZe {'+
-    '  background: transparent !important;'+
-    '  margin: 0 0 0 36px !important;'+
-    '}'+
-    '#gWP1 .cF4V5c.yTik0.wplJBd.PBn44e.iQXTJe {'+
-    '  background: rgb(26, 28, 29) !important;'+
-    '  border: 1px solid #666 !important;'+
-    '  border-radius: 6px !important;'+
-    '  padding: 0 !important;'+
-    '}'+
-    '#gWP1 .cF4V5c g-menu {'+
-    '  padding-bottom: 0 !important;'+
-    '}'+
-    '#gWP1 .cF4V5c g-menu-item:nth-child(6) span {'+
-    '  line-height: 30px !important;'+
-    '}'+
-    '#gWP1 .cF4V5c g-menu-item:nth-child(6) {'+
-    '  margin-bottom: -5px !important;'+
-    '}'+
-    '#gWP1 g-menu-item:hover {'+
-    '  background: #333 !important;'+
-    '  color: #FFF !important;'+
-    '}'+
-    '#gWP1 g-menu-item:first-of-type {'+
-    '  border-radius: 6px 6px 0 0 !important;'+
-    '}'+
-    '#gWP1 g-menu-item:nth-child(6) {'+
-    '  border-radius: 0 0 6px 6px !important;'+
-    '}'+
-    '#gWP1 g-menu-item.EpPYLd.GZnQqe.LGiluc:hover {'+
-    '  background: none !important;'+
-    '}'+
-    '#gWP1 #gb > div > div[style*="width: 370px; z-index: 991; height: 470px"] {'+
-    '  height: calc(-86px + 100vh) !important;'+
-    '  margin-top: 49px !important;'+
-    '}'+
-    '#gWP1 .pHiOh,'+
-    '#gWP1 a.gb_C {'+
-    '  padding-right: 0px !important;'+
-    '}'+
-    '#gWP1 a.gb_d.gb_Aa.gb_D {'+
-    '  margin-left: 0px !important;'+
-    '}'+
-    '#gWP1 #gbwa > div > a:hover > svg {'+
-    '  fill: #FFF !important;'+
-    '}'+
-    '#gWP1 .pHiOh {'+
-    '  padding-right: 0px !important;'+
-    '  position: relative !important;'+
-    '  top: 0 !important;'+
-    '}'+
-    '#gWP1 a.pHiOh::before {'+
-    '  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAOdJREFUOE+lkj1ywjAQhb/X4yqhg5ukCCWuMgMl3ME5CblDKKFNyuQOOULogAr6TcRIHlnYHnusSj+rb9/bXREtM5sAS+AJeADOQCHpEMfFe4WDma2A94bAtaRt3dsNkHzOgZ8o+NfvayHyskPQWNIpsfUIHP3dNLXjALv/jAvg7jGy52rjkuwluRqVywG+gOeOgG9JsxQwWEEBbIBc0mddpc1sDnwAr5LeUgXBn7vvX8TBbew6SL5TL5LK4XN/K4e2UTYzC8liSAXQNO/e5gi4RDGZpGtnQCOkLWtDSytKeimICh4g2R8nwnUfSvaudQAAAABJRU5ErkJggg==) !important;'+
-    '  position: relative !important;'+
-    '  top: 3px !important;'+
-    '}'+
-    '#gWP1 .lJ9FBc {'+
-    '  background: transparent !important;'+
-    '}'+
-    '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div.SDkEP {'+
-    '  max-height: 28px !important;'+
-    '}'+
-    '#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.RNNXgb > div.SDkEP > div.fM33ce.dRYYxd > button {'+
-    '  display: none !important;'+
-    '}'+
-    '#gWP1 > div.L3eUgb > div.o3j99.LLD4me.LS8OJ > div > div.IzOpfd {'+
-    '  display: none !important;'+
-    '}'+
-    '#gWP1 > div.L3eUgb > div.o3j99.LLD4me.yr19Zb.LS8OJ > div > svg > path {'+
-    '  fill: #FFF !important;'+
+    'body#gWP1 {'+
+    '  background:  url(' + githubSite + GM_getValue('wallpaperImage') +'.jpg) no-repeat center / cover fixed !important;'+
     '}'+
   '');
 
