@@ -96,9 +96,7 @@
         monthnum = MonthNum.split(','),
         body = $q('html[itemtype="http://schema.org/WebPage"] > body'),
         header = $q('html[itemtype="http://schema.org/WebPage"] #gb'),
-        center = $q('html[itemtype="http://schema.org/WebPage"] div.FPdoLc.T14B5e.iThwld > center'),
-        placeHolder = $q('html[itemtype="http://schema.org/WebPage"] textarea[name="q"]'),
-        settingsBtn = $q('html[itemtype="http://schema.org/WebPage"] div.KxwPGc.iTjxkf > span'),
+        placeHolder = $q('html[itemtype="http://schema.org/WebPage"] #APjFqb'),
         imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
@@ -118,7 +116,13 @@
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
         btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
-        divLogo = $c('img', {id: 'buttonLogo', src: gear32, title: switchLogo, onclick: e => logoClick(GM_getValue('logoImageNum'))});
+        divLogo = $c('div', {id: 'divLogo'}),
+        labelLogo = $c('label', {id: 'labelLogo', innerHTML: 'Logo Changer'}),
+        upLogo = $c('button', {id: 'upLogo', style: 'background-image: url('+ upArrow +') !important;', title: '', onclick: e => logoClick(e.target.id)}),
+        inpLogo = $c('input', {id: 'inpLogo', type: 'number', value: GM_getValue('logoImageNum')}),
+        dnLogo = $c('button', {id: 'dnLogo', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => logoClick(e.target.id)});
+
+  const logos = [null, logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8, logo9, logo10, logo11, logo12];
 
   let clockInterval,
       getLogo,
@@ -152,7 +156,6 @@
     window.removeEventListener('load', () => init());
     if (body) {
       body.id = 'gWP1';
-      settingsBtn.id = 'gSettings';
       if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
       else { dateTime.hidden = true; clearInterval(clockInterval) }
       let int = GM_getValue('logoImageNum');
@@ -176,12 +179,14 @@
       divThemer.appendChild(btnThemer);
       divThemer.appendChild(inpThemer);
       divThemer.appendChild(btnDown);
+      divLogo.appendChild(labelLogo);
+      divLogo.appendChild(upLogo);
+      divLogo.appendChild(inpLogo);
+      divLogo.appendChild(dnLogo);
       header.insertBefore(dateTimeContainer, header.firstChild);
-      insertAfter(divThemer, dateTimeContainer);
       insertAfter(getLogo, dateTimeContainer);
       insertAfter(divThemer, getLogo);
       insertAfter(divLogo, divThemer);
-      center.appendChild(settingsBtn);
       placeHolder.placeholder = placeHolderText;
       inpThemer.value = GM_getValue('wallpaperImage');
       onResize();
@@ -284,24 +289,20 @@
     dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
   }
 
-  function logoClick(e) {
-    e = e % 12 + 1;
-    GM_setValue('logoImageNum', e);
-    switch (e) {
-      case 1: getLogo = logo1; break;
-      case 2: getLogo = logo2; break;
-      case 3: getLogo = logo3; break;
-      case 4: getLogo = logo4; break;
-      case 5: getLogo = logo5; break;
-      case 6: getLogo = logo6; break;
-      case 7: getLogo = logo7; break;
-      case 8: getLogo = logo8; break;
-      case 9: getLogo = logo9; break;
-      case 10: getLogo = logo10; break;
-      case 11: getLogo = logo11; break;
-      case 12: getLogo = logo12; break;
+  function logoClick(id) {
+    let current = GM_getValue('logoImageNum', 1);
+    let next;
+    if (id === 'upLogo') {
+      next = (current % 12) + 1;
+    } else if (id === 'dnLogo') {
+      next = ((current - 2) % 12 + 12) % 12 + 1;
+    } else {
+      return;
     }
-    insertAfter(getLogo, dateTimeContainer);
+    GM_setValue('logoImageNum', next);
+    insertAfter(logos[next], dateTimeContainer)
+    const input = $q('#inpLogo');
+    if (input) input.value = next;
     removeDupes('logo');
     onResize();
   }
@@ -387,18 +388,18 @@
   initInterval = setInterval(() => {
     if (!dateTimeContainer || !divThemer) init();
     else clearInterval(initInterval);
-    //onResize();
+    init();
+    onResize();
   }, openInterval);
 
   GM_addStyle(''+
-    '* {'+
-    '  text-decoration: none !important;'+
-    '}'+
     '#gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,'+
     '#gWP1 #LS8OJ,'+
-    '#gWP1 > div.L3eUgb div.c93Gbe,'+
     '#gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f > div:nth-child(2) > a,'+
     '#gWP1 #gb > div.gb_Ad.gb_6.gb_L,'+
+    '#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.AghGtd,'+
+    '#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.ssOUyb,'+
+    '#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > a,'+
     '#gWP1 > div.L3eUgb div.RNNXgb div.fzj3ad {'+
     '  display: none !important;'+
     '}'+
@@ -411,6 +412,7 @@
     '#gWP1 #dateTimeContainer {'+
     '  display: inline-flex !important;'+
     '  font: 20px monospace !important;'+
+    '  height: 32px !important;'+
     '  left: 13px !important;'+
     '  position: absolute !important;'+
     '  top: 10px !important;'+
@@ -454,6 +456,7 @@
     '  margin-top: 210px !important;'+
     '}'+
     '#gWP1 #themerDiv {'+
+    '  height: 32px !important;'+
     '  margin-top: 10px !important;'+
     '}'+
     '#gWP1 #themerDiv * {'+
@@ -499,30 +502,63 @@
     '#gWP1 #inputThemer::-webkit-outer-spin-button {'+
     '  display: none !important;'+
     '}'+
+    '#gWP1 #divLogo {'+
+    '  height: 32px !important;'+
+    '  margin: 8px 0px 0px 10px !important;'+
+    '}'+
+    '#gWP1 #labelLogo {'+
+    '  font: 20px monospace !important;'+
+    '  opacity: .8 !important;'+
+    '}'+
+    '#gWP1 #upLogo {'+
+    '  margin: 0px 10px !important;'+
+    '}'+
+    '#gWP1 #upLogo,'+
+    '#gWP1 #dnLogo {'+
+    '  height: 15px !important;'+
+    '  opacity: .6 !important;'+
+    '  width: 21px !important;'+
+    '}'+
+    '#gWP1 #inpLogo {'+
+    '  background: #000 !important;'+
+    '  border: 1px solid #FFF !important;'+
+    '  height: 22px !important;'+
+    '  padding-top: 4px !important;'+
+    '  pointer-events: none !important;'+
+    '  position: relative !important;'+
+    '  text-align: center !important;'+
+    '  top: -1px !important;'+
+    '  width: 24px !important;'+
+    '}'+
+    '#gWP1 #inpLogo::-webkit-inner-spin-button,'+
+    '#gWP1 #inpLogo::-webkit-outer-spin-button,'+
+    '#gWP1 #inpLogo::-webkit-inner-spin-button,'+
+    '#gWP1 #inpLogo::-webkit-outer-spin-button {'+
+    '  display: none !important;'+
+    '}'+
+    '#gWP1 #dnLogo {'+
+    '  margin: 0px 10px !important;'+
+    '  position: relative !important;'+
+    '  top: 2px !important;'+
+    '}'+
+    '#gWP1 #upLogo:hover,'+
+    '#gWP1 #dnLogo:hover {'+
+    '  opacity: 1 !important;'+
+    '}'+
     '#gb > div.gb_Q.gb_6.gb_Vf.gb_3f {'+
     '  padding-right: 0px !important;'+
     '}'+
     'a {'+
     '  text-decoration: none !important;'+
     '}'+
-    '#gWP1 #gSettings {'+
-    '  background-color: #f8f9fa !important;'+ /* #f8f9fa #1b1e1f */
-    '  border: 1px solid #ccc !important;'+ /*#323638*/
-    '  border-radius: 8px !important;'+
-    '  color: #c0bab2 !important;'+
-    '  cursor: pointer !important;'+
-    '  margin-left: 6px !important;'+
-    '  max-height: 36px !important;'+
-    '  opacity: .9 !important;'+
-    '  padding: 7px 0px !important;'+
-    '  text-shadow: 1px 1px 2px #000 !important;'+
-    '  width: auto !important;'+
-    '}'+
-    '#gWP1 #gSettings:hover {'+
-    '  opacity: 1 !important;'+
-    '}'+
     'body#gWP1 {'+
     '  background:  url(' + githubSite + GM_getValue('wallpaperImage') +'.jpg) no-repeat center / cover fixed !important;'+
+    '}'+
+    '#gWP1 > div.L3eUgb > div:nth-child(13) > div {'+
+    '  background: transparent !important;'+
+    '}'+
+    '#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe {'+
+    '  float: right !important;'+
     '}'+
   '');
 
