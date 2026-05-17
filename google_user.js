@@ -496,12 +496,6 @@
     '#gWP1 #inputThemer:focus-within {'+
     '  opacity: 1 !important;'+
     '}'+
-    '#gWP1 #inputThemer::-webkit-inner-spin-button,'+
-    '#gWP1 #inputThemer::-webkit-outer-spin-button,'+
-    '#gWP1 #inputThemer::-webkit-inner-spin-button,'+
-    '#gWP1 #inputThemer::-webkit-outer-spin-button {'+
-    '  display: none !important;'+
-    '}'+
     '#gWP1 #divLogo {'+
     '  height: 32px !important;'+
     '  margin: 8px 0px 0px 10px !important;'+
@@ -530,10 +524,10 @@
     '  top: -1px !important;'+
     '  width: 24px !important;'+
     '}'+
-    '#gWP1 #inpLogo::-webkit-inner-spin-button,'+
-    '#gWP1 #inpLogo::-webkit-outer-spin-button,'+
-    '#gWP1 #inpLogo::-webkit-inner-spin-button,'+
-    '#gWP1 #inpLogo::-webkit-outer-spin-button {'+
+    '#gWP1 ::-webkit-inner-spin-button,'+
+    '#gWP1 ::-webkit-outer-spin-button,'+
+    '#gWP1 ::-webkit-inner-spin-button,'+
+    '#gWP1 ::-webkit-outer-spin-button {'+
     '  display: none !important;'+
     '}'+
     '#gWP1 #dnLogo {'+
