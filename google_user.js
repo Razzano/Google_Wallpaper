@@ -396,12 +396,15 @@
     '}'+
     '#gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,'+
     '#gWP1 #LS8OJ,'+
-    '#gWP1 > div.L3eUgb div.c93Gbe {'+
+    '#gWP1 > div.L3eUgb div.c93Gbe,'+
+    '#gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f > div:nth-child(2) > a,'+
+    '#gWP1 #gb > div.gb_Ad.gb_6.gb_L,'+
+    '#gWP1 > div.L3eUgb div.RNNXgb div.fzj3ad {'+
     '  display: none !important;'+
     '}'+
     '#gWP1 #imageCalendar {'+
     '  cursor: pointer !important;'+
-    '  margin: 0 !important;'+
+    '  margin: 0px !important;'+
     '  position: relative !important;'+
     '  top: -1px !important;'+
     '}'+
@@ -420,7 +423,7 @@
     '  color: #FFF !important;'+
     '  cursor: pointer !important;'+
     '  margin-left: 3px !important;'+
-    '  padding: 0 6px !important;'+
+    '  padding: 0px 6px !important;'+
     '}'+
     '#gWP1 #imageCalendar:hover + #dateTime {'+
     '  background: #900 !important;'+
@@ -435,7 +438,7 @@
     '  max-height: 100% !important;'+
     '  max-width: 100% !important;'+
     '  position: absolute !important;'+
-    '  top: 0 !important;'+
+    '  top: 0px !important;'+
     '}'+
     '#gWP1 #buttonLogo {'+
     '  cursor: pointer !important;'+
@@ -475,7 +478,7 @@
     '  background-repeat: no-repeat !important;'+
     '  cursor: pointer !important;'+
     '  height: 15px !important;'+
-    '  margin-left: 0 !important;'+
+    '  margin-left: 0px !important;'+
     '  margin-right: 14px !important;'+
     '  position: relative !important;'+
     '  top: 2px !important;'+
@@ -496,6 +499,9 @@
     '#gWP1 #inputThemer::-webkit-outer-spin-button {'+
     '  display: none !important;'+
     '}'+
+    '#gb > div.gb_Q.gb_6.gb_Vf.gb_3f {'+
+    '  padding-right: 0px !important;'+
+    '}'+
     'a {'+
     '  text-decoration: none !important;'+
     '}'+
@@ -508,7 +514,7 @@
     '  margin-left: 6px !important;'+
     '  max-height: 36px !important;'+
     '  opacity: .9 !important;'+
-    '  padding: 7px 0 !important;'+
+    '  padding: 7px 0px !important;'+
     '  text-shadow: 1px 1px 2px #000 !important;'+
     '  width: auto !important;'+
     '}'+
