@@ -154,45 +154,46 @@
 
   function init() {
     window.removeEventListener('load', () => init());
-    if (body) {
-      body.id = 'gWP1';
-      if (GM_getValue('defaultDateTimeView')) dateTimeDefault();
-      else { dateTime.hidden = true; clearInterval(clockInterval) }
-      let int = GM_getValue('logoImageNum');
-      switch (int) {
-        case 1: getLogo = logo1; break;
-        case 2: getLogo = logo2; break;
-        case 3: getLogo = logo3; break;
-        case 4: getLogo = logo4; break;
-        case 5: getLogo = logo5; break;
-        case 6: getLogo = logo6; break;
-        case 7: getLogo = logo7; break;
-        case 8: getLogo = logo8; break;
-        case 9: getLogo = logo9; break;
-        case 10: getLogo = logo10; break;
-        case 11: getLogo = logo11; break;
-        case 12: getLogo = logo12; break;
-      }
-      dateTime.title = addRemoveText;
-      dateTimeContainer.appendChild(imageCalendar);
-      dateTimeContainer.appendChild(dateTime);
-      divThemer.appendChild(btnThemer);
-      divThemer.appendChild(inpThemer);
-      divThemer.appendChild(btnDown);
-      divLogo.appendChild(labelLogo);
-      divLogo.appendChild(upLogo);
-      divLogo.appendChild(inpLogo);
-      divLogo.appendChild(dnLogo);
-      header.insertBefore(dateTimeContainer, header.firstChild);
-      insertAfter(getLogo, dateTimeContainer);
-      insertAfter(divThemer, getLogo);
-      insertAfter(divLogo, divThemer);
-      placeHolder.placeholder = placeHolderText;
-      inpThemer.value = GM_getValue('wallpaperImage');
-      onResize();
-      searchLinksWhere();
-      wallpaper(GM_getValue('wallpaperImage'));
-  } }
+    if (!body) return;
+    body.id = 'gWP1';
+    if (GM_getValue('defaultDateTimeView')) {
+      dateTimeDefault();
+    } else {
+      dateTime.hidden = true;
+      clearInterval(clockInterval);
+    }
+    let num = GM_getValue('logoImageNum', 1);
+    if (num < 1 || num > 13) {
+      num = 1;
+      GM_setValue('logoImageNum', 1);
+    }
+    dateTime.title = addRemoveText;
+    dateTimeContainer.appendChild(imageCalendar);
+    dateTimeContainer.appendChild(dateTime);
+    divThemer.appendChild(btnThemer);
+    divThemer.appendChild(inpThemer);
+    divThemer.appendChild(btnDown);
+    divLogo.appendChild(labelLogo);
+    divLogo.appendChild(upLogo);
+    divLogo.appendChild(inpLogo);
+    divLogo.appendChild(dnLogo);
+    header.insertBefore(dateTimeContainer, header.firstChild);
+    insertAfter(divThemer, dateTimeContainer); // adjusted order
+    insertAfter(divLogo, divThemer);
+    placeHolder.placeholder = placeHolderText;
+    inpThemer.value = GM_getValue('wallpaperImage');
+    applyLogo(num);
+    const input = $q('#inpLogo');
+    if (input) {
+      input.addEventListener('input', handleLogoInput);
+      input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') handleLogoInput(e);
+      });
+    }
+    onResize();
+    searchLinksWhere();
+    wallpaper(GM_getValue('wallpaperImage'));
+  }
 
   function dateTimeFormat(int) {
     if (!GM_getValue('defaultDateTimeView')) return;
@@ -289,21 +290,57 @@
     dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
   }
 
+  function applyLogo(num) {
+    const input = $q('#inpLogo');
+    if (num === 13) {
+      GM_addStyle(`
+        #gWP1 #LS8OJ { display: block !important; }
+        #gWP1 form { margin-top: -86px !important; }
+        #gWP1 #logoGoogle, #gWP1 .logo { display: none !important; }
+      `);
+      if (input) input.value = 13;
+      return;
+    }
+    GM_addStyle(`
+      #gWP1 #LS8OJ { display: none !important; }
+      #gWP1 form { margin-top: 210px !important; }
+      #gWP1 #logoGoogle, #gWP1 .logo { display: inline-block !important; }
+    `);
+    if (logos[num]) {
+      insertAfter(logos[num], dateTimeContainer);
+    }
+    if (input) input.value = num;
+    removeDupes('logo');
+  }
+
   function logoClick(id) {
     let current = GM_getValue('logoImageNum', 1);
     let next;
     if (id === 'upLogo') {
-      next = (current % 12) + 1;
+      next = (current % 13) + 1;
     } else if (id === 'dnLogo') {
-      next = ((current - 2) % 12 + 12) % 12 + 1;
+      next = ((current - 2) % 13 + 13) % 13 + 1;
     } else {
       return;
     }
     GM_setValue('logoImageNum', next);
-    insertAfter(logos[next], dateTimeContainer)
-    const input = $q('#inpLogo');
-    if (input) input.value = next;
-    removeDupes('logo');
+    applyLogo(next);
+    onResize();
+  }
+
+  function handleLogoInput(e) {
+    let val = e.target.value.trim();
+    let num;
+    if (val.toLowerCase() === "default" || val === "13") {
+      num = 13;
+    } else {
+      num = parseInt(val);
+      if (isNaN(num)) return;
+      if (num < 1) num = 1;
+      if (num > 13) num = 13;
+    }
+    GM_setValue('logoImageNum', num);
+    applyLogo(num);
     onResize();
   }
 
@@ -385,175 +422,177 @@
   window.addEventListener('resize', () => onResize());
   window.addEventListener('unload', () => onClose());
 
-  initInterval = setInterval(() => {
-    if (!dateTimeContainer || !divThemer) init();
-    else clearInterval(initInterval);
-    init();
-    onResize();
-  }, openInterval);
+  if (!initInterval) {
+    initInterval = setInterval(() => {
+      if (dateTimeContainer && divThemer) {
+        clearInterval(initInterval);
+        initInterval = null;
+      } else {
+        init();
+      }
+    }, openInterval);
+  }
 
-  GM_addStyle(''+
-    '#gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,'+
-    '#gWP1 #LS8OJ,'+
-    '#gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f > div:nth-child(2) > a,'+
-    '#gWP1 #gb > div.gb_Ad.gb_6.gb_L,'+
-    '#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.AghGtd,'+
-    '#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.ssOUyb,'+
-    '#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > a,'+
-    '#gWP1 > div.L3eUgb div.RNNXgb div.fzj3ad {'+
-    '  display: none !important;'+
-    '}'+
-    '#gWP1 #imageCalendar {'+
-    '  cursor: pointer !important;'+
-    '  margin: 0px !important;'+
-    '  position: relative !important;'+
-    '  top: -1px !important;'+
-    '}'+
-    '#gWP1 #dateTimeContainer {'+
-    '  display: inline-flex !important;'+
-    '  font: 20px monospace !important;'+
-    '  height: 32px !important;'+
-    '  left: 13px !important;'+
-    '  position: absolute !important;'+
-    '  top: 10px !important;'+
-    '}'+
-    '#gWP1 #dateTimeContainer > #dateTime {'+
-    '  background: rgba(0, 0, 0, .3) !important;'+
-    '  border: 1px solid transparent !important;'+
-    '  border-radius: 8px !important;'+
-    '  box-shadow: none !important;'+
-    '  color: #FFF !important;'+
-    '  cursor: pointer !important;'+
-    '  margin-left: 3px !important;'+
-    '  padding: 0px 6px !important;'+
-    '}'+
-    '#gWP1 #imageCalendar:hover + #dateTime {'+
-    '  background: #900 !important;'+
-    '  border-color: #C00 !important;'+
-    '  color: #FFF !important;'+
-    '}'+
-    '#gWP1 #dateTimeContainer > #dateTime:hover {'+
-    '  background: #181A1B !important;'+
-    '  border: 1px solid #000 !important;'+
-    '}'+
-    '#gWP1 #logoGoogle {'+
-    '  max-height: 100% !important;'+
-    '  max-width: 100% !important;'+
-    '  position: absolute !important;'+
-    '  top: 0px !important;'+
-    '}'+
-    '#gWP1 #buttonLogo {'+
-    '  cursor: pointer !important;'+
-    '  height: 28px !important;'+
-    '  margin: 10px !important;'+
-    '  opacity: .7 !important;'+
-    '  width: 28px !important;'+
-    '}'+
-    '#gWP1 #buttonLogo:hover {'+
-    '  opacity: 1 !important;'+
-    '}'+
-    '#gWP1 form {'+
-    '  margin-top: 210px !important;'+
-    '}'+
-    '#gWP1 #themerDiv {'+
-    '  height: 32px !important;'+
-    '  margin-top: 10px !important;'+
-    '}'+
-    '#gWP1 #themerDiv * {'+
-    '  background: transparent !important;'+
-    '  border: none !important;'+
-    '  color: #FFF !important;'+
-    '  font: 20px monospace !important;'+
-    '  opacity: .7 !important;'+
-    '  text-shadow: 1px 1px 2px #000 !important;'+
-    '}'+
-    '#gWP1 #buttonThemer {'+
-    '  background-position: bottom 6px right !important;'+
-    '  background-repeat: no-repeat !important;'+
-    '  width: 224px !important;'+
-    '}'+
-    '#gWP1 #inputThemer {'+
-    '  text-align: center !important;'+
-    '  width: 34px !important;'+
-    '}'+
-    '#gWP1 #buttonDown {'+
-    '  background-position: center !important;'+
-    '  background-repeat: no-repeat !important;'+
-    '  cursor: pointer !important;'+
-    '  height: 15px !important;'+
-    '  margin-left: 0px !important;'+
-    '  margin-right: 14px !important;'+
-    '  position: relative !important;'+
-    '  top: 2px !important;'+
-    '  width: 21px !important;'+
-    '}'+
-    '#gWP1 #buttonThemer:hover,'+
-    '#gWP1 #buttonDown:hover {'+
-    '  opacity: 1 !important;'+
-    '  cursor: pointer !important;'+
-    '}'+
-    '#gWP1 #inputThemer:hover,'+
-    '#gWP1 #inputThemer:focus-within {'+
-    '  opacity: 1 !important;'+
-    '}'+
-    '#gWP1 #divLogo {'+
-    '  height: 32px !important;'+
-    '  margin: 8px 0px 0px 10px !important;'+
-    '}'+
-    '#gWP1 #labelLogo {'+
-    '  font: 20px monospace !important;'+
-    '  opacity: .8 !important;'+
-    '}'+
-    '#gWP1 #upLogo {'+
-    '  margin: 0px 10px !important;'+
-    '}'+
-    '#gWP1 #upLogo,'+
-    '#gWP1 #dnLogo {'+
-    '  height: 15px !important;'+
-    '  opacity: .6 !important;'+
-    '  width: 21px !important;'+
-    '}'+
-    '#gWP1 #inpLogo {'+
-    '  background: #000 !important;'+
-    '  border: 1px solid #FFF !important;'+
-    '  height: 22px !important;'+
-    '  padding-top: 4px !important;'+
-    '  pointer-events: none !important;'+
-    '  position: relative !important;'+
-    '  text-align: center !important;'+
-    '  top: -1px !important;'+
-    '  width: 24px !important;'+
-    '}'+
-    '#gWP1 ::-webkit-inner-spin-button,'+
-    '#gWP1 ::-webkit-outer-spin-button,'+
-    '#gWP1 ::-webkit-inner-spin-button,'+
-    '#gWP1 ::-webkit-outer-spin-button {'+
-    '  display: none !important;'+
-    '}'+
-    '#gWP1 #dnLogo {'+
-    '  margin: 0px 10px !important;'+
-    '  position: relative !important;'+
-    '  top: 2px !important;'+
-    '}'+
-    '#gWP1 #upLogo:hover,'+
-    '#gWP1 #dnLogo:hover {'+
-    '  opacity: 1 !important;'+
-    '}'+
-    '#gb > div.gb_Q.gb_6.gb_Vf.gb_3f {'+
-    '  padding-right: 0px !important;'+
-    '}'+
-    'a {'+
-    '  text-decoration: none !important;'+
-    '}'+
-    'body#gWP1 {'+
-    '  background:  url(' + githubSite + GM_getValue('wallpaperImage') +'.jpg) no-repeat center / cover fixed !important;'+
-    '}'+
-    '#gWP1 > div.L3eUgb > div:nth-child(13) > div {'+
-    '  background: transparent !important;'+
-    '}'+
-    '#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe {'+
-    '  float: right !important;'+
-    '}'+
-  '');
+  GM_addStyle(`
+    #gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
+    #gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f > div:nth-child(2) > a,
+    #gWP1 #gb > div.gb_Ad.gb_6.gb_L,
+    #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.AghGtd,
+    #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.ssOUyb,
+    #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > a,
+    #gWP1 > div.L3eUgb div.RNNXgb div.fzj3ad {
+      display: none !important;
+    }
+    #gWP1 #imageCalendar {
+      cursor: pointer !important;
+      margin: 0px !important;
+      position: relative !important;
+      top: -1px !important;
+    }
+    #gWP1 #dateTimeContainer {
+      display: inline-flex !important;
+      font: 20px monospace !important;
+      height: 32px !important;
+      left: 13px !important;
+      position: absolute !important;
+      top: 10px !important;
+    }
+    #gWP1 #dateTimeContainer > #dateTime {
+      background: rgba(0, 0, 0, .3) !important;
+      border: 1px solid transparent !important;
+      border-radius: 8px !important;
+      box-shadow: none !important;
+      color: #FFF !important;
+      cursor: pointer !important;
+      margin-left: 3px !important;
+      padding: 0px 6px !important;
+    }
+    #gWP1 #imageCalendar:hover + #dateTime {
+      background: #900 !important;
+      border-color: #C00 !important;
+      color: #FFF !important;
+    }
+    #gWP1 #dateTimeContainer > #dateTime:hover {
+      background: #181A1B !important;
+      border: 1px solid #000 !important;
+    }
+    #gWP1 #logoGoogle {
+      max-height: 100% !important;
+      max-width: 100% !important;
+      position: absolute !important;
+      top: 0px !important;
+    }
+    #gWP1 #buttonLogo {
+      cursor: pointer !important;
+      height: 28px !important;
+      margin: 10px !important;
+      opacity: .7 !important;
+      width: 28px !important;
+    }
+    #gWP1 #buttonLogo:hover {
+      opacity: 1 !important;
+    }
+    #gWP1 form {
+      margin-top: 210px !important;
+    }
+    #gWP1 #themerDiv {
+      height: 32px !important;
+      margin-top: 10px !important;
+    }
+    #gWP1 #themerDiv * {
+      background: transparent !important;
+      border: none !important;
+      color: #FFF !important;
+      font: 20px monospace !important;
+      opacity: .7 !important;
+      text-shadow: 1px 1px 2px #000 !important;
+    }
+    #gWP1 #buttonThemer {
+      background-position: bottom 6px right !important;
+      background-repeat: no-repeat !important;
+      width: 224px !important;
+    }
+    #gWP1 #inputThemer {
+      text-align: center !important;
+      width: 34px !important;
+    }
+    #gWP1 #buttonDown {
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+      cursor: pointer !important;
+      height: 15px !important;
+      margin-left: 0px !important;
+      margin-right: 14px !important;
+      position: relative !important;
+      top: 2px !important;
+      width: 21px !important;
+    }
+    #gWP1 #buttonThemer:hover,
+    #gWP1 #buttonDown:hover {
+      opacity: 1 !important;
+      cursor: pointer !important;
+    }
+    #gWP1 #inputThemer:hover,
+    #gWP1 #inputThemer:focus-within {
+      opacity: 1 !important;
+    }
+    #gWP1 #divLogo {
+      height: 32px !important;
+      margin: 8px 0px 0px 10px !important;
+    }
+    #gWP1 #labelLogo {
+      font: 20px monospace !important;
+      opacity: .8 !important;
+    }
+    #gWP1 #upLogo {
+      margin: 0px 10px !important;
+    }
+    #gWP1 #upLogo,
+    #gWP1 #dnLogo {
+      height: 15px !important;
+      opacity: .6 !important;
+      width: 21px !important;
+    }
+    #gWP1 #inpLogo {
+      background: #000 !important;
+      border: 1px solid #FFF !important;
+      height: 22px !important;
+      padding-top: 4px !important;
+      position: relative !important;
+      text-align: center !important;
+      top: -1px !important;
+      width: 24px !important;
+    }
+    #gWP1 ::-webkit-inner-spin-button,
+    #gWP1 ::-webkit-outer-spin-button,
+    #gWP1 ::-webkit-inner-spin-button,
+    #gWP1 ::-webkit-outer-spin-button {
+      display: none !important;
+    }
+    #gWP1 #dnLogo {
+      margin: 0px 10px !important;
+      position: relative !important;
+      top: 2px !important;
+    }
+    #gWP1 #upLogo:hover,
+    #gWP1 #dnLogo:hover {
+      opacity: 1 !important;
+    }
+    #gb > div.gb_Q.gb_6.gb_Vf.gb_3f {
+      padding-right: 0px !important;
+    }
+    a {
+      text-decoration: none !important;
+    }
+    body#gWP1 {
+      background:  url( + githubSite + GM_getValue(wallpaperImage) +.jpg) no-repeat center / cover fixed !important;
+    }
+    #gWP1 > div.L3eUgb > div:nth-child(13) > div {
+      background: transparent !important;
+    }
+    #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe {
+      float: right !important;
+    }
+  `);
 
 })();
