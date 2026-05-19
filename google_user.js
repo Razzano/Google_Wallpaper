@@ -117,8 +117,11 @@
     window.removeEventListener('load', () => init());
     if (!body) return;
     body.id = 'gWP1';
-    if (GM_getValue('dateFormat') < 1 || GM_getValue('dateFormat') > 4) {
-      GM_setValue('dateFormat', 1);
+    let int = GM_getValue('dateFormat');
+    if (int < 1 || int > 4) {
+      if (int < 1) int = 1;
+      if (int > 13) int = 13;
+      GM_setValue('dateFormat', parseInt(int));
     }
     if (GM_getValue('defaultDateTimeView')) {
       dateTimeDefault();
@@ -184,7 +187,7 @@
       () => `${map.weekday} ⇒ ${map.month} ${ordinal}, ${year} ⏰ ${hr12}${minStr}${secStr} ${ampm}`, // 1: Monday ⇒ January 1st, 2026
       () => `${getPart({weekday: 'short'})} * ${getPart({month: 'short'})} ${day}, ${year} 🕑 ${hr12}${minStr}${secStr} ${ampm}`, // 2: Mon * Jan 1, 2026
       () => `${map.weekday} • ${getPart({month: 'numeric'})}/${dayPadded}/${year} ⏰ ${hr12}${minStr}${secStr} ${ampm}`, // 3: Monday • 1/01/2026
-      () => `${getPart({weekday: 'short'})} :: ${getPart({month: '2-digit'})}-${dayPadded}-${year} 🕑 ${hr12}${minStr}${secStr} ${ampm}` // 4: Mon :: 01-01-2026
+      () => `${getPart({weekday: 'short'})} ⇒ ${getPart({month: '2-digit'})}-${dayPadded}-${year} 🕑 ${hr12}${minStr}${secStr} ${ampm}` // 4: Mon ⇒ 01-01-2026
     ];
     return formats[int]();
   }
