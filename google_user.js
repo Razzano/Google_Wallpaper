@@ -19,13 +19,13 @@
         themerInterval = 30000,
         timerLong = 10000,
         timerShort = 1000,
-        dateTimeFormatCount = 9,
+        dateTimeFormatCount = 4,
         am = 'AM',
         pm = 'PM',
-        arrow = '\u21D2',
-        asterisk = '\u002A', // '*'
-        bullet = '\u2022', // '•'
-        clock = '\u23F0', // '⏰' or '\u23F2',
+        arrow = '⇒',
+        asterisk = '*',
+        bullet = '•',
+        clock = '⏰',
         colon = ':',
         colons = '::',
         comma = ',',
@@ -33,7 +33,7 @@
         hyphen = '-',
         slash = '/',
         space = ' ',
-        watch = '\u231A', // '⌚'
+        watch = '⌚',
         addRemoveText = bullet + ' Left-click to Add/Remove :seconds\n' + bullet + ' Shift + Left-click to Add/Remove AM/PM\n' + bullet + ' Ctrl + Left-click to change Date format 1 - 9',
         changeWallpaperTooltip = 'Left-click to change wallpaper',
         wallpaperImageText = 'Wallpaper Image',
@@ -44,7 +44,7 @@
         placeHolderText = 'Search Look-up',
         githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
         aURL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/',
-        downArrow = aURL + 'downArrow5.png',
+        downArrow = aURL + 'downArrow7.png',
         upArrow = aURL + 'upArrow5.png',
         image1 = aURL + 'logoGoogle.png',
         image2 = aURL + 'imageGoogle.png',
@@ -112,15 +112,13 @@
         logo10 = $c('img', {id: 'logoGoogle', class: 'logo', src: image10}), // Google Logo Image Round
         logo11 = $c('img', {id: 'logoGoogle', class: 'logo', src: image11}), // Flag Image
         logo12 = $c('img', {id: 'logoGoogle', class: 'logo', src: image12}), // Look Image
-        divThemer = $c('div', {id: 'themerDiv'}),
+        changerContainer = $c('div', {id: 'changerContainer'}),
         btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
-        inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger(e)}),
-        btnDown = $c('button', {id: 'buttonDown', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
-        divLogo = $c('div', {id: 'divLogo'}),
-        labelLogo = $c('label', {id: 'labelLogo', innerHTML: 'Logo Changer'}),
-        upLogo = $c('button', {id: 'upLogo', style: 'background-image: url('+ upArrow +') !important;', title: '', onclick: e => logoClick(e.target.id)}),
-        inpLogo = $c('input', {id: 'inpLogo', type: 'number', value: GM_getValue('logoImageNum')}),
-        dnLogo = $c('button', {id: 'dnLogo', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => logoClick(e.target.id)});
+        inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger()}),
+        btnDown = $c('button', {id: 'downThemer', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
+        btnLogo = $c('button', {id: 'buttonLogo', innerHTML: 'Logo Changer', style: 'background-image: url('+ upArrow +') !important;', title: 'Logo Changer', onclick: e => logoClick(e.target.id)}),
+        inpLogo = $c('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum')}),
+        dnLogo = $c('button', {id: 'downLogo', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => logoClick(e.target.id)});
 
   const logos = [null, logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8, logo9, logo10, logo11, logo12];
 
@@ -148,8 +146,9 @@
   }
 
   function removeDupes(className) {
-    let dupe = document.getElementsByClassName(className);
-    if(dupe.length > 1) for(let i = 1; i < dupe.length; i++) dupe[i].parentNode.removeChild(dupe[i]);
+    document.querySelectorAll('.' + className).forEach((el, i) => {
+      if (i > 0) el.remove();
+    });
   }
 
   function init() {
@@ -170,20 +169,18 @@
     dateTime.title = addRemoveText;
     dateTimeContainer.appendChild(imageCalendar);
     dateTimeContainer.appendChild(dateTime);
-    divThemer.appendChild(btnThemer);
-    divThemer.appendChild(inpThemer);
-    divThemer.appendChild(btnDown);
-    divLogo.appendChild(labelLogo);
-    divLogo.appendChild(upLogo);
-    divLogo.appendChild(inpLogo);
-    divLogo.appendChild(dnLogo);
+    changerContainer.appendChild(btnThemer);
+    changerContainer.appendChild(inpThemer);
+    changerContainer.appendChild(btnDown);
+    changerContainer.appendChild(btnLogo);
+    changerContainer.appendChild(inpLogo);
+    changerContainer.appendChild(dnLogo);
     header.insertBefore(dateTimeContainer, header.firstChild);
-    insertAfter(divThemer, dateTimeContainer); // adjusted order
-    insertAfter(divLogo, divThemer);
+    insertAfter(changerContainer, dateTimeContainer);
     placeHolder.placeholder = placeHolderText;
     inpThemer.value = GM_getValue('wallpaperImage');
     applyLogo(num);
-    const input = $q('#inpLogo');
+    const input = document.getElementById('inputLogo');
     if (input) {
       input.addEventListener('input', handleLogoInput);
       input.addEventListener('keypress', function(e) {
@@ -197,49 +194,35 @@
 
   function dateTimeFormat(int) {
     if (!GM_getValue('defaultDateTimeView')) return;
-    let date = new Date(),
-        dt = date.getDate(),
-        dy = date.getDay(),
-        hr = date.getHours(),
-        min = date.getMinutes(),
-        sec = date.getSeconds(),
-        mth = date.getMonth(),
-        yr = date.getFullYear(),
-        d = daynum[dt],
-        dd = dayno[dt],
-        ddd = dayord[dt],
-        m = monthnum[mth],
-        mm = monthno[mth],
-        mmm = monthnameabbr[mth],
-        mmmm = monthname[mth],
-        w = daynameabbr[dy],
-        ww = dayname[dy],
-        yy = yr - 2000,
-        yyyy = yr,
-        hr12, hr24, ampm,
-        span = $c('img', {src: imgClock16});
-    if (hr > 12) { hr12 = hr - 12; hr24 = hr }
-    else { hr12 = hr; hr24 = hr }
-    if (hr < 10) { hr12 = hr; hr24 = '0' + hr }
-    if (hr === 0) { hr12 = 12; hr24 = '00' }
-    min < 10 ? min = ':0' + min : min = ':' + min;
-    if (GM_getValue('defaultSecondsView')) sec < 10 ? sec = ':0' + sec : sec = ':' + sec;
-    else sec = '';
-    if (GM_getValue('defaultAMPM')) hr < 12 ? ampm = am : ampm = pm;
-    else ampm = '';
-    switch (int) {
-      // RETURN OPTIONS: (w / ww) + (m / mm / mmm / mmmm) + (d / dd / ddd) +  (yy / yyyy) + (hr12 / hr24) + (min) + (sec) + (ampm) special characters: arrow, asterisk, bullet, clock, colon, colons, comma, hyphen, slash, space, watch
-      case 1: return ww + space + arrow + space + mmmm + space + ddd + comma + space + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sunday ?? March 1st, 2021 ?? 12:34 AM
-      case 2: return w + space + bullet + space + mmm + space + d + comma + space + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • Mar. 1, 2021 • 12:34 AM
-      case 3: return w + space + arrow + space + mmm + space + dd + comma + space + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • Mar. 01, 2021 • 12:34 AM
-      case 4: return w + space + bullet + space + m + hyphen + d + hyphen + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3-1-2021 • 12:34 AM
-      case 5: return w + space + bullet + space + mm + hyphen + dd + hyphen + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03-01-2021 • 12:34 AM
-      case 6: return w + space + bullet + space + m + slash + d + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 3/1/2021 • 12:34 AM
-      case 7: return w + space + bullet + space + mm + slash + dd + slash + yyyy + space + clock + space + hr12 + min + sec + space + ampm; // Sun. • 03/01/2021 • 12:34 AM
-      // Delete "customFormatText + 148" or "customFormatText + 149" text below and add RETURN OPTIONS with desired format and special characters.
-      case 8: return customFormatText + 240;
-      case 9: return customFormatText + 241;
-  } }
+    if (!Number.isInteger(int) || int < 1 || int > 4) {
+	     throw new RangeError('int must be an integer between 1 and 4');
+	   }
+    const date = new Date();
+    const locale = navigator.language;
+    const getPart = (options) => new Intl.DateTimeFormat(locale, options).format(date);
+    const parts = new Intl.DateTimeFormat(locale, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).formatToParts(date);
+    const map = Object.fromEntries(parts.map(p => [p.type, p.value]));
+    const day = parseInt(map.day);
+    const dayPadded = map.day.padStart(2, '0');
+    const year = map.year;
+    const suffix = ['th', 'st', 'nd', 'rd'][(day % 10 > 3 || Math.floor(day / 10) === 1 ? 0 : day % 10)] || 'th';
+    const ordinal = day + suffix;
+    let hr = date.getHours();
+    let min = date.getMinutes();
+    let sec = date.getSeconds();
+    const hr12 = hr % 12 || 12;
+    const minStr = min < 10 ? ':0' + min : ':' + min;
+    const secStr = GM_getValue('defaultSecondsView', false) ? (sec < 10 ? ':0' + sec : ':' + sec) : '';
+    const ampm = GM_getValue('defaultAMPM', false) ? (hr >= 12 ? pm : am) : '';
+    const formats = [
+      null,
+      () => `${map.weekday} ⇒ ${map.month} ${ordinal}, ${year} ${clock} ${hr12}${minStr}${secStr} ${ampm}`, // 1: Monday ⇒ January 1st, 2026
+      () => `${getPart({weekday: 'short'})} * ${getPart({month: 'short'})} ${day}, ${year} ${clock} ${hr12}${minStr}${secStr} ${ampm}`, // 2: Mon * Jan 1, 2026
+      () => `${map.weekday} • ${getPart({month: 'numeric'})}/${dayPadded}/${year} ${clock} ${hr12}${minStr}${secStr} ${ampm}`, // 3: Monday • 1/01/2026
+      () => `${getPart({weekday: 'short'})} :: ${getPart({month: '2-digit'})}-${dayPadded}-${year} ${clock} ${hr12}${minStr}${secStr} ${ampm}` // 4: Mon :: 01-01-2026
+    ];
+    return formats[int]();
+  }
 
   function dateTimeDefault() {
     dateTime.hidden = false;
@@ -272,33 +255,29 @@
   } }
 
   function dateTimeToggleSecondsAmPm(e) {
-    if (!e.button === 0) return;
-    let bool1, bool2, int, target;
+    if (e.button !== 0) return;
     e.preventDefault();
-    if (!e.shiftKey && !e.ctrlKey && !e.altKey && e.button === 0) {
-      bool1 = GM_getValue('defaultSecondsView') !== true ? true : false;
-      GM_setValue('defaultSecondsView', bool1);
+    if (!e.shiftKey && !e.ctrlKey) {
+      GM_setValue('defaultSecondsView', !GM_getValue('defaultSecondsView', false));
       dateTimeTimer();
-    } else if (e.shiftKey && !e.ctrlKey && !e.altKey && e.button === 0) {
-      bool2 = GM_getValue('defaultAMPM') !== true ? true : false;
-      GM_setValue('defaultAMPM', bool2);
-    } else if (!e.shiftKey && e.ctrlKey && !e.altKey && e.button === 0) {
-      int = GM_getValue('dateFormat') + 1;
-      int < dateTimeFormatCount + 1 ? GM_setValue('dateFormat', int) : GM_setValue('dateFormat', 1);
+    } else if (e.shiftKey) {
+      GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', false));
+    } else if (e.ctrlKey) {
+      let f = GM_getValue('dateFormat', 1);
+      GM_setValue('dateFormat', f >= dateTimeFormatCount ? 1 : f + 1);
     }
-    dateTime.title = addRemoveText;
-    dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
+    document.getElementById('dateTime').textContent = dateTimeFormat(GM_getValue('dateFormat', 1));
   }
 
   function applyLogo(num) {
-    const input = $q('#inpLogo');
+    const input = document.getElementById('inputLogo');
     if (num === 13) {
       GM_addStyle(`
         #gWP1 #LS8OJ { display: block !important; }
         #gWP1 form { margin-top: -86px !important; }
         #gWP1 #logoGoogle, #gWP1 .logo { display: none !important; }
       `);
-      if (input) input.value = 13;
+      if (input) input.value = 0;
       return;
     }
     GM_addStyle(`
@@ -316,9 +295,9 @@
   function logoClick(id) {
     let current = GM_getValue('logoImageNum', 1);
     let next;
-    if (id === 'upLogo') {
+    if (id === 'buttonLogo') {
       next = (current % 13) + 1;
-    } else if (id === 'dnLogo') {
+    } else if (id === 'downLogo') {
       next = ((current - 2) % 13 + 13) % 13 + 1;
     } else {
       return;
@@ -354,7 +333,7 @@
 
   function onResize() {
     try {
-      let getLogo = $q('#logoGoogle'),
+      let getLogo = document.getElementById('logoGoogle'),
           setLeft = (window.innerWidth / 2) - (getLogo.width / 2) + 'px';
       getLogo.style = 'left: ' + setLeft;
     } catch(ex) {}
@@ -365,23 +344,21 @@
     for (let i = 0; i < links.length; i++) links[i].setAttribute('target', GM_getValue('linkTarget'));
   }
 
-  function wallpaper(e) {
-    if (e === 0) {
-      GM_addStyle(''+
-        'body#gWP1 {'+
-        '  background: initial !important;'+
-        '}'+
-      '');
+  function wallpaper(num) {
+    num = parseInt(num) || 0;
+    if (num === 0) {
+        GM_addStyle(`body#gWP1 { background: initial !important; }`);
     } else {
-      GM_addStyle(''+
-        'body#gWP1 {'+
-         '  background:  url('+ githubSite + e + '.jpg) no-repeat center / cover !important;'+
-        '}'+
-      '');
+      GM_addStyle(`
+        body#gWP1 {
+          background: url(${githubSite}${num}.jpg) no-repeat center center / cover !important;
+          background-attachment: fixed !important;
+        }
+      `);
   } }
 
   function wallpaperButtonChanger(e) {
-    let inp = $q('#inputThemer'),
+    let inp = document.getElementById('inputThemer'),
         num1 = parseInt(inp.value),
         sum = parseInt(num1 + 1),
         sub = parseInt(num1 - 1);
@@ -390,7 +367,7 @@
         if (inp.value > 51) inp.value = 0;
         else inp.value = sum;
         break;
-      case 'buttonDown':
+      case 'downThemer':
         if (inp.value > 0) inp.value = sub;
         else inp.value = 52;
     }
@@ -398,8 +375,8 @@
     wallpaper(inp.value);
   }
 
-  function wallpaperInputChanger(e) {
-    let inp = $q('#inputThemer');
+  function wallpaperInputChanger() {
+    let inp = document.getElementById('inputThemer');
     inp.value = inp.value % 52;
     GM_setValue('wallpaperImage', inp.value);
     wallpaper(inp.value);
@@ -410,28 +387,25 @@
     wallpaper(num);
   }
 
-  if (!GM_getValue('dateFormat')) GM_setValue('dateFormat', 1);
-  if (!GM_getValue('defaultAMPM')) GM_setValue('defaultAMPM', false);
-  if (!GM_getValue('defaultDateTimeView')) GM_setValue('defaultDateTimeView', false);
-  if (!GM_getValue('defaultSecondsView')) GM_setValue('defaultSecondsView', false);
-  if (!GM_getValue('linkTarget')) GM_setValue('linkTarget', '_blank');
-  if (!GM_getValue('logoImageNum')) GM_setValue('logoImageNum', 1);
-  if (!GM_getValue('wallpaperImage')) GM_setValue('wallpaperImage', 0);
+  function start() {
+    if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
+    if (GM_getValue('defaultAMPM') === undefined) GM_setValue('defaultAMPM', false);
+    if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', false);
+    if (GM_getValue('defaultSecondsView') === undefined) GM_setValue('defaultSecondsView', false);
+    if (GM_getValue('linkTarget') === undefined) GM_setValue('linkTarget', '_blank');
+    if (GM_getValue('logoImageNum') === undefined) GM_setValue('logoImageNum', 1);
+    if (GM_getValue('wallpaperImage') === undefined) GM_setValue('wallpaperImage', 0);
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+  } }
 
   window.addEventListener('load', () => init());
   window.addEventListener('resize', () => onResize());
   window.addEventListener('unload', () => onClose());
 
-  if (!initInterval) {
-    initInterval = setInterval(() => {
-      if (dateTimeContainer && divThemer) {
-        clearInterval(initInterval);
-        initInterval = null;
-      } else {
-        init();
-      }
-    }, openInterval);
-  }
+  start();
 
   GM_addStyle(`
     #gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
@@ -440,7 +414,8 @@
     #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.AghGtd,
     #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.ssOUyb,
     #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > a,
-    #gWP1 > div.L3eUgb div.RNNXgb div.fzj3ad {
+    #gWP1 > div.L3eUgb div.RNNXgb div.fzj3ad,
+    #gWP1 > div.L3eUgb > div.o3j99.qarstb > div:nth-child(3) {
       display: none !important;
     }
     #gWP1 #imageCalendar {
@@ -464,7 +439,7 @@
       box-shadow: none !important;
       color: #FFF !important;
       cursor: pointer !important;
-      margin-left: 3px !important;
+      margin: 0px 0px 0px 3px !important;
       padding: 0px 6px !important;
     }
     #gWP1 #imageCalendar:hover + #dateTime {
@@ -482,101 +457,64 @@
       position: absolute !important;
       top: 0px !important;
     }
-    #gWP1 #buttonLogo {
-      cursor: pointer !important;
-      height: 28px !important;
-      margin: 10px !important;
-      opacity: .7 !important;
-      width: 28px !important;
-    }
-    #gWP1 #buttonLogo:hover {
-      opacity: 1 !important;
-    }
     #gWP1 form {
       margin-top: 210px !important;
     }
-    #gWP1 #themerDiv {
-      height: 32px !important;
-      margin-top: 10px !important;
+    #gWP1 #changerContainer {
+      height: 36px !important;
+      margin-top: 3px !important;
     }
-    #gWP1 #themerDiv * {
-      background: transparent !important;
-      border: none !important;
-      color: #FFF !important;
+    #gWP1 #buttonThemer,
+    #gWP1 #buttonLogo {
+      background-position: bottom 6px right !important;
+      background-repeat: no-repeat !important;
+      cursor: pointer !important;
       font: 20px monospace !important;
+      margin-right: 13px !important;
       opacity: .7 !important;
       text-shadow: 1px 1px 2px #000 !important;
     }
     #gWP1 #buttonThemer {
-      background-position: bottom 6px right !important;
-      background-repeat: no-repeat !important;
       width: 224px !important;
     }
-    #gWP1 #inputThemer {
-      text-align: center !important;
-      width: 34px !important;
+    #gWP1 #buttonLogo {
+      width: 190px !important;
     }
-    #gWP1 #buttonDown {
-      background-position: center !important;
-      background-repeat: no-repeat !important;
-      cursor: pointer !important;
-      height: 15px !important;
-      margin-left: 0px !important;
-      margin-right: 14px !important;
-      position: relative !important;
-      top: 2px !important;
-      width: 21px !important;
-    }
-    #gWP1 #buttonThemer:hover,
-    #gWP1 #buttonDown:hover {
-      opacity: 1 !important;
-      cursor: pointer !important;
-    }
-    #gWP1 #inputThemer:hover,
-    #gWP1 #inputThemer:focus-within {
-      opacity: 1 !important;
-    }
-    #gWP1 #divLogo {
-      height: 32px !important;
-      margin: 8px 0px 0px 10px !important;
-    }
-    #gWP1 #labelLogo {
-      font: 20px monospace !important;
-      opacity: .8 !important;
-    }
-    #gWP1 #upLogo {
-      margin: 0px 10px !important;
-    }
-    #gWP1 #upLogo,
-    #gWP1 #dnLogo {
-      height: 15px !important;
-      opacity: .6 !important;
-      width: 21px !important;
-    }
-    #gWP1 #inpLogo {
+    #gWP1 #inputThemer,
+    #gWP1 #inputLogo {
       background: #000 !important;
-      border: 1px solid #FFF !important;
+      border: 2px outset #FFF !important;
+      cursor: pointer !important;
+      font: 20px monospace !important;
       height: 22px !important;
       padding-top: 4px !important;
       position: relative !important;
       text-align: center !important;
       top: -1px !important;
-      width: 24px !important;
+      width: 27px !important;
+    }
+    #gWP1 #downThemer,
+    #gWP1 #downLogo {
+      background-repeat: no-repeat !important;
+      cursor: pointer !important;
+      height: 32px !important;
+      margin: 0px !important;
+      opacity: .6 !important;
+      position: relative !important;
+      top: 7px !important;
+      width: 47px !important;
+    }
+    #gWP1 #changerContainer > button:hover,
+    #gWP1 #changerContainer > button:focus-within,
+    #gWP1 #changerContainer > input:hover,
+    #gWP1 #changerContainer > input:focus-within {
+      opacity: 1 !important;
     }
     #gWP1 ::-webkit-inner-spin-button,
     #gWP1 ::-webkit-outer-spin-button,
     #gWP1 ::-webkit-inner-spin-button,
     #gWP1 ::-webkit-outer-spin-button {
       display: none !important;
-    }
-    #gWP1 #dnLogo {
-      margin: 0px 10px !important;
-      position: relative !important;
-      top: 2px !important;
-    }
-    #gWP1 #upLogo:hover,
-    #gWP1 #dnLogo:hover {
-      opacity: 1 !important;
     }
     #gb > div.gb_Q.gb_6.gb_Vf.gb_3f {
       padding-right: 0px !important;
