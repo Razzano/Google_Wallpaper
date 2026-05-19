@@ -23,25 +23,15 @@
         dateTimeFormatCount: 4
   };
 
-  const symbols = {
-        arrow: '⇒',
-        bullet: '•',
-        clock1: '⏰',
-        clock2: '🕑',
-        heart: '❤️',
-        am: 'AM',
-        pm: 'PM',
-        watch: '⌚'
-  };
-
   const texts = {
         addRemoveText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`,
         changeWallpaperTooltip: 'Left-click to change wallpaper',
         wallpaperImageText: 'Wallpaper Image',
+        logoChangerText: 'Logo Changer',
         hideShowText: `• Left-click to Hide/Show Date/Time\n• Shift + Left-click for link targets of _blank\n• Ctrl + Left-click for link targets of _self`,
         switchLogo: 'Left-click to change logos',
-        inputThemerTooltip: '0 - 52',
-        inputLogoTooltip: '0 - 12',
+        inputThemerTooltip: '0 - 52 (0 = Default background)',
+        inputLogoTooltip: '0 - 12 (0 = Default logo)',
         placeHolderText: 'Search Look-up'
   };
 
@@ -84,7 +74,7 @@
         buttonThemer = $c('button', {id: 'buttonThemer', innerHTML: texts.wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: texts.changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
         inputThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: texts.inputThemerTooltip, oninput: e => wallpaperInputChanger()}),
         downThemer = $c('button', {id: 'downThemer', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
-        buttonLogo = $c('button', {id: 'buttonLogo', innerHTML: 'Logo Changer', style: 'background-image: url('+ upArrow +') !important;', title: texts.switchLogo, onclick: e => logoClick(e.target.id)}),
+        buttonLogo = $c('button', {id: 'buttonLogo', innerHTML: texts.logoChangerText, style: 'background-image: url('+ upArrow +') !important;', title: texts.switchLogo, onclick: e => logoClick(e.target.id)}),
         inputLogo = $c('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum'), title: texts.inputLogoTooltip, }),
         downLogo = $c('button', {id: 'downLogo', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => logoClick(e.target.id)});
 
