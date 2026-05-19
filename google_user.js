@@ -15,89 +15,57 @@
 
   'use strict';
 
-  const openInterval = 200,
-        themerInterval = 30000,
-        timerLong = 10000,
-        timerShort = 1000,
-        dateTimeFormatCount = 4,
-        am = 'AM',
-        pm = 'PM',
-        arrow = '⇒',
-        asterisk = '*',
-        bullet = '•',
-        clock = '⏰',
-        colon = ':',
-        colons = '::',
-        comma = ',',
-        heart = '❤️',
-        hyphen = '-',
-        slash = '/',
-        space = ' ',
-        watch = '⌚',
-        addRemoveText = bullet + ' Left-click to Add/Remove :seconds\n' + bullet + ' Shift + Left-click to Add/Remove AM/PM\n' + bullet + ' Ctrl + Left-click to change Date format 1 - 9',
-        changeWallpaperTooltip = 'Left-click to change wallpaper',
-        wallpaperImageText = 'Wallpaper Image',
-        customFormatText = 'Add a custom format in script line ',
-        hideShowText = bullet + ' Left-click to Hide/Show Date/Time\n' + bullet + ' Shift + Left-click for link targets of "_blank"\n' + bullet + ' Ctrl + Left-click for link targets of "_self"',
-        switchLogo = 'Switch Logo Images',
-        inputTooltip = '0 - 52',
-        placeHolderText = 'Search Look-up',
-        githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
-        aURL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/',
-        downArrow = aURL + 'downArrow7.png',
-        upArrow = aURL + 'upArrow5.png',
-        image1 = aURL + 'logoGoogle.png',
-        image2 = aURL + 'imageGoogle.png',
-        image3 = aURL + 'World.png',
-        image4 = aURL + 'search8.png',
-        image5 = aURL + 'googleLogo11.png',
-        image6 = aURL + 'googleLogo12.png',
-        image7 = aURL + 'lightbulb.png',
-        image8 = aURL + 'manSearching3.png',
-        image9 = aURL + 'googleLogo15.png',
-        image10 = aURL + 'googleLogo17.png',
-        image11 = aURL + 'flag.png',
-        image12 = aURL + 'face.png',
-        imgCalendar = aURL + 'imageCalendar.png',
-        imgClock16 = aURL + 'imageClock16.png',
-        imgClock32 = aURL + 'imageClock32.png',
-        gear24 = aURL + 'gear.png',
-        gear32 = aURL + 'gear32.png',
-        google32 = aURL + 'google32.png',
-        logoOff32 = aURL + 'logoOff32.png',
-        logoOn32 = aURL + 'logoOn32.png',
-        off32 = aURL + 'off32.png',
-        on32 = aURL + 'on32.png',
-        off40 = aURL + 'off40.png',
-        on40 = aURL + 'on40.png',
-        smiley24 = aURL + 'smiley24.png',
-        smiley32 = aURL + 'smiley32.png',
-        star24 = aURL + 'star24.png',
-        star24w = aURL + 'star24w.png',
-        star32 = aURL + 'star32.png',
-        star46 = aURL + 'star46.png',
-        DayNameAbbr = 'Sun.,Mon.,Tue.,Wed.,Thu.,Fri.,Sat.',
-        daynameabbr = DayNameAbbr.split(','),
-        DayName = 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
-        dayname = DayName.split(','),
-        DayNo = '"",01,02,03,04,05,06,07,08,09,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31',
-        dayno = DayNo.split(','),
-        DayNum = '"",1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31',
-        daynum = DayNum.split(','),
-        DayOrd = '"",1st,2nd,3rd,4th,5th,6th,7th,8th,9th,10th,11th,12th,13th,14th,15th,16th,17th,18th,19th,20th,21st,22nd,23rd,24th,25th,26th,27th,28th,29th,30th,31st',
-        dayord = DayOrd.split(','),
-        MonthName = 'January,February,March,April,May,June,July,August,September,October,November,December',
-        monthname = MonthName.split(','),
-        MonthNameAbbr = 'Jan.,Feb.,Mar.,Apr.,May,Jun.,Jul.,Aug.,Sep.,Oct.,Nov.,Dec.',
-        monthnameabbr = MonthNameAbbr.split(','),
-        MonthNo = '01,02,03,04,05,06,07,08,09,10,11,12',
-        monthno = MonthNo.split(','),
-        MonthNum = '1,2,3,4,5,6,7,8,9,10,11,12',
-        monthnum = MonthNum.split(','),
-        body = $q('html[itemtype="http://schema.org/WebPage"] > body'),
+  const CONFIG = {
+        githubSite: 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
+        aURL: 'https://raw.githubusercontent.com/Razzano/My_Images/master/',
+        timerLong: 10000,
+        timerShort: 1000,
+        dateTimeFormatCount: 4
+  };
+
+  const symbols = {
+        arrow: '⇒',
+        bullet: '•',
+        clock1: '⏰',
+        clock2: '🕑',
+        heart: '❤️',
+        am: 'AM',
+        pm: 'PM',
+        watch: '⌚'
+  };
+
+  const texts = {
+        addRemoveText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`,
+        changeWallpaperTooltip: 'Left-click to change wallpaper',
+        wallpaperImageText: 'Wallpaper Image',
+        hideShowText: `• Left-click to Hide/Show Date/Time\n• Shift + Left-click for link targets of _blank\n• Ctrl + Left-click for link targets of _self`,
+        switchLogo: 'Left-click to change logos',
+        inputThemerTooltip: '0 - 52',
+        inputLogoTooltip: '0 - 12',
+        placeHolderText: 'Search Look-up'
+  };
+
+  const aURL = CONFIG.aURL;
+  const image1 = aURL + 'logoGoogle.png';
+  const image2 = aURL + 'imageGoogle.png';
+  const image3 = aURL + 'World.png';
+  const image4 = aURL + 'search8.png';
+  const image5 = aURL + 'googleLogo11.png';
+  const image6 = aURL + 'googleLogo12.png';
+  const image7 = aURL + 'lightbulb.png';
+  const image8 = aURL + 'manSearching3.png';
+  const image9 = aURL + 'googleLogo15.png';
+  const image10 = aURL + 'googleLogo17.png';
+  const image11 = aURL + 'flag.png';
+  const image12 = aURL + 'face.png';
+  const downArrow = aURL + 'downArrow7.png';
+  const upArrow = aURL + 'upArrow5.png';
+  const imgCalendar = aURL + 'imageCalendar.png';
+
+  const body = $q('html[itemtype="http://schema.org/WebPage"] > body'),
         header = $q('html[itemtype="http://schema.org/WebPage"] #gb'),
         placeHolder = $q('html[itemtype="http://schema.org/WebPage"] #APjFqb'),
-        imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: hideShowText, onmousedown: e => dateTimeToggle(e)}),
+        imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: texts.hideShowText, onmousedown: e => dateTimeToggle(e)}),
         dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
         dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
         logo1 = $c('img', {id: 'logoGoogle', class: 'logo', src: image1}), // Google Text Image Small
@@ -113,12 +81,12 @@
         logo11 = $c('img', {id: 'logoGoogle', class: 'logo', src: image11}), // Flag Image
         logo12 = $c('img', {id: 'logoGoogle', class: 'logo', src: image12}), // Look Image
         changerContainer = $c('div', {id: 'changerContainer'}),
-        btnThemer = $c('button', {id: 'buttonThemer', innerHTML: wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
-        inpThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: inputTooltip, oninput: e => wallpaperInputChanger()}),
-        btnDown = $c('button', {id: 'downThemer', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
-        btnLogo = $c('button', {id: 'buttonLogo', innerHTML: 'Logo Changer', style: 'background-image: url('+ upArrow +') !important;', title: 'Logo Changer', onclick: e => logoClick(e.target.id)}),
-        inpLogo = $c('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum')}),
-        dnLogo = $c('button', {id: 'downLogo', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => logoClick(e.target.id)});
+        buttonThemer = $c('button', {id: 'buttonThemer', innerHTML: texts.wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: texts.changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
+        inputThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: texts.inputThemerTooltip, oninput: e => wallpaperInputChanger()}),
+        downThemer = $c('button', {id: 'downThemer', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
+        buttonLogo = $c('button', {id: 'buttonLogo', innerHTML: 'Logo Changer', style: 'background-image: url('+ upArrow +') !important;', title: texts.switchLogo, onclick: e => logoClick(e.target.id)}),
+        inputLogo = $c('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum'), title: texts.inputLogoTooltip, }),
+        downLogo = $c('button', {id: 'downLogo', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => logoClick(e.target.id)});
 
   const logos = [null, logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8, logo9, logo10, logo11, logo12];
 
@@ -155,6 +123,9 @@
     window.removeEventListener('load', () => init());
     if (!body) return;
     body.id = 'gWP1';
+    if (GM_getValue('dateFormat') < 1 || GM_getValue('dateFormat') > 4) {
+      GM_setValue('dateFormat', 1);
+    }
     if (GM_getValue('defaultDateTimeView')) {
       dateTimeDefault();
     } else {
@@ -166,19 +137,19 @@
       num = 1;
       GM_setValue('logoImageNum', 1);
     }
-    dateTime.title = addRemoveText;
+    dateTime.title = texts.addRemoveText;
     dateTimeContainer.appendChild(imageCalendar);
     dateTimeContainer.appendChild(dateTime);
-    changerContainer.appendChild(btnThemer);
-    changerContainer.appendChild(inpThemer);
-    changerContainer.appendChild(btnDown);
-    changerContainer.appendChild(btnLogo);
-    changerContainer.appendChild(inpLogo);
-    changerContainer.appendChild(dnLogo);
+    changerContainer.appendChild(buttonThemer);
+    changerContainer.appendChild(inputThemer);
+    changerContainer.appendChild(downThemer);
+    changerContainer.appendChild(buttonLogo);
+    changerContainer.appendChild(inputLogo);
+    changerContainer.appendChild(downLogo);
     header.insertBefore(dateTimeContainer, header.firstChild);
     insertAfter(changerContainer, dateTimeContainer);
-    placeHolder.placeholder = placeHolderText;
-    inpThemer.value = GM_getValue('wallpaperImage');
+    placeHolder.placeholder = texts.placeHolderText;
+    inputThemer.value = GM_getValue('wallpaperImage');
     applyLogo(num);
     const input = document.getElementById('inputLogo');
     if (input) {
@@ -213,13 +184,13 @@
     const hr12 = hr % 12 || 12;
     const minStr = min < 10 ? ':0' + min : ':' + min;
     const secStr = GM_getValue('defaultSecondsView', false) ? (sec < 10 ? ':0' + sec : ':' + sec) : '';
-    const ampm = GM_getValue('defaultAMPM', false) ? (hr >= 12 ? pm : am) : '';
+    const ampm = GM_getValue('defaultAMPM', false) ? (hr >= 12 ? 'PM' : 'AM') : '';
     const formats = [
       null,
-      () => `${map.weekday} ⇒ ${map.month} ${ordinal}, ${year} ${clock} ${hr12}${minStr}${secStr} ${ampm}`, // 1: Monday ⇒ January 1st, 2026
-      () => `${getPart({weekday: 'short'})} * ${getPart({month: 'short'})} ${day}, ${year} ${clock} ${hr12}${minStr}${secStr} ${ampm}`, // 2: Mon * Jan 1, 2026
-      () => `${map.weekday} • ${getPart({month: 'numeric'})}/${dayPadded}/${year} ${clock} ${hr12}${minStr}${secStr} ${ampm}`, // 3: Monday • 1/01/2026
-      () => `${getPart({weekday: 'short'})} :: ${getPart({month: '2-digit'})}-${dayPadded}-${year} ${clock} ${hr12}${minStr}${secStr} ${ampm}` // 4: Mon :: 01-01-2026
+      () => `${map.weekday} ⇒ ${map.month} ${ordinal}, ${year} ⏰ ${hr12}${minStr}${secStr} ${ampm}`, // 1: Monday ⇒ January 1st, 2026
+      () => `${getPart({weekday: 'short'})} * ${getPart({month: 'short'})} ${day}, ${year} 🕑 ${hr12}${minStr}${secStr} ${ampm}`, // 2: Mon * Jan 1, 2026
+      () => `${map.weekday} • ${getPart({month: 'numeric'})}/${dayPadded}/${year} ⏰ ${hr12}${minStr}${secStr} ${ampm}`, // 3: Monday • 1/01/2026
+      () => `${getPart({weekday: 'short'})} :: ${getPart({month: '2-digit'})}-${dayPadded}-${year} 🕑 ${hr12}${minStr}${secStr} ${ampm}` // 4: Mon :: 01-01-2026
     ];
     return formats[int]();
   }
@@ -227,15 +198,15 @@
   function dateTimeDefault() {
     dateTime.hidden = false;
     dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
-    dateTime.title = addRemoveText;
+    dateTime.title = texts.addRemoveText;
     dateTimeTimer();
   }
 
   function dateTimeTimer() {
     clearInterval(clockInterval);
     if (!GM_getValue('defaultDateTimeView')) return;
-    if (GM_getValue('defaultSecondsView')) clockInterval = setInterval(function() {dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'))}, timerShort);
-    else clockInterval = setInterval(function() {dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'))}, timerLong);
+    if (GM_getValue('defaultSecondsView')) clockInterval = setInterval(function() {dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'))}, CONFIG.timerShort);
+    else clockInterval = setInterval(function() {dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'))}, CONFIG.timerLong);
   }
 
   function dateTimeToggle(e) {
@@ -264,7 +235,7 @@
       GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', false));
     } else if (e.ctrlKey) {
       let f = GM_getValue('dateFormat', 1);
-      GM_setValue('dateFormat', f >= dateTimeFormatCount ? 1 : f + 1);
+      GM_setValue('dateFormat', f >= CONFIG.dateTimeFormatCount ? 1 : f + 1);
     }
     document.getElementById('dateTime').textContent = dateTimeFormat(GM_getValue('dateFormat', 1));
   }
@@ -351,7 +322,7 @@
     } else {
       GM_addStyle(`
         body#gWP1 {
-          background: url(${githubSite}${num}.jpg) no-repeat center center / cover !important;
+          background: url(${CONFIG.githubSite}${num}.jpg) no-repeat center center / cover !important;
           background-attachment: fixed !important;
         }
       `);
@@ -461,8 +432,10 @@
       margin-top: 210px !important;
     }
     #gWP1 #changerContainer {
-      height: 36px !important;
-      margin-top: 3px !important;
+      height: 52px !important;
+      margin: 0px !important;
+      position: relative !important;
+      top: -3px !important;
     }
     #gWP1 #buttonThemer,
     #gWP1 #buttonLogo {
