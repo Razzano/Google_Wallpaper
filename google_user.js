@@ -24,11 +24,15 @@
   };
 
   const texts = {
-        addRemoveText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`,
+        addRemoveText: `• Left-click: toggle seconds\n` +
+                       `• Shift+Left: toggle AM/PM\n` +
+                       `• Ctrl+Left: cycle date format (1-4)`,
         changeWallpaperTooltip: 'Left-click to change wallpaper',
         wallpaperImageText: 'Wallpaper Image',
         logoChangerText: 'Logo Changer',
-        hideShowText: `• Left-click to Hide/Show Date/Time\n• Shift + Left-click for link targets of _blank\n• Ctrl + Left-click for link targets of _self`,
+        hideShowText: `• Left-click to Hide/Show Date/Time\n` +
+                      `• Shift + Left-click for link targets of _blank\n` +
+                      `• Ctrl + Left-click for link targets of _self`,
         switchLogo: 'Left-click to change logos',
         inputThemerTooltip: '0 - 52 (0 = Default background)',
         inputLogoTooltip: '0 - 12 (0 = Default logo)',
