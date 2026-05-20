@@ -98,7 +98,6 @@
         margin-top: ${num === 13 ? '-86px' : '210px'} !important;
       }
     `);
-
     if (num !== 13 && logos[num]) {
       const logoCopy = logos[num].cloneNode(false);
       logoCopy.id = 'logoGoogle';
@@ -122,7 +121,9 @@
       });
     }
     const inp = document.getElementById('inputLogo');
-    if (inp) inp.value = num;
+    if (inp) {
+      inp.value = (num === 13) ? 0 : num;
+    }
     GM_setValue('logoImageNum', num);
   }
 
