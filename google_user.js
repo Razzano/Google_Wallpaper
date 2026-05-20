@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Google w/Wallpaper + Date/Time + Logo Switcher
 // @namespace    srazzano
-// @version      2.4.4
-// @description  Modernized Google with centered logo, wallpaper, date/time
+// @version      2.4.5
+// @description  Modernized Google with centered logo (no flash), wallpaper & date/time
 // @author       Sonny Razzano
 // @match        https://www.google.com/*
 // @match        https://google.com/*
@@ -14,46 +14,44 @@
 // ==/UserScript==
 
 (function () {
-
   'use strict';
 
   const CONFIG = {
-        aURL: 'https://raw.githubusercontent.com/Razzano/My_Images/master/',
-        dateTimeFormatCount: 4,
-        githubSite: 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
-        timerLong: 10000,
-        timerShort: 1000
+    aURL: 'https://raw.githubusercontent.com/Razzano/My_Images/master/',
+    dateTimeFormatCount: 4,
+    githubSite: 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
+    timerLong: 10000,
+    timerShort: 1000
   };
 
   const texts = {
-        changeWallpaperTooltip: 'Left-click to change wallpaper',
-        hideShowText: `• Left-click to Hide/Show Date/Time\n• Shift + Left-click for link targets of '_blank'\n• Ctrl + Left-click for link targets of '_self'`,
-        inputLogoTooltip: '1 - 12 (13 = Default Google logo)',
-        inputThemerTooltip: '0 - 52 (0 = Default background)',
-        logoChangerText: 'Logo Changer',
-        placeHolderText: 'Search Look-up',
-        switchLogo: 'Left-click to change logos',
-        toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`,
-        wallpaperImageText: 'Wallpaper Image'
+    changeWallpaperTooltip: 'Left-click to change wallpaper',
+    hideShowText: `• Left-click to Hide/Show Date/Time\n• Shift + Left-click for link targets of '_blank'\n• Ctrl + Left-click for link targets of '_self'`,
+    inputLogoTooltip: '1 - 12 (13 = Default Google logo)',
+    inputThemerTooltip: '0 - 52 (0 = Default background)',
+    logoChangerText: 'Logo Changer',
+    placeHolderText: 'Search Look-up',
+    switchLogo: 'Left-click to change logos',
+    toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`,
+    wallpaperImageText: 'Wallpaper Image'
   };
 
   const images = {
-        logo1:  CONFIG.aURL + 'logoGoogle.png',
-        logo2:  CONFIG.aURL + 'imageGoogle.png',
-        logo3:  CONFIG.aURL + 'World.png',
-        logo4:  CONFIG.aURL + 'search8.png',
-        logo5:  CONFIG.aURL + 'googleLogo11.png',
-        logo6:  CONFIG.aURL + 'googleLogo12.png',
-        logo7:  CONFIG.aURL + 'lightbulb.png',
-        logo8:  CONFIG.aURL + 'manSearching3.png',
-        logo9:  CONFIG.aURL + 'googleLogo15.png',
-        logo10: CONFIG.aURL + 'googleLogo17.png',
-        logo11: CONFIG.aURL + 'flag.png',
-        logo12: CONFIG.aURL + 'face.png',
-
-        calendar:   CONFIG.aURL + 'imageCalendar.png',
-        upArrow:    CONFIG.aURL + 'upArrow5.png',
-        downArrow:  CONFIG.aURL + 'downArrow7.png'
+    logo1: CONFIG.aURL + 'logoGoogle.png',
+    logo2: CONFIG.aURL + 'imageGoogle.png',
+    logo3: CONFIG.aURL + 'World.png',
+    logo4: CONFIG.aURL + 'search8.png',
+    logo5: CONFIG.aURL + 'googleLogo11.png',
+    logo6: CONFIG.aURL + 'googleLogo12.png',
+    logo7: CONFIG.aURL + 'lightbulb.png',
+    logo8: CONFIG.aURL + 'manSearching3.png',
+    logo9: CONFIG.aURL + 'googleLogo15.png',
+    logo10: CONFIG.aURL + 'googleLogo17.png',
+    logo11: CONFIG.aURL + 'flag.png',
+    logo12: CONFIG.aURL + 'face.png',
+    calendar: CONFIG.aURL + 'imageCalendar.png',
+    upArrow: CONFIG.aURL + 'upArrow5.png',
+    downArrow: CONFIG.aURL + 'downArrow7.png'
   };
 
   const logos = [null];
@@ -75,28 +73,14 @@
     document.querySelectorAll('.' + className).forEach((el, i) => { if (i > 0) el.remove(); });
   }
 
-  function centerLogo() {
-    const logo = document.getElementById('logoGoogle');
-    if (!logo) return;
-    logo.style.position = 'absolute';
-    logo.style.left = '50%';
-    logo.style.top = '0px';
-    logo.style.transform = 'translateX(-50%)';
-    logo.style.zIndex = '999';
-    logo.style.opacity = '1';
-  }
-
+  // ================== ANTI-FLASH CENTERED LOGO ==================
   function applyLogo(num) {
     num = parseInt(num) || 1;
     if (num < 1 || num > 13) num = 13;
     document.getElementById('logoGoogle')?.remove();
     GM_addStyle(`
-      #gWP1 #LS8OJ {
-        display: ${num === 13 ? 'block' : 'none'} !important;
-      }
-      #gWP1 form, #gWP1 .RN6D2c {
-        margin-top: ${num === 13 ? '-86px' : '210px'} !important;
-      }
+      #gWP1 #LS8OJ { display: ${num === 13 ? 'block' : 'none'} !important; }
+      #gWP1 form, #gWP1 .RN6D2c { margin-top: ${num === 13 ? '-86px' : '210px'} !important; }
     `);
     if (num !== 13 && logos[num]) {
       const logoCopy = logos[num].cloneNode(false);
@@ -112,9 +96,7 @@
         filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)) !important;
       `;
       const dtContainer = document.getElementById('dateTimeContainer');
-      if (dtContainer) {
-        dtContainer.after(logoCopy);
-      }
+      if (dtContainer) dtContainer.after(logoCopy);
       removeDupes('logo');
       requestAnimationFrame(() => {
         logoCopy.style.opacity = '1';
@@ -122,24 +104,12 @@
     }
     const inp = document.getElementById('inputLogo');
     if (inp) {
-      inp.value = (num === 13) ? 0 : num;
+        inp.value = (num === 13) ? 0 : num; // Show 0 for default logo
     }
     GM_setValue('logoImageNum', num);
   }
 
-  function handleLogoInput(e) {
-    let val = e.target.value.trim();
-    let num;
-    if (val.toLowerCase() === "default" || val === "13") {
-      num = 13;
-    } else {
-      num = parseInt(val);
-      if (isNaN(num)) return;
-      num = Math.max(1, Math.min(13, num));
-    }
-    applyLogo(num);
-  }
-
+  // ================== WALLPAPER ==================
   function applyWallpaper(num) {
     num = parseInt(num) || 0;
     if (num === 0) {
@@ -153,6 +123,7 @@
       `);
   } }
 
+  // ================== DATE/TIME ==================
   function getDateTime(format = 1) {
     const now = new Date();
     const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear();
@@ -165,7 +136,7 @@
     const dayFull = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dy];
     const monthAbbr = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'][mth];
     const mPadded = (mth + 1) < 10 ? '0' + (mth + 1) : (mth + 1);
-    switch(format) {
+    switch(format){
       case 1: return `${dayFull} ⇒ ${monthAbbr} ${dt}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
       case 2: return `${dayAbbr} • ${monthAbbr} ${dt}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
       case 3: return `${dayAbbr} • ${mPadded}/${dt < 10 ? '0'+dt : dt}/${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
@@ -182,39 +153,22 @@
     }, ms);
   }
 
-  function dateTimeToggle(e) {
-    if (e.button !== 0) return;
-    if (!e.shiftKey && !e.ctrlKey) {
-      const visible = !GM_getValue('defaultDateTimeView', true);
-      GM_setValue('defaultDateTimeView', visible);
-      const el = document.getElementById('dateTime');
-      if (el) el.style.display = visible ? 'inline' : 'none';
-      if (visible) startClock(); else clearInterval(clockInterval);
-  } }
-
-  function dateTimeToggleSecondsAmPm(e) {
-    if (e.button !== 0) return;
-    e.preventDefault();
-    if (!e.shiftKey && !e.ctrlKey) {
-      GM_setValue('defaultSecondsView', !GM_getValue('defaultSecondsView', false));
-      startClock();
-    } else if (e.shiftKey && !e.ctrlKey) {
-      GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', false));
-    } else if (e.ctrlKey && !e.shiftKey) {
-      let fmt = GM_getValue('dateFormat', 1);
-      fmt = (fmt >= CONFIG.dateTimeFormatCount) ? 1 : fmt + 1;
-      GM_setValue('dateFormat', fmt);
-    }
-    const el = document.getElementById('dateTime');
-    if (el) el.textContent = getDateTime(GM_getValue('dateFormat', 1));
-  }
-
+  // ================== EVENT HANDLERS ==================
   function logoClick(id) {
     let current = GM_getValue('logoImageNum', 1);
     let next = (id.includes('up') || id === 'buttonLogo')
       ? (current % 13) + 1
       : ((current - 2) % 13 + 13) % 13 + 1;
     applyLogo(next);
+  }
+
+  // Handle manual number input in logo field
+  function handleLogoInput(e) {
+    let val = parseInt(e.target.value);
+    if (isNaN(val)) return;
+    if (val === 0) val = 13; // 0 = Default Google logo
+    val = Math.max(1, Math.min(13, val));
+    applyLogo(val);
   }
 
   function wallpaperButtonChanger(e) {
@@ -236,6 +190,7 @@
     applyWallpaper(val);
   }
 
+  // ================== INIT ==================
   function init() {
     const body = document.body;
     if (!body) return;
@@ -284,10 +239,7 @@
       type: 'number',
       value: GM_getValue('logoImageNum', 1),
       title: texts.inputLogoTooltip,
-      oninput: handleLogoInput,
-      onkeypress: function(e) {
-        if (e.key === 'Enter') handleLogoInput(e);
-      }
+      oninput: handleLogoInput
     });
     const downLogo = $c('button', {
       id: 'downLogo',
@@ -305,16 +257,44 @@
       startClock();
     } else {
       dateTimeEl.style.display = 'none';
+  } }
+
+  // Date/Time handlers
+  function dateTimeToggle(e) {
+    if (e.button !== 0) return;
+    if (!e.shiftKey && !e.ctrlKey) {
+      const visible = !GM_getValue('defaultDateTimeView', true);
+      GM_setValue('defaultDateTimeView', visible);
+      const el = document.getElementById('dateTime');
+      if (el) el.style.display = visible ? 'inline' : 'none';
+      if (visible) startClock(); else clearInterval(clockInterval);
+  } }
+
+  function dateTimeToggleSecondsAmPm(e) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    if (!e.shiftKey && !e.ctrlKey) {
+      GM_setValue('defaultSecondsView', !GM_getValue('defaultSecondsView', false));
+      startClock();
+    } else if (e.shiftKey && !e.ctrlKey) {
+      GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', false));
+    } else if (e.ctrlKey && !e.shiftKey) {
+      let fmt = GM_getValue('dateFormat', 1);
+      fmt = (fmt >= CONFIG.dateTimeFormatCount) ? 1 : fmt + 1;
+      GM_setValue('dateFormat', fmt);
     }
-    window.addEventListener('resize', centerLogo);
+    const el = document.getElementById('dateTime');
+    if (el) el.textContent = getDateTime(GM_getValue('dateFormat', 1));
   }
 
+  // Set defaults
   if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
   if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', true);
   if (GM_getValue('defaultSecondsView') === undefined) GM_setValue('defaultSecondsView', false);
   if (GM_getValue('defaultAMPM') === undefined) GM_setValue('defaultAMPM', true);
   if (GM_getValue('logoImageNum') === undefined) GM_setValue('logoImageNum', 1);
   if (GM_getValue('wallpaperImage') === undefined) GM_setValue('wallpaperImage', 0);
+
   if (document.readyState === "loading") {
     document.addEventListener('DOMContentLoaded', init);
   } else {
@@ -439,7 +419,7 @@
       text-decoration: none !important;
     }
     body#gWP1 {
-      background:  url(CONFIG.githubSite + GM_getValue(wallpaperImage) + .jpg) no-repeat center / cover fixed !important;
+      background: url(${CONFIG.githubSite}GM_getValue(wallpaperImage)}.jpg) no-repeat center center / cover !important;
     }
     #gWP1 > div.L3eUgb > div:nth-child(13) > div {
       background: transparent !important;
