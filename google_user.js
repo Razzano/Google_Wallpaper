@@ -14,6 +14,7 @@
 // ==/UserScript==
 
 (function () {
+
   'use strict';
 
   const CONFIG = {
@@ -26,7 +27,9 @@
 
   const texts = {
     changeWallpaperTooltip: 'Left-click to change wallpaper',
-    hideShowText: `• Left-click to Hide/Show Date/Time\n• Shift + Left-click for link targets of '_blank'\n• Ctrl + Left-click for link targets of '_self'`,
+    hideShowText: `• Left-click to Hide/Show Date/Time\n` +
+                  `• Shift + Left-click for link targets of '_blank'\n` +
+                  `• Ctrl + Left-click for link targets of '_self'`,
     inputLogoTooltip: '1 - 12 (13 = Default Google logo)',
     inputThemerTooltip: '0 - 52 (0 = Default background)',
     logoChangerText: 'Logo Changer',
@@ -104,7 +107,7 @@
     }
     const inp = document.getElementById('inputLogo');
     if (inp) {
-        inp.value = (num === 13) ? 0 : num; // Show 0 for default logo
+      inp.value = (num === 13) ? 0 : num; // Show 0 for default logo
     }
     GM_setValue('logoImageNum', num);
   }
