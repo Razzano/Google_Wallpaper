@@ -1,17 +1,19 @@
 // ==UserScript==
-// @name         Google w/Wallpaper
+// @name         Google w/Wallpaper + Date/Time + Logo Switcher
 // @namespace    srazzano
-// @version      1.0.1
-// @description  Layout and Theme
-// @author       Sonny Razzano a.k.a. srazzano
+// @version      2.4.4
+// @description  Modernized Google with improved centered logo
+// @author       Sonny Razzano
 // @match        https://www.google.com/*
+// @match        https://google.com/*
 // @icon         https://raw.githubusercontent.com/srazzano/Images/master/googleicon64.png
 // @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @run-at       document-start
 // ==/UserScript==
 
-(function() {
+(function () {
 
   'use strict';
 
@@ -25,10 +27,8 @@
 
   const texts = {
         changeWallpaperTooltip: 'Left-click to change wallpaper',
-        hideShowText: `• Left-click to Hide/Show Date/Time\n` +
-                      `• Shift + Left-click for link targets of '_blank'\n` +
-                      `• Ctrl + Left-click for link targets of '_self'`,
-        inputLogoTooltip: '0 - 12 (0 = Default logo)',
+        hideShowText: 'Left-click to Hide/Show Date/Time',
+        inputLogoTooltip: '1 - 12 (0 = Default Google logo)',
         inputThemerTooltip: '0 - 52 (0 = Default background)',
         logoChangerText: 'Logo Changer',
         placeHolderText: 'Search Look-up',
@@ -39,280 +39,95 @@
         wallpaperImageText: 'Wallpaper Image'
   };
 
+  const aURL = CONFIG.aURL;
   const images = {
-        logo1: CONFIG.aURL + 'logoGoogle.png',
-        logo2: CONFIG.aURL + 'imageGoogle.png',
-        logo3: CONFIG.aURL + 'World.png',
-        logo4: CONFIG.aURL + 'search8.png',
-        logo5: CONFIG.aURL + 'googleLogo11.png',
-        logo6: CONFIG.aURL + 'googleLogo12.png',
-        logo7: CONFIG.aURL + 'lightbulb.png',
-        logo8: CONFIG.aURL + 'manSearching3.png',
-        logo9: CONFIG.aURL + 'googleLogo15.png',
-        logo10: CONFIG.aURL + 'googleLogo17.png',
-        logo11: CONFIG.aURL + 'flag.png',
-        logo12: CONFIG.aURL + 'face.png',
-        calendar: CONFIG.aURL + 'imageCalendar.png',
-        upArrow: CONFIG.aURL + 'upArrow5.png',
-        downArrow: CONFIG.aURL + 'downArrow7.png'
+        logo1: aURL + 'logoGoogle.png',
+        logo2: aURL + 'imageGoogle.png',
+        logo3: aURL + 'World.png',
+        logo4: aURL + 'search8.png',
+        logo5: aURL + 'googleLogo11.png',
+        logo6: aURL + 'googleLogo12.png',
+        logo7: aURL + 'lightbulb.png',
+        logo8: aURL + 'manSearching3.png',
+        logo9: aURL + 'googleLogo15.png',
+        logo10: aURL + 'googleLogo17.png',
+        logo11: aURL + 'flag.png',
+        logo12: aURL + 'face.png',
+        calendar: aURL + 'imageCalendar.png',
+        upArrow: aURL + 'upArrow5.png',
+        downArrow: aURL + 'downArrow7.png'
   };
 
-  function $c(type, props) {
-    let node = document.createElement(type);
-    try {
-      if (props && typeof props == 'object') for (let prop in props) typeof node[prop] == 'undefined' ? node.setAttribute(prop, props[prop]) : node[prop] = props[prop];
-      return node;
-    } catch(ex) {}
+  const logos = [null];
+  for (let i = 1; i <= 12; i++) {
+    logos.push($c('img', {id: 'logoGoogle', class: 'logo', src: images[`logo${i}`]}));
   }
 
-  function $q(el, all) {
-    if (all) return document.querySelectorAll(el);
-    return document.querySelector(el);
+  let clockInterval = null;
+
+  function $c(type, props = {}) {
+    const node = document.createElement(type);
+    Object.assign(node, props);
+    return node;
   }
 
-  function insertAfter(newNode, refNode) {
-    if (refNode.nextSibling) return refNode.parentNode.insertBefore(newNode, refNode.nextSibling);
-    return refNode.parentNode.appendChild(newNode);
-  }
+  function $q(sel) { return document.querySelector(sel); }
 
   function removeDupes(className) {
-    document.querySelectorAll('.' + className).forEach((el, i) => {
-      if (i > 0) el.remove();
-    });
+    document.querySelectorAll('.' + className).forEach((el, i) => { if (i > 0) el.remove(); });
   }
 
-  const body = $q('html[itemtype="http://schema.org/WebPage"] > body');
-  const header = $q('html[itemtype="http://schema.org/WebPage"] #gb');
-  const placeHolder = $q('html[itemtype="http://schema.org/WebPage"] #APjFqb');
-  const imageCalendar = $c('img', {id: 'imageCalendar', src: images.calendar, title: texts.hideShowText, onmousedown: e => dateTimeToggle(e)});
-  const dateTimeContainer = $c('div', {id: 'dateTimeContainer'});
-  const dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)});
-  const changerContainer = $c('div', {id: 'changerContainer'});
-  const buttonThemer = $c('button', {id: 'buttonThemer', innerHTML: texts.wallpaperImageText, style: 'background-image: url('+ images.upArrow +') !important;', title: texts.changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)});
-  const inputThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: texts.inputThemerTooltip, oninput: e => wallpaperInputChanger()});
-  const downThemer = $c('button', {id: 'downThemer', style: 'background-image: url('+ images.downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)});
-  const buttonLogo = $c('button', {id: 'buttonLogo', innerHTML: texts.logoChangerText, style: 'background-image: url('+ images.upArrow +') !important;', title: texts.switchLogo, onclick: e => logoClick(e.target.id)});
-  const inputLogo = $c('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum'), title: texts.inputLogoTooltip, });
-  const downLogo = $c('button', {id: 'downLogo', style: 'background-image: url('+ images.downArrow +') !important;', title: '', onclick: e => logoClick(e.target.id)});
-
-  const logos = [
-    null,
-    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo1}),
-    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo2}),
-    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo3}),
-    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo4}),
-    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo5}),
-    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo6}),
-    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo7}),
-    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo8}),
-    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo9}),
-    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo10}),
-    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo11}),
-    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo12})
-  ];
-
-  let clockInterval;
-  let getLogo;
-  let initInterval;
-  let wallpaperInterval;
-
-  function init() {
-    window.removeEventListener('load', () => init());
-    if (!body) return;
-    body.id = 'gWP1';
-    let int = GM_getValue('dateFormat');
-    if (int < 1 || int > 4) {
-      if (int < 1) int = 1;
-      if (int > 13) int = 13;
-      GM_setValue('dateFormat', parseInt(int));
-    }
-    if (GM_getValue('defaultDateTimeView')) {
-      dateTimeDefault();
-    } else {
-      dateTime.hidden = true;
-      clearInterval(clockInterval);
-    }
-    let num = GM_getValue('logoImageNum', 1);
-    if (num < 1 || num > 13) {
-      num = 1;
-      GM_setValue('logoImageNum', 1);
-    }
-    dateTime.title = texts.toggleText;
-    dateTimeContainer.append(imageCalendar, dateTime);
-    changerContainer.append(buttonThemer, inputThemer, downThemer, buttonLogo, inputLogo, downLogo);
-    header.prepend(dateTimeContainer);
-    dateTimeContainer.after(changerContainer);
-    placeHolder.placeholder = texts.placeHolderText;
-    inputThemer.value = GM_getValue('wallpaperImage');
-    applyLogo(num);
-    const input = document.getElementById('inputLogo');
-    if (input) {
-      input.addEventListener('input', handleLogoInput);
-      input.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') handleLogoInput(e);
-      });
-    }
-    onResize();
-    searchLinksWhere();
-    wallpaper(GM_getValue('wallpaperImage'));
-  }
-
-  function dateTimeFormat(int) {
-    if (!GM_getValue('defaultDateTimeView')) return;
-    if (!Number.isInteger(int) || int < 1 || int > 4) {
-	     throw new RangeError('int must be an integer between 1 and 4');
-	   }
-    const date = new Date();
-    const locale = navigator.language;
-    const getPart = (options) => new Intl.DateTimeFormat(locale, options).format(date);
-    const parts = new Intl.DateTimeFormat(locale, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).formatToParts(date);
-    const map = Object.fromEntries(parts.map(p => [p.type, p.value]));
-    const day = parseInt(map.day);
-    const dayPadded = map.day.padStart(2, '0');
-    const year = map.year;
-    const suffix = ['th', 'st', 'nd', 'rd'][(day % 10 > 3 || Math.floor(day / 10) === 1 ? 0 : day % 10)] || 'th';
-    const ordinal = day + suffix;
-    let hr = date.getHours();
-    let min = date.getMinutes();
-    let sec = date.getSeconds();
-    const hr12 = hr % 12 || 12;
-    const minStr = min < 10 ? ':0' + min : ':' + min;
-    const secStr = GM_getValue('defaultSecondsView', false) ? (sec < 10 ? ':0' + sec : ':' + sec) : '';
-    const ampm = GM_getValue('defaultAMPM', false) ? (hr >= 12 ? 'PM' : 'AM') : '';
-    const formats = [
-      null,
-      () => `${map.weekday} ⇒ ${map.month} ${ordinal}, ${year} ⏰ ${hr12}${minStr}${secStr} ${ampm}`, // 1: Monday ⇒ January 1st, 2026
-      () => `${getPart({weekday: 'short'})} * ${getPart({month: 'short'})} ${day}, ${year} 🕑 ${hr12}${minStr}${secStr} ${ampm}`, // 2: Mon * Jan 1, 2026
-      () => `${map.weekday} • ${getPart({month: 'numeric'})}/${dayPadded}/${year} ⏰ ${hr12}${minStr}${secStr} ${ampm}`, // 3: Monday • 1/01/2026
-      () => `${getPart({weekday: 'short'})} ⇒ ${getPart({month: '2-digit'})}-${dayPadded}-${year} 🕑 ${hr12}${minStr}${secStr} ${ampm}` // 4: Mon ⇒ 01-01-2026
-    ];
-    return formats[int]();
-  }
-
-  function dateTimeDefault() {
-    dateTime.hidden = false;
-    dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
-    dateTime.title = texts.toggleText;
-    dateTimeTimer();
-  }
-
-  function dateTimeTimer() {
-    clearInterval(clockInterval);
-    if (!GM_getValue('defaultDateTimeView')) return;
-    if (GM_getValue('defaultSecondsView')) clockInterval = setInterval(function() {dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'))}, CONFIG.timerShort);
-    else clockInterval = setInterval(function() {dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'))}, CONFIG.timerLong);
-  }
-
-  function dateTimeToggle(e) {
-    let bool, target;
-    if (!e.shiftKey && !e.ctrlKey && !e.altKey && e.button === 0) {
-      bool = dateTime.hidden !== true ? true : false;
-      dateTime.hidden = bool;
-      GM_setValue('defaultDateTimeView', !bool);
-      if (bool) clearInterval(clockInterval);
-      else { dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat')); dateTimeTimer() }
-    } else if (e.shiftKey && !e.ctrlKey && !e.altKey && e.button === 0) {
-      GM_setValue('linkTarget', '_blank');
-      searchLinksWhere()
-    } else if (!e.shiftKey && e.ctrlKey && !e.altKey && e.button === 0) {
-      GM_setValue('linkTarget', '_self');
-      searchLinksWhere()
-  } }
-
-  function dateTimeToggleSecondsAmPm(e) {
-    if (e.button !== 0) return;
-    e.preventDefault();
-    if (!e.shiftKey && !e.ctrlKey) {
-      GM_setValue('defaultSecondsView', !GM_getValue('defaultSecondsView', false));
-      dateTimeTimer();
-    } else if (e.shiftKey) {
-      GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', false));
-    } else if (e.ctrlKey) {
-      let f = GM_getValue('dateFormat', 1);
-      GM_setValue('dateFormat', f >= CONFIG.dateTimeFormatCount ? 1 : f + 1);
-    }
-    document.getElementById('dateTime').textContent = dateTimeFormat(GM_getValue('dateFormat', 1));
+  function centerLogo() {
+    const logo = document.getElementById('logoGoogle');
+    if (!logo) return;
+    logo.style.position = 'absolute !important';
+    logo.style.left = '50% !important';
+    logo.style.top = '0px !important';
+    logo.style.transform = 'translateX(-50%) !important';
+    logo.style.zIndex = '999 !important';
+    logo.style.display = 'block !important';
+    logo.style.margin = '0px !important';
+    logo.style.padding = '0px !important';
   }
 
   function applyLogo(num) {
-    const input = document.getElementById('inputLogo');
-    if (num === 13) {
-      GM_addStyle(`
-        #gWP1 #LS8OJ { display: block !important; }
-        #gWP1 form { margin-top: -86px !important; }
-        #gWP1 #logoGoogle, #gWP1 .logo { display: none !important; }
-      `);
-      if (input) input.value = 0;
-      return;
-    }
+    num = parseInt(num) || 1;
+    if (num < 1 || num > 13) num = 13;
+    document.getElementById('logoGoogle')?.remove();
     GM_addStyle(`
-      #gWP1 #LS8OJ { display: none !important; }
-      #gWP1 form { margin-top: 210px !important; }
-      #gWP1 #logoGoogle, #gWP1 .logo { display: inline-block !important; }
+      #gWP1 #LS8OJ { display: ${num === 13 ? 'block' : 'none'} !important; }
+      #gWP1 form, #gWP1 .RN6D2c {
+        margin-top: ${num === 13 ? '-86px' : '210px'} !important;
+      }
+      #gWP1 .logo {
+        display: ${num === 13 ? 'none' : 'block'} !important;
+        position: absolute !important;
+        left: 50% !important;
+        top: 0px !important;
+        transform: translateX(-50%) !important;
+        z-index: 999 !important;
+        filter: drop-shadow(0px 4px 12px rgba(0,0,0,0.35)) !important;
+      }
     `);
-    if (logos[num]) {
-      insertAfter(logos[num], dateTimeContainer);
+    if (num !== 13 && logos[num]) {
+      const logoCopy = logos[num].cloneNode(false);
+      logoCopy.id = 'logoGoogle';
+      logoCopy.className = 'logo';
+      const dtContainer = document.getElementById('dateTimeContainer');
+      if (dtContainer) dtContainer.after(logoCopy);
+      removeDupes('logo');
+      setTimeout(centerLogo, 200);
     }
-    if (input) input.value = num;
-    removeDupes('logo');
-  }
-
-  function logoClick(id) {
-    let current = GM_getValue('logoImageNum', 1);
-    let next;
-    if (id === 'buttonLogo') {
-      next = (current % 13) + 1;
-    } else if (id === 'downLogo') {
-      next = ((current - 2) % 13 + 13) % 13 + 1;
-    } else {
-      return;
-    }
-    GM_setValue('logoImageNum', next);
-    applyLogo(next);
-    onResize();
-  }
-
-  function handleLogoInput(e) {
-    let val = e.target.value.trim();
-    let num;
-    if (val.toLowerCase() === 'default' || val === '13') {
-      num = 13;
-    } else {
-      num = parseInt(val);
-      if (isNaN(num)) return;
-      if (num < 1) num = 1;
-      if (num > 13) num = 13;
-    }
+    const inp = document.getElementById('inputLogo');
+    if (inp) inp.value = num;
+    if (num === 13) inp.value = 0;
     GM_setValue('logoImageNum', num);
-    applyLogo(num);
-    onResize();
   }
 
-  function onClose() {
-    window.removeEventListener('unload', () => onClose());
-    window.removeEventListener('resize', () => onResize());
-    clearInterval(clockInterval);
-    clearInterval(initInterval);
-    clearInterval(wallpaperInterval);
-  }
-
-  function onResize() {
-    try {
-      let getLogo = document.getElementById('logoGoogle'),
-          setLeft = (window.innerWidth / 2) - (getLogo.width / 2) + 'px';
-      getLogo.style = 'left: ' + setLeft;
-    } catch(ex) {}
-  }
-
-  function searchLinksWhere() {
-    let links = $q('a', true);
-    for (let i = 0; i < links.length; i++) links[i].setAttribute('target', GM_getValue('linkTarget'));
-  }
-
-  function wallpaper(num) {
+  function applyWallpaper(num) {
     num = parseInt(num) || 0;
     if (num === 0) {
-        GM_addStyle(`body#gWP1 { background: initial !important; }`);
+      GM_addStyle(`body#gWP1 { background: initial !important; }`);
     } else {
       GM_addStyle(`
         body#gWP1 {
@@ -322,52 +137,133 @@
       `);
   } }
 
-  function wallpaperButtonChanger(e) {
-    let inp = document.getElementById('inputThemer'),
-        num1 = parseInt(inp.value),
-        sum = parseInt(num1 + 1),
-        sub = parseInt(num1 - 1);
-    switch (e.target.id) {
-      case 'buttonThemer':
-        if (inp.value > 51) inp.value = 0;
-        else inp.value = sum;
-        break;
-      case 'downThemer':
-        if (inp.value > 0) inp.value = sub;
-        else inp.value = 52;
+  function getDateTime(format = 1) {
+    const now = new Date();
+    const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear();
+    let hr = now.getHours(), min = now.getMinutes(), sec = now.getSeconds();
+    const hr12 = hr % 12 || 12;
+    const minStr = min < 10 ? ':0' + min : ':' + min;
+    const secStr = GM_getValue('defaultSecondsView', false) ? (sec < 10 ? ':0' + sec : ':' + sec) : '';
+    const ampm = GM_getValue('defaultAMPM', false) ? (hr >= 12 ? 'PM' : 'AM') : '';
+    const dayAbbr = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'][dy];
+    const dayFull = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dy];
+    const monthAbbr = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'][mth];
+    const mPadded = (mth + 1) < 10 ? '0' + (mth + 1) : (mth + 1);
+    switch(format) {
+      case 1: return `${dayFull} ⇒ ${monthAbbr} ${dt}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
+      case 2: return `${dayAbbr} • ${monthAbbr} ${dt}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
+      case 3: return `${dayAbbr} • ${mPadded}/${dt < 10 ? '0'+dt : dt}/${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
+      case 4: return `${dayFull} ⇒ ${monthAbbr} ${dt}, ${yr} ⏰ ${hr<10?'0'+hr:hr}${minStr}${secStr}`;
+      default: return `${dayAbbr} ${hr12}${minStr}${secStr} ${ampm}`;
+  } }
+
+  function startClock() {
+    if (clockInterval) clearInterval(clockInterval);
+    const ms = GM_getValue('defaultSecondsView', false) ? CONFIG.timerShort : CONFIG.timerLong;
+    clockInterval = setInterval(() => {
+      const el = document.getElementById('dateTime');
+      if (el) el.textContent = getDateTime(GM_getValue('dateFormat', 1));
+    }, ms);
+  }
+
+  function init() {
+    const body = document.body;
+    if (!body) return;
+    body.id = 'gWP1';
+    const dtContainer = $c('div', {id: 'dateTimeContainer'});
+    const imageCalendar = $c('img', {id: 'imageCalendar', src: images.calendar, title: texts.hideShowText, onmousedown: dateTimeToggle});
+    const dateTimeEl = $c('span', {id: 'dateTime', title: texts.toggleText, onmousedown: dateTimeToggleSecondsAmPm});
+    dtContainer.append(imageCalendar, dateTimeEl);
+    const changerContainer = $c('div', {id: 'changerContainer'});
+    const buttonThemer = $c('button', {id: 'buttonThemer', innerHTML: texts.wallpaperImageText, style: `background-image: url(${images.upArrow}) !important;`, title: texts.changeWallpaperTooltip, onclick: wallpaperButtonChanger});
+    const inputThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: texts.inputThemerTooltip, oninput: wallpaperInputChanger});
+    const downThemer = $c('button', {id: 'downThemer', style: `background-image: url(${images.downArrow}) !important;`, onclick: wallpaperButtonChanger});
+    const buttonLogo = $c('button', {id: 'buttonLogo', innerHTML: texts.logoChangerText, style: `background-image: url(${images.upArrow}) !important;`, title: texts.switchLogo, onclick: e => logoClick(e.target.id)});
+    const inputLogo = $c('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: texts.inputLogoTooltip});
+    const downLogo = $c('button', {id: 'downLogo', style: `background-image: url(${images.downArrow}) !important;`, onclick: e => logoClick(e.target.id)});
+    changerContainer.append(buttonThemer, inputThemer, downThemer, buttonLogo, inputLogo, downLogo);
+    const header = $q('#gb') || $q('header') || body;
+    header.prepend(dtContainer);
+    dtContainer.after(changerContainer);
+    applyWallpaper(GM_getValue('wallpaperImage', 0));
+    applyLogo(GM_getValue('logoImageNum', 1));
+    if (GM_getValue('defaultDateTimeView', true)) {
+      dateTimeEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
+      startClock();
+    } else {
+      dateTimeEl.style.display = 'none';
     }
-    GM_setValue('wallpaperImage', inp.value);
-    wallpaper(inp.value);
+    window.addEventListener('resize', centerLogo);
+  }
+
+  function dateTimeToggle(e) {
+    if (e.button !== 0) return;
+    if (!e.shiftKey && !e.ctrlKey) {
+      const visible = !GM_getValue('defaultDateTimeView', true);
+      GM_setValue('defaultDateTimeView', visible);
+      const el = document.getElementById('dateTime');
+      if (el) el.style.display = visible ? 'inline' : 'none';
+      if (visible) startClock(); else clearInterval(clockInterval);
+  } }
+
+  function dateTimeToggleSecondsAmPm(e) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    if (!e.shiftKey && !e.ctrlKey) {
+      GM_setValue('defaultSecondsView', !GM_getValue('defaultSecondsView', false));
+      startClock();
+    }
+    else if (e.shiftKey && !e.ctrlKey) {
+      GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', false));
+    }
+    else if (e.ctrlKey && !e.shiftKey) {
+      let fmt = GM_getValue('dateFormat', 1);
+      fmt = (fmt >= CONFIG.dateTimeFormatCount) ? 1 : fmt + 1;
+      GM_setValue('dateFormat', fmt);
+    }
+    const el = document.getElementById('dateTime');
+    if (el) el.textContent = getDateTime(GM_getValue('dateFormat', 1));
+  }
+
+  function logoClick(id) {
+    let current = GM_getValue('logoImageNum', 1);
+    let next = (id.includes('up') || id === 'buttonLogo')
+      ? (current % 13) + 1
+      : ((current - 2) % 13 + 13) % 13 + 1;
+    applyLogo(next);
+  }
+
+  function wallpaperButtonChanger(e) {
+    const inp = document.getElementById('inputThemer');
+    let val = parseInt(inp.value) || 0;
+    val = e.target.id.includes('down') ? val - 1 : val + 1;
+    if (val > 52) val = 0;
+    if (val < 0) val = 52;
+    inp.value = val;
+    GM_setValue('wallpaperImage', val);
+    applyWallpaper(val);
   }
 
   function wallpaperInputChanger() {
-    let inp = document.getElementById('inputThemer');
-    inp.value = inp.value % 52;
-    GM_setValue('wallpaperImage', inp.value);
-    wallpaper(inp.value);
-  }
-
-  function wallpaperSite() {
-    let num = GM_getValue('wallpaperImage');
-    wallpaper(num);
+    let val = parseInt(this.value) || 0;
+    val = Math.max(0, Math.min(52, val));
+    this.value = val;
+    GM_setValue('wallpaperImage', val);
+    applyWallpaper(val);
   }
 
   if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
-  if (GM_getValue('defaultAMPM') === undefined) GM_setValue('defaultAMPM', false);
-  if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', false);
+  if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', true);
   if (GM_getValue('defaultSecondsView') === undefined) GM_setValue('defaultSecondsView', false);
-  if (GM_getValue('linkTarget') === undefined) GM_setValue('linkTarget', '_blank');
+  if (GM_getValue('defaultAMPM') === undefined) GM_setValue('defaultAMPM', true);
   if (GM_getValue('logoImageNum') === undefined) GM_setValue('logoImageNum', 1);
   if (GM_getValue('wallpaperImage') === undefined) GM_setValue('wallpaperImage', 0);
-  if (document.readyState === 'loading') {
+
+  if (document.readyState === "loading") {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
-
-  window.addEventListener('load', () => init());
-  window.addEventListener('resize', () => onResize());
-  window.addEventListener('unload', () => onClose());
 
   GM_addStyle(`
     #gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
@@ -496,5 +392,4 @@
       float: right !important;
     }
   `);
-
 })();
