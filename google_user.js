@@ -138,8 +138,7 @@
       GM_setValue('logoImageNum', 1);
     }
     dateTime.title = texts.toggleText;
-    dateTimeContainer.appendChild(imageCalendar);
-    dateTimeContainer.appendChild(dateTime);
+    dateTimeContainer.append(imageCalendar, dateTime);
     changerContainer.append(buttonThemer, inputThemer, downThemer, buttonLogo, inputLogo, downLogo);
     header.prepend(dateTimeContainer);
     dateTimeContainer.after(changerContainer);
