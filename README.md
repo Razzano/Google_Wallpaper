@@ -1,1 +1,1 @@
-# Google Wallpaper
+# Google w/Wallpaper + Date/Time + Logo Switcher
