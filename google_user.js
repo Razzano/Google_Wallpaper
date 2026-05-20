@@ -16,78 +16,46 @@
   'use strict';
 
   const CONFIG = {
-        githubSite: 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
         aURL: 'https://raw.githubusercontent.com/Razzano/My_Images/master/',
+        dateTimeFormatCount: 4,
+        githubSite: 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
         timerLong: 10000,
-        timerShort: 1000,
-        dateTimeFormatCount: 4
+        timerShort: 1000
   };
 
   const texts = {
-        addRemoveText: `• Left-click: toggle seconds\n` +
-                       `• Shift+Left: toggle AM/PM\n` +
-                       `• Ctrl+Left: cycle date format (1-4)`,
         changeWallpaperTooltip: 'Left-click to change wallpaper',
-        wallpaperImageText: 'Wallpaper Image',
-        logoChangerText: 'Logo Changer',
         hideShowText: `• Left-click to Hide/Show Date/Time\n` +
-                      `• Shift + Left-click for link targets of _blank\n` +
-                      `• Ctrl + Left-click for link targets of _self`,
-        switchLogo: 'Left-click to change logos',
-        inputThemerTooltip: '0 - 52 (0 = Default background)',
+                      `• Shift + Left-click for link targets of '_blank'\n` +
+                      `• Ctrl + Left-click for link targets of '_self'`,
         inputLogoTooltip: '0 - 12 (0 = Default logo)',
-        placeHolderText: 'Search Look-up'
+        inputThemerTooltip: '0 - 52 (0 = Default background)',
+        logoChangerText: 'Logo Changer',
+        placeHolderText: 'Search Look-up',
+        switchLogo: 'Left-click to change logos',
+        toggleText: `• Left-click: toggle seconds\n` +
+                    `• Shift+Left: toggle AM/PM\n` +
+                    `• Ctrl+Left: cycle date format (1-4)`,
+        wallpaperImageText: 'Wallpaper Image'
   };
 
-  const aURL = CONFIG.aURL;
-  const image1 = aURL + 'logoGoogle.png';
-  const image2 = aURL + 'imageGoogle.png';
-  const image3 = aURL + 'World.png';
-  const image4 = aURL + 'search8.png';
-  const image5 = aURL + 'googleLogo11.png';
-  const image6 = aURL + 'googleLogo12.png';
-  const image7 = aURL + 'lightbulb.png';
-  const image8 = aURL + 'manSearching3.png';
-  const image9 = aURL + 'googleLogo15.png';
-  const image10 = aURL + 'googleLogo17.png';
-  const image11 = aURL + 'flag.png';
-  const image12 = aURL + 'face.png';
-  const downArrow = aURL + 'downArrow7.png';
-  const upArrow = aURL + 'upArrow5.png';
-  const imgCalendar = aURL + 'imageCalendar.png';
-
-  const body = $q('html[itemtype="http://schema.org/WebPage"] > body'),
-        header = $q('html[itemtype="http://schema.org/WebPage"] #gb'),
-        placeHolder = $q('html[itemtype="http://schema.org/WebPage"] #APjFqb'),
-        imageCalendar = $c('img', {id: 'imageCalendar', src: imgCalendar, title: texts.hideShowText, onmousedown: e => dateTimeToggle(e)}),
-        dateTimeContainer = $c('div', {id: 'dateTimeContainer'}),
-        dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)}),
-        logo1 = $c('img', {id: 'logoGoogle', class: 'logo', src: image1}), // Google Text Image Small
-        logo2 = $c('img', {id: 'logoGoogle', class: 'logo', src: image2}), // Google Text Image Large
-        logo3 = $c('img', {id: 'logoGoogle', class: 'logo', src: image3}), // World Image
-        logo4 = $c('img', {id: 'logoGoogle', class: 'logo', src: image4}), // Man Search Image
-        logo5 = $c('img', {id: 'logoGoogle', class: 'logo', src: image5}), // Silver G Image
-        logo6 = $c('img', {id: 'logoGoogle', class: 'logo', src: image6}), // Red-Green-Blue G Image
-        logo7 = $c('img', {id: 'logoGoogle', class: 'logo', src: image7}), // Lightbulb Image
-        logo8 = $c('img', {id: 'logoGoogle', class: 'logo', src: image8}), // Man Search Image
-        logo9 = $c('img', {id: 'logoGoogle', class: 'logo', src: image9}), // Google Logo Image Square
-        logo10 = $c('img', {id: 'logoGoogle', class: 'logo', src: image10}), // Google Logo Image Round
-        logo11 = $c('img', {id: 'logoGoogle', class: 'logo', src: image11}), // Flag Image
-        logo12 = $c('img', {id: 'logoGoogle', class: 'logo', src: image12}), // Look Image
-        changerContainer = $c('div', {id: 'changerContainer'}),
-        buttonThemer = $c('button', {id: 'buttonThemer', innerHTML: texts.wallpaperImageText, style: 'background-image: url('+ upArrow +') !important;', title: texts.changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)}),
-        inputThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: texts.inputThemerTooltip, oninput: e => wallpaperInputChanger()}),
-        downThemer = $c('button', {id: 'downThemer', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)}),
-        buttonLogo = $c('button', {id: 'buttonLogo', innerHTML: texts.logoChangerText, style: 'background-image: url('+ upArrow +') !important;', title: texts.switchLogo, onclick: e => logoClick(e.target.id)}),
-        inputLogo = $c('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum'), title: texts.inputLogoTooltip, }),
-        downLogo = $c('button', {id: 'downLogo', style: 'background-image: url('+ downArrow +') !important;', title: '', onclick: e => logoClick(e.target.id)});
-
-  const logos = [null, logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8, logo9, logo10, logo11, logo12];
-
-  let clockInterval,
-      getLogo,
-      initInterval,
-      wallpaperInterval;
+  const images = {
+        logo1: CONFIG.aURL + 'logoGoogle.png',
+        logo2: CONFIG.aURL + 'imageGoogle.png',
+        logo3: CONFIG.aURL + 'World.png',
+        logo4: CONFIG.aURL + 'search8.png',
+        logo5: CONFIG.aURL + 'googleLogo11.png',
+        logo6: CONFIG.aURL + 'googleLogo12.png',
+        logo7: CONFIG.aURL + 'lightbulb.png',
+        logo8: CONFIG.aURL + 'manSearching3.png',
+        logo9: CONFIG.aURL + 'googleLogo15.png',
+        logo10: CONFIG.aURL + 'googleLogo17.png',
+        logo11: CONFIG.aURL + 'flag.png',
+        logo12: CONFIG.aURL + 'face.png',
+        calendar: CONFIG.aURL + 'imageCalendar.png',
+        upArrow: CONFIG.aURL + 'upArrow5.png',
+        downArrow: CONFIG.aURL + 'downArrow7.png'
+  };
 
   function $c(type, props) {
     let node = document.createElement(type);
@@ -113,6 +81,41 @@
     });
   }
 
+  const body = $q('html[itemtype="http://schema.org/WebPage"] > body');
+  const header = $q('html[itemtype="http://schema.org/WebPage"] #gb');
+  const placeHolder = $q('html[itemtype="http://schema.org/WebPage"] #APjFqb');
+  const imageCalendar = $c('img', {id: 'imageCalendar', src: images.calendar, title: texts.hideShowText, onmousedown: e => dateTimeToggle(e)});
+  const dateTimeContainer = $c('div', {id: 'dateTimeContainer'});
+  const dateTime = $c('span', {id: 'dateTime', onmousedown: e => dateTimeToggleSecondsAmPm(e)});
+  const changerContainer = $c('div', {id: 'changerContainer'});
+  const buttonThemer = $c('button', {id: 'buttonThemer', innerHTML: texts.wallpaperImageText, style: 'background-image: url('+ images.upArrow +') !important;', title: texts.changeWallpaperTooltip, onclick: e => wallpaperButtonChanger(e)});
+  const inputThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage'), title: texts.inputThemerTooltip, oninput: e => wallpaperInputChanger()});
+  const downThemer = $c('button', {id: 'downThemer', style: 'background-image: url('+ images.downArrow +') !important;', title: '', onclick: e => wallpaperButtonChanger(e)});
+  const buttonLogo = $c('button', {id: 'buttonLogo', innerHTML: texts.logoChangerText, style: 'background-image: url('+ images.upArrow +') !important;', title: texts.switchLogo, onclick: e => logoClick(e.target.id)});
+  const inputLogo = $c('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum'), title: texts.inputLogoTooltip, });
+  const downLogo = $c('button', {id: 'downLogo', style: 'background-image: url('+ images.downArrow +') !important;', title: '', onclick: e => logoClick(e.target.id)});
+
+  const logos = [
+    null,
+    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo1}),
+    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo2}),
+    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo3}),
+    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo4}),
+    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo5}),
+    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo6}),
+    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo7}),
+    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo8}),
+    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo9}),
+    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo10}),
+    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo11}),
+    $c('img', {id: 'logoGoogle', class: 'logo', src: images.logo12})
+  ];
+
+  let clockInterval;
+  let getLogo;
+  let initInterval;
+  let wallpaperInterval;
+
   function init() {
     window.removeEventListener('load', () => init());
     if (!body) return;
@@ -134,17 +137,12 @@
       num = 1;
       GM_setValue('logoImageNum', 1);
     }
-    dateTime.title = texts.addRemoveText;
+    dateTime.title = texts.toggleText;
     dateTimeContainer.appendChild(imageCalendar);
     dateTimeContainer.appendChild(dateTime);
-    changerContainer.appendChild(buttonThemer);
-    changerContainer.appendChild(inputThemer);
-    changerContainer.appendChild(downThemer);
-    changerContainer.appendChild(buttonLogo);
-    changerContainer.appendChild(inputLogo);
-    changerContainer.appendChild(downLogo);
-    header.insertBefore(dateTimeContainer, header.firstChild);
-    insertAfter(changerContainer, dateTimeContainer);
+    changerContainer.append(buttonThemer, inputThemer, downThemer, buttonLogo, inputLogo, downLogo);
+    header.prepend(dateTimeContainer);
+    dateTimeContainer.after(changerContainer);
     placeHolder.placeholder = texts.placeHolderText;
     inputThemer.value = GM_getValue('wallpaperImage');
     applyLogo(num);
@@ -195,7 +193,7 @@
   function dateTimeDefault() {
     dateTime.hidden = false;
     dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat'));
-    dateTime.title = texts.addRemoveText;
+    dateTime.title = texts.toggleText;
     dateTimeTimer();
   }
 
@@ -215,10 +213,10 @@
       if (bool) clearInterval(clockInterval);
       else { dateTime.textContent = dateTimeFormat(GM_getValue('dateFormat')); dateTimeTimer() }
     } else if (e.shiftKey && !e.ctrlKey && !e.altKey && e.button === 0) {
-      GM_setValue('linkTarget', "_blank");
+      GM_setValue('linkTarget', '_blank');
       searchLinksWhere()
     } else if (!e.shiftKey && e.ctrlKey && !e.altKey && e.button === 0) {
-      GM_setValue('linkTarget', "_self");
+      GM_setValue('linkTarget', '_self');
       searchLinksWhere()
   } }
 
@@ -278,7 +276,7 @@
   function handleLogoInput(e) {
     let val = e.target.value.trim();
     let num;
-    if (val.toLowerCase() === "default" || val === "13") {
+    if (val.toLowerCase() === 'default' || val === '13') {
       num = 13;
     } else {
       num = parseInt(val);
@@ -355,25 +353,22 @@
     wallpaper(num);
   }
 
-  function start() {
-    if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
-    if (GM_getValue('defaultAMPM') === undefined) GM_setValue('defaultAMPM', false);
-    if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', false);
-    if (GM_getValue('defaultSecondsView') === undefined) GM_setValue('defaultSecondsView', false);
-    if (GM_getValue('linkTarget') === undefined) GM_setValue('linkTarget', '_blank');
-    if (GM_getValue('logoImageNum') === undefined) GM_setValue('logoImageNum', 1);
-    if (GM_getValue('wallpaperImage') === undefined) GM_setValue('wallpaperImage', 0);
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", init);
-    } else {
-      init();
-  } }
+  if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
+  if (GM_getValue('defaultAMPM') === undefined) GM_setValue('defaultAMPM', false);
+  if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', false);
+  if (GM_getValue('defaultSecondsView') === undefined) GM_setValue('defaultSecondsView', false);
+  if (GM_getValue('linkTarget') === undefined) GM_setValue('linkTarget', '_blank');
+  if (GM_getValue('logoImageNum') === undefined) GM_setValue('logoImageNum', 1);
+  if (GM_getValue('wallpaperImage') === undefined) GM_setValue('wallpaperImage', 0);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 
   window.addEventListener('load', () => init());
   window.addEventListener('resize', () => onResize());
   window.addEventListener('unload', () => onClose());
-
-  start();
 
   GM_addStyle(`
     #gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
