@@ -29,9 +29,6 @@
 
   const texts = {
     changeWallpaperTooltip: 'Left-click to change wallpaper',
-    hideShowText: `• Left-click to Hide/Show Date/Time\n` +
-                  `• Shift + Left-click for link targets of '_blank'\n` +
-                  `• Ctrl + Left-click for link targets of '_self'`,
     inputLogoTooltip: '1 - 12 (13 = Default Google logo)',
     inputThemerTooltip: '0 - 52 (0 = Default background)',
     logoChangerText: 'Logo Changer',
@@ -65,19 +62,23 @@
   }
 
   let clockInterval = null;
-
   const $id = (id) => document.getElementById(id);
-
   function $c(type, props = {}) {
     const node = document.createElement(type);
     Object.assign(node, props);
     return node;
   }
-
   function $q(sel) { return document.querySelector(sel); }
-
   function removeDupes(className) {
     document.querySelectorAll('.' + className).forEach((el, i) => { if (i > 0) el.remove(); });
+  }
+
+  // ================== DYNAMIC TOOLTIP ==================
+  function getTooltipText() {
+    return `• Left-click to Hide/Show Date/Time\n` +
+           `• Shift + Left-click for link targets of '_blank'\n` +
+           `• Ctrl + Left-click for link targets of '_self'\n` +
+           `• Current value: ⇒ '${GM_getValue('linkTarget', '_blank')}'`;
   }
 
   // ================== ANTI-FLASH CENTERED LOGO ==================
@@ -199,6 +200,64 @@
     applyWallpaper(val);
   }
 
+  function searchLinksWhere() {
+    const links = document.querySelectorAll('a');
+    const target = GM_getValue('linkTarget', '_blank');
+    links.forEach(link => {
+      link.setAttribute('target', target);
+    });
+  }
+
+  // ================== UPDATED DATE/TIME TOGGLE ==================
+  function dateTimeToggle(e) {
+    if (e.button !== 0) return;
+    const dtEl = document.getElementById('dateTime');
+    if (!dtEl) return;
+    if (!e.shiftKey && !e.ctrlKey) {
+      // Toggle visibility
+      const isHidden = dtEl.hidden;
+      dtEl.hidden = !isHidden;
+      GM_setValue('defaultDateTimeView', !isHidden);
+      if (!isHidden) {
+        clearInterval(clockInterval);
+      } else {
+        dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
+        startClock();
+    } }
+    else if (e.shiftKey && !e.ctrlKey) {
+      GM_setValue('linkTarget', '_blank');
+      searchLinksWhere();
+      updateCalendarTooltip(); // ← Added
+    }
+    else if (e.ctrlKey && !e.shiftKey) {
+      GM_setValue('linkTarget', '_self');
+      searchLinksWhere();
+      updateCalendarTooltip(); // ← Added
+  } }
+
+  // New helper to refresh tooltip
+  function updateCalendarTooltip() {
+    const cal = $id('imageCalendar');
+    if (cal) cal.title = getTooltipText();
+  }
+
+  function dateTimeToggleSecondsAmPm(e) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    if (!e.shiftKey && !e.ctrlKey) {
+      GM_setValue('defaultSecondsView', !GM_getValue('defaultSecondsView', false));
+      startClock();
+    } else if (e.shiftKey && !e.ctrlKey) {
+      GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', false));
+    } else if (e.ctrlKey && !e.shiftKey) {
+      let fmt = GM_getValue('dateFormat', 1);
+      fmt = (fmt >= CONFIG.dateTimeFormatCount) ? 1 : fmt + 1;
+      GM_setValue('dateFormat', fmt);
+    }
+    const el = $id('dateTime');
+    if (el) el.textContent = getDateTime(GM_getValue('dateFormat', 1));
+  }
+
   // ================== INIT ==================
   function init() {
     const body = document.body;
@@ -208,11 +267,12 @@
     const imageCalendar = $c('img', {
       id: 'imageCalendar',
       src: images.calendar,
-      title: texts.toggleText,
+      title: getTooltipText(), // Dynamic tooltip
       onmousedown: dateTimeToggle
     });
     const dateTimeEl = $c('span', {
       id: 'dateTime',
+      title: texts.toggleText,
       onmousedown: dateTimeToggleSecondsAmPm
     });
     dtContainer.append(imageCalendar, dateTimeEl);
@@ -266,34 +326,8 @@
       startClock();
     } else {
       dateTimeEl.style.display = 'none';
-  } }
-
-  // Date/Time handlers
-  function dateTimeToggle(e) {
-    if (e.button !== 0) return;
-    if (!e.shiftKey && !e.ctrlKey) {
-      const visible = !GM_getValue('defaultDateTimeView', true);
-      GM_setValue('defaultDateTimeView', visible);
-      const el = $id('dateTime');
-      if (el) el.style.display = visible ? 'inline' : 'none';
-      if (visible) startClock(); else clearInterval(clockInterval);
-  } }
-
-  function dateTimeToggleSecondsAmPm(e) {
-    if (e.button !== 0) return;
-    e.preventDefault();
-    if (!e.shiftKey && !e.ctrlKey) {
-      GM_setValue('defaultSecondsView', !GM_getValue('defaultSecondsView', false));
-      startClock();
-    } else if (e.shiftKey && !e.ctrlKey) {
-      GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', false));
-    } else if (e.ctrlKey && !e.shiftKey) {
-      let fmt = GM_getValue('dateFormat', 1);
-      fmt = (fmt >= CONFIG.dateTimeFormatCount) ? 1 : fmt + 1;
-      GM_setValue('dateFormat', fmt);
     }
-    const el = $id('dateTime');
-    if (el) el.textContent = getDateTime(GM_getValue('dateFormat', 1));
+    searchLinksWhere();
   }
 
   // Set defaults
@@ -301,9 +335,9 @@
   if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', true);
   if (GM_getValue('defaultSecondsView') === undefined) GM_setValue('defaultSecondsView', false);
   if (GM_getValue('defaultAMPM') === undefined) GM_setValue('defaultAMPM', true);
+  if (GM_getValue('linkTarget') === undefined) GM_setValue('linkTarget', '_blank');
   if (GM_getValue('logoImageNum') === undefined) GM_setValue('logoImageNum', 1);
   if (GM_getValue('wallpaperImage') === undefined) GM_setValue('wallpaperImage', 0);
-
   if (document.readyState === "loading") {
     document.addEventListener('DOMContentLoaded', init);
   } else {
@@ -447,6 +481,13 @@
     body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe {
       float: right !important;
     }
+    body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span > span > g-popup > div.CcNe6e > div {
+      background: #000 !important;
+      border-radius: 6px !important;
+      padding: 8px 16px !important;
+    }
+    #gWP1 > div.L3eUgb > div.o3j99.ikrT4e.KEY6ib > form > div:nth-child(1) > div > div.RNNXgb {
+      background: rgba(0,0,0,.1) !important;
+    }
   `);
-
 })();
