@@ -6,6 +6,8 @@
 // @author       Sonny Razzano
 // @match        https://www.google.com/*
 // @match        https://google.com/*
+// @exclude      https://www.google.com/search*
+// @exclude      https://google.com/search*
 // @icon         https://raw.githubusercontent.com/srazzano/Images/master/googleicon64.png
 // @grant        GM_addStyle
 // @grant        GM_getValue
@@ -64,6 +66,8 @@
 
   let clockInterval = null;
 
+  const $id = (id) => document.getElementById(id);
+
   function $c(type, props = {}) {
     const node = document.createElement(type);
     Object.assign(node, props);
@@ -80,10 +84,14 @@
   function applyLogo(num) {
     num = parseInt(num) || 1;
     if (num < 1 || num > 13) num = 13;
-    document.getElementById('logoGoogle')?.remove();
+    $id('logoGoogle')?.remove();
     GM_addStyle(`
       #gWP1 #LS8OJ { display: ${num === 13 ? 'block' : 'none'} !important; }
-      #gWP1 form, #gWP1 .RN6D2c { margin-top: ${num === 13 ? '-86px' : '210px'} !important; }
+      #gWP1 form, #gWP1 .RN6D2c { margin-top: ${num === 13 || num === 0
+        ? '-86px' : num === 4
+        ? '168px'
+        : '210px'
+      } !important; }
     `);
     if (num !== 13 && logos[num]) {
       const logoCopy = logos[num].cloneNode(false);
@@ -98,14 +106,14 @@
         opacity: 0 !important;
         filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)) !important;
       `;
-      const dtContainer = document.getElementById('dateTimeContainer');
+      const dtContainer = $id('dateTimeContainer');
       if (dtContainer) dtContainer.after(logoCopy);
       removeDupes('logo');
       requestAnimationFrame(() => {
         logoCopy.style.opacity = '1';
       });
     }
-    const inp = document.getElementById('inputLogo');
+    const inp = $id('inputLogo');
     if (inp) {
       inp.value = (num === 13) ? 0 : num; // Show 0 for default logo
     }
@@ -134,7 +142,7 @@
     const hr12 = hr % 12 || 12;
     const minStr = min < 10 ? ':0' + min : ':' + min;
     const secStr = GM_getValue('defaultSecondsView', false) ? (sec < 10 ? ':0' + sec : ':' + sec) : '';
-    const ampm = GM_getValue('defaultAMPM', false) ? (hr >= 12 ? 'PM' : 'AM') : '';
+    const ampm = GM_getValue('defaultAMPM', false) ? (hr < 12 ? 'AM' : 'PM') : '';
     const dayAbbr = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'][dy];
     const dayFull = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dy];
     const monthAbbr = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'][mth];
@@ -151,7 +159,7 @@
     if (clockInterval) clearInterval(clockInterval);
     const ms = GM_getValue('defaultSecondsView', false) ? CONFIG.timerShort : CONFIG.timerLong;
     clockInterval = setInterval(() => {
-      const el = document.getElementById('dateTime');
+      const el = $id('dateTime');
       if (el) el.textContent = getDateTime(GM_getValue('dateFormat', 1));
     }, ms);
   }
@@ -175,7 +183,7 @@
   }
 
   function wallpaperButtonChanger(e) {
-    const inp = document.getElementById('inputThemer');
+    const inp = $id('inputThemer');
     let val = parseInt(inp.value) || 0;
     val = e.target.id.includes('down') ? val - 1 : val + 1;
     if (val > 52) val = 0;
@@ -268,7 +276,7 @@
     if (!e.shiftKey && !e.ctrlKey) {
       const visible = !GM_getValue('defaultDateTimeView', true);
       GM_setValue('defaultDateTimeView', visible);
-      const el = document.getElementById('dateTime');
+      const el = $id('dateTime');
       if (el) el.style.display = visible ? 'inline' : 'none';
       if (visible) startClock(); else clearInterval(clockInterval);
   } }
@@ -286,7 +294,7 @@
       fmt = (fmt >= CONFIG.dateTimeFormatCount) ? 1 : fmt + 1;
       GM_setValue('dateFormat', fmt);
     }
-    const el = document.getElementById('dateTime');
+    const el = $id('dateTime');
     if (el) el.textContent = getDateTime(GM_getValue('dateFormat', 1));
   }
 
@@ -305,23 +313,23 @@
   }
 
   GM_addStyle(`
-    #gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
-    #gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f > div:nth-child(2) > a,
-    #gWP1 #gb > div.gb_Ad.gb_6.gb_L,
-    #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.AghGtd,
-    #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.ssOUyb,
-    #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > a,
-    #gWP1 > div.L3eUgb div.RNNXgb div.fzj3ad,
-    #gWP1 > div.L3eUgb > div.o3j99.qarstb > div:nth-child(3) {
+    body#gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
+    body#gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f > div:nth-child(2) > a,
+    body#gWP1 #gb > div.gb_Ad.gb_6.gb_L,
+    body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.AghGtd,
+    body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.ssOUyb,
+    body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > a,
+    body#gWP1 > div.L3eUgb div.RNNXgb div.fzj3ad,
+    body#gWP1 > div.L3eUgb > div.o3j99.qarstb > div:nth-child(3) {
       display: none !important;
     }
-    #gWP1 #imageCalendar {
+    body#gWP1 #imageCalendar {
       cursor: pointer !important;
       margin: 0px !important;
       position: relative !important;
       top: -1px !important;
     }
-    #gWP1 #dateTimeContainer {
+    body#gWP1 #dateTimeContainer {
       display: inline-flex !important;
       font: 20px monospace !important;
       height: 32px !important;
@@ -329,7 +337,7 @@
       position: absolute !important;
       top: 10px !important;
     }
-    #gWP1 #dateTimeContainer > #dateTime {
+    body#gWP1 #dateTimeContainer > #dateTime {
       background: rgba(0, 0, 0, .3) !important;
       border: 1px solid transparent !important;
       border-radius: 8px !important;
@@ -339,50 +347,51 @@
       margin: 0px 0px 0px 3px !important;
       padding: 0px 6px !important;
     }
-    #gWP1 #imageCalendar:hover + #dateTime {
+    body#gWP1 #imageCalendar:hover + #dateTime {
       background: #900 !important;
       border-color: #C00 !important;
       color: #FFF !important;
     }
-    #gWP1 #dateTimeContainer > #dateTime:hover {
+    body#gWP1 #dateTimeContainer > #dateTime:hover {
       background: #181A1B !important;
       border: 1px solid #000 !important;
     }
-    #gWP1 #logoGoogle {
+    body#gWP1 #logoGoogle {
       max-height: 100% !important;
       max-width: 100% !important;
       position: absolute !important;
       top: 0px !important;
     }
-    #gWP1 form {
-      margin-top: 210px !important;
-    }
-    #gWP1 #changerContainer {
+    body#gWP1 #changerContainer {
       height: 52px !important;
       margin: 0px !important;
       position: relative !important;
       top: -3px !important;
     }
-    #gWP1 #buttonThemer,
-    #gWP1 #buttonLogo {
+    body#gWP1 #buttonThemer,
+    body#gWP1 #buttonLogo {
       background-position: bottom 6px right !important;
       background-repeat: no-repeat !important;
+      color: #FFF !important;
       cursor: pointer !important;
       font: 20px monospace !important;
       margin-right: 13px !important;
       opacity: .7 !important;
       text-shadow: 1px 1px 2px #000 !important;
     }
-    #gWP1 #buttonThemer {
+    body#gWP1 #buttonThemer {
       width: 224px !important;
     }
-    #gWP1 #buttonLogo {
+    body#gWP1 #buttonLogo {
       width: 190px !important;
     }
-    #gWP1 #inputThemer,
-    #gWP1 #inputLogo {
+    body#gWP1 #inputThemer,
+    body#gWP1 #inputLogo {
       background: #000 !important;
-      border: 2px outset #FFF !important;
+      border: 2px solid #FFF !important;
+      border-radius: 6px !important;
+      box-shadow: 0 1px 3px rgba(2555,255,255,0.15) !important;
+      color: #FFF !important;
       cursor: pointer !important;
       font: 20px monospace !important;
       height: 22px !important;
@@ -390,10 +399,16 @@
       position: relative !important;
       text-align: center !important;
       top: -1px !important;
-      width: 27px !important;
+      width: 32px !important;
     }
-    #gWP1 #downThemer,
-    #gWP1 #downLogo {
+    body#gWP1 #inputThemer:hover,
+    body#gWP1 #inputThemer:focus-within,
+    body#gWP1 #inputLogo:hover,
+    body#gWP1 #inputLogo:focus-within {
+      border-color: #999 !important;
+    }
+    body#gWP1 #downThemer,
+    body#gWP1 #downLogo {
       background-repeat: no-repeat !important;
       cursor: pointer !important;
       height: 32px !important;
@@ -403,31 +418,35 @@
       top: 7px !important;
       width: 47px !important;
     }
-    #gWP1 #changerContainer > button:hover,
-    #gWP1 #changerContainer > button:focus-within,
-    #gWP1 #changerContainer > input:hover,
-    #gWP1 #changerContainer > input:focus-within {
+    body#gWP1 #changerContainer > button:hover,
+    body#gWP1 #changerContainer > button:focus-within,
+    body#gWP1 #changerContainer > input:hover,
+    body#gWP1 #changerContainer > input:focus-within {
       opacity: 1 !important;
     }
-    #gWP1 ::-webkit-inner-spin-button,
-    #gWP1 ::-webkit-outer-spin-button,
-    #gWP1 ::-webkit-inner-spin-button,
-    #gWP1 ::-webkit-outer-spin-button {
+    body#gWP1 ::-webkit-inner-spin-button,
+    body#gWP1 ::-webkit-outer-spin-button,
+    body#gWP1 ::-webkit-inner-spin-button,
+    body#gWP1 ::-webkit-outer-spin-button {
       display: none !important;
     }
-    #gb > div.gb_Q.gb_6.gb_Vf.gb_3f {
+    body#gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f {
       padding-right: 0px !important;
     }
-    a {
+    body#gWP1 header a {
+      color: #FFF !important;
       text-decoration: none !important;
+    }
+    body#gWP1 header a > svg {
+      fill: #FFF !important;
     }
     body#gWP1 {
       background: url(${CONFIG.githubSite}GM_getValue(wallpaperImage)}.jpg) no-repeat center center / cover !important;
     }
-    #gWP1 > div.L3eUgb > div:nth-child(13) > div {
+    body#gWP1 > div.L3eUgb > div:nth-child(13) > div {
       background: transparent !important;
     }
-    #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe {
+    body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe {
       float: right !important;
     }
   `);
