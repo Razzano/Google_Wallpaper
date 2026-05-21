@@ -85,13 +85,11 @@
     num = parseInt(num) || 1;
     if (num < 1 || num > 13) num = 13;
     $id('logoGoogle')?.remove();
+    const margins = { 0: '-86px', 4: '168px', 13: '-86px' };
+    const marginTop = margins[num] ?? '210px';
     GM_addStyle(`
       #gWP1 #LS8OJ { display: ${num === 13 ? 'block' : 'none'} !important; }
-      #gWP1 form, #gWP1 .RN6D2c { margin-top: ${num === 13 || num === 0
-        ? '-86px' : num === 4
-        ? '168px'
-        : '210px'
-      } !important; }
+      #gWP1 form, #gWP1 .RN6D2c { margin-top: ${marginTop} !important; }
     `);
     if (num !== 13 && logos[num]) {
       const logoCopy = logos[num].cloneNode(false);
