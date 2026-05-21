@@ -62,22 +62,26 @@
   }
 
   let clockInterval = null;
+
   const $id = (id) => document.getElementById(id);
+
   function $c(type, props = {}) {
     const node = document.createElement(type);
     Object.assign(node, props);
     return node;
   }
+
   function $q(sel) { return document.querySelector(sel); }
+
   function removeDupes(className) {
     document.querySelectorAll('.' + className).forEach((el, i) => { if (i > 0) el.remove(); });
   }
+
   function updateCalendarTooltip() {
     const cal = $id('imageCalendar');
     if (cal) cal.title = getTooltipText();
   }
 
-  // ================== DYNAMIC TOOLTIP ==================
   function getTooltipText() {
     return `• Left-click to Hide/Show Date/Time\n` +
            `• Shift + Left-click for link targets of '_blank'\n` +
@@ -85,7 +89,6 @@
            `• Current value: ⇒ '${GM_getValue('linkTarget', '_blank')}'`;
   }
 
-  // ================== ANTI-FLASH CENTERED LOGO ==================
   function applyLogo(num) {
     num = parseInt(num) || 1;
     if (num < 1 || num > 13) num = 13;
@@ -123,7 +126,6 @@
     GM_setValue('logoImageNum', num);
   }
 
-  // ================== WALLPAPER ==================
   function applyWallpaper(num) {
     num = parseInt(num) || 0;
     if (num === 0) {
@@ -137,7 +139,6 @@
       `);
   } }
 
-  // ================== DATE/TIME ==================
   function getDateTime(format = 1) {
     const now = new Date();
     const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear();
@@ -167,7 +168,6 @@
     }, ms);
   }
 
-  // ================== EVENT HANDLERS ==================
   function logoClick(id) {
     let current = GM_getValue('logoImageNum', 1);
     let next = (id.includes('up') || id === 'buttonLogo')
@@ -176,7 +176,6 @@
     applyLogo(next);
   }
 
-  // Handle manual number input in logo field
   function handleLogoInput(e) {
     let val = parseInt(e.target.value);
     if (isNaN(val)) return;
@@ -212,7 +211,6 @@
     });
   }
 
-  // ================== UPDATED DATE/TIME TOGGLE ==================
   function dateTimeToggle(e) {
     if (e.button !== 0) return;
     const dtEl = document.getElementById('dateTime');
@@ -260,7 +258,6 @@
     if (el) el.textContent = getDateTime(GM_getValue('dateFormat', 1));
   }
 
-  // ================== INIT ==================
   function init() {
     const body = document.body;
     if (!body) return;
@@ -269,7 +266,7 @@
     const imageCalendar = $c('img', {
       id: 'imageCalendar',
       src: images.calendar,
-      title: getTooltipText(), // Dynamic tooltip
+      title: getTooltipText(),
       onclick: dateTimeToggle
     });
     const dateTimeEl = $c('span', {
@@ -335,7 +332,6 @@
       imageCalendar.addEventListener('click', dateTimeToggle, false);
   } }
 
-  // Set defaults
   if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
   if (GM_getValue('dateTimeHidden') === undefined) GM_setValue('dateTimeHidden', false);
   if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', true);
