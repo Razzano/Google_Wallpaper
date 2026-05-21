@@ -72,6 +72,10 @@
   function removeDupes(className) {
     document.querySelectorAll('.' + className).forEach((el, i) => { if (i > 0) el.remove(); });
   }
+  function updateCalendarTooltip() {
+    const cal = $id('imageCalendar');
+    if (cal) cal.title = getTooltipText();
+  }
 
   // ================== DYNAMIC TOOLTIP ==================
   function getTooltipText() {
@@ -214,32 +218,30 @@
     const dtEl = document.getElementById('dateTime');
     if (!dtEl) return;
     if (!e.shiftKey && !e.ctrlKey) {
-      // Toggle visibility
-      const isHidden = dtEl.hidden;
-      dtEl.hidden = !isHidden;
+      //const willBeHidden = !dtEl.hidden; // what it will become after toggle
+      const isHidden = GM_getValue('defaultDateTimeView');
+      dtEl.hidden = isHidden;
       GM_setValue('defaultDateTimeView', !isHidden);
-      if (!isHidden) {
-        clearInterval(clockInterval);
+      if (isHidden) {
+        dtEl.style.display = 'none';
+        if (clockInterval) clearInterval(clockInterval);
       } else {
+        dtEl.style.display = 'block';
         dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
         startClock();
-    } }
+      }
+      return;
+    }
     else if (e.shiftKey && !e.ctrlKey) {
       GM_setValue('linkTarget', '_blank');
-      searchLinksWhere();
-      updateCalendarTooltip(); // ← Added
     }
     else if (e.ctrlKey && !e.shiftKey) {
       GM_setValue('linkTarget', '_self');
-      searchLinksWhere();
-      updateCalendarTooltip(); // ← Added
+    }
+	   searchLinksWhere();
+    if (typeof updateCalendarTooltip === 'function') {
+      updateCalendarTooltip();
   } }
-
-  // New helper to refresh tooltip
-  function updateCalendarTooltip() {
-    const cal = $id('imageCalendar');
-    if (cal) cal.title = getTooltipText();
-  }
 
   function dateTimeToggleSecondsAmPm(e) {
     if (e.button !== 0) return;
@@ -268,12 +270,12 @@
       id: 'imageCalendar',
       src: images.calendar,
       title: getTooltipText(), // Dynamic tooltip
-      onmousedown: dateTimeToggle
+      onclick: dateTimeToggle
     });
     const dateTimeEl = $c('span', {
       id: 'dateTime',
       title: texts.toggleText,
-      onmousedown: dateTimeToggleSecondsAmPm
+      onclick: dateTimeToggleSecondsAmPm
     });
     dtContainer.append(imageCalendar, dateTimeEl);
     const changerContainer = $c('div', {id: 'changerContainer'});
@@ -328,10 +330,14 @@
       dateTimeEl.style.display = 'none';
     }
     searchLinksWhere();
-  }
+    if (imageCalendar) {
+      imageCalendar.onclick = null; // remove old handlers
+      imageCalendar.addEventListener('click', dateTimeToggle, false);
+  } }
 
   // Set defaults
   if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
+  if (GM_getValue('dateTimeHidden') === undefined) GM_setValue('dateTimeHidden', false);
   if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', true);
   if (GM_getValue('defaultSecondsView') === undefined) GM_setValue('defaultSecondsView', false);
   if (GM_getValue('defaultAMPM') === undefined) GM_setValue('defaultAMPM', true);
