@@ -163,12 +163,14 @@
     const dayFull = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dy];
     const monthAbbr = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'][mth];
     const mPadded = (mth + 1) < 10 ? '0' + (mth + 1) : (mth + 1);
+    const suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th';
+    const ordinal = dt + suffix;
     switch(format){
-      case 1: return `${dayFull} ⇒ ${monthAbbr} ${dt}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
+      case 1: return `${dayFull} ⇒ ${monthAbbr} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
       case 2: return `${dayAbbr} • ${monthAbbr} ${dt}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
       case 3: return `${dayAbbr} • ${mPadded}/${dt < 10 ? '0'+dt : dt}/${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
-      case 4: return `${dayFull}, ${monthAbbr} ${dt}, ${yr} ⏰ ${hr<10?'0'+hr:hr}${minStr}${secStr}`;
-      default: return `${dayAbbr} ${hr12}${minStr}${secStr} ${ampm}`;
+      case 4: return `${dayFull}, ${monthAbbr} ${dt}, ${yr} ⏰ ${hr<10?'0'+hr:hr}${minStr}${secStr} ${ampm}`;
+      default: return `${dayFull} ⇒ ${monthAbbr} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
   } }
 
   function startClock() {
