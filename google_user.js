@@ -351,6 +351,7 @@
   if (GM_getValue('linkTarget') === undefined) GM_setValue('linkTarget', '_blank');
   if (GM_getValue('logoImageNum') === undefined) GM_setValue('logoImageNum', 1);
   if (GM_getValue('wallpaperImage') === undefined) GM_setValue('wallpaperImage', 0);
+
   if (document.readyState === "loading") {
     document.addEventListener('DOMContentLoaded', init);
   } else {
