@@ -276,7 +276,9 @@
     const body = document.body;
     if (!body) return;
     body.id = 'gWP1';
-    const dtContainer = $c('div', {id: 'dateTimeContainer'});
+    const dtContainer = $c('div', {
+      id: 'dateTimeContainer'
+    });
     const imageCalendar = $c('img', {
       id: 'imageCalendar',
       src: images.calendar,
@@ -289,7 +291,9 @@
       onclick: dateTimeToggleSecondsAmPm
     });
     dtContainer.append(imageCalendar, dateTimeEl);
-    const changerContainer = $c('div', {id: 'changerContainer'});
+    const changerContainer = $c('div', {
+      id: 'changerContainer'
+    });
     const buttonThemer = $c('button', {
       id: 'buttonThemer',
       innerHTML: texts.wallpaperImageText,
@@ -388,6 +392,7 @@
     }
     body#gWP1 #dateTimeContainer > #dateTime {
       background: rgba(0, 0, 0, .3) !important;
+      display: block !important;
       border: 1px solid transparent !important;
       border-radius: 8px !important;
       box-shadow: none !important;
@@ -395,6 +400,10 @@
       cursor: pointer !important;
       margin: 0px 0px 0px 3px !important;
       padding: 0px 6px !important;
+    }
+    body#gWP1 #dateTimeContainer > #dateTime[hidden] {
+      display: none !important;
+      min-width: 0 !important;
     }
     body#gWP1 #imageCalendar:hover + #dateTime {
       background: #900 !important;
@@ -503,10 +512,10 @@
       border-radius: 6px !important;
       padding: 8px 16px !important;
     }
-    #gWP1 #LS8OJ > div.k1zIA.rSk4se > svg {
+    body#gWP1 #LS8OJ > div.k1zIA.rSk4se > svg {
       fill: #FFF !important;
     }
-    #gWP1 > div.L3eUgb > div.o3j99.ikrT4e.KEY6ib > form > div:nth-child(1) > div > div.RNNXgb {
+    body#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.KEY6ib > form > div:nth-child(1) > div > div.RNNXgb {
       background: rgba(0,0,0,.1) !important;
     }
   `);
