@@ -46,7 +46,7 @@
     logo5: CONFIG.aURL + 'googleLogo11.png',
     logo6: CONFIG.aURL + 'googleLogo12.png',
     logo7: CONFIG.aURL + 'lightbulb.png',
-    logo8: CONFIG.aURL + 'manSearching3.png',
+    logo8: CONFIG.aURL + 'search2.png',
     logo9: CONFIG.aURL + 'googleLogo15.png',
     logo10: CONFIG.aURL + 'googleLogo17.png',
     logo11: CONFIG.aURL + 'flag.png',
@@ -83,22 +83,34 @@
   }
 
   function getTooltipText() {
-    return `• Left-click to Hide/Show Date/Time\n` +
-           `• Shift + Left-click for link targets of '_blank'\n` +
-           `• Ctrl + Left-click for link targets of '_self'\n` +
-           `• Current value: ⇒ '${GM_getValue('linkTarget', '_blank')}'`;
+    return `• Left-click to Hide/Show Date/Time Container\n` +
+           `• Shift + Left-click for link target in New Tab: '_blank'\n` +
+           `• Ctrl + Left-click for link target in Active Tab: '_self'\n` +
+           `• Current setting: ⇒ ${
+              GM_getValue('linkTarget', '_blank') === '_blank'
+              ? 'New Tab with target of "_blank"'
+              : 'Active Tab with target of "_self"'
+            }`;
   }
 
   function applyLogo(num) {
     num = parseInt(num) || 1;
     if (num < 1 || num > 13) num = 13;
     $id('logoGoogle')?.remove();
-    const margins = { 0: '-86px', 4: '168px', 13: '-86px' };
-    const marginTop = margins[num] ?? '210px';
+    //const margins = { 0: '-86px', 4: '168px', 13: '-86px' }; ⇒ For Logo at top
+    //const marginTop = margins[num] ?? '210px'; ⇒ For Logo at top
+    const margins = { 4: '64px', 8: '60px' };
+    const marginTop = margins[num] ?? '40px';
+    const translate = { 8: 'translateX(-180%)' }
+    const transform = translate[num] ?? 'translateX(-50%)';
+    //#gWP1 #LS8OJ { display: ${num === 13 ? 'block' : 'none'} !important; } ⇒ In GM_addStyle for logo at top
+    //#gWP1 form, #gWP1 .RN6D2c { margin-top: ${marginTop} !important; } ⇒ In GM_addStyle for logo at top
     GM_addStyle(`
-      #gWP1 #LS8OJ { display: ${num === 13 ? 'block' : 'none'} !important; }
-      #gWP1 form, #gWP1 .RN6D2c { margin-top: ${marginTop} !important; }
+      #gWP1 #LS8OJ > div.k1zIA.rSk4se { display: ${num === 13 ? 'block' : 'none'} !important; }
+      #gWP1 #logoGoogle { margin-top: ${marginTop} !important; }
     `);
+    //top: 0 !important; ⇒ In logoCopy.style.cssText for logo at top
+    //transform: translateX(-50%) !important;
     if (num !== 13 && logos[num]) {
       const logoCopy = logos[num].cloneNode(false);
       logoCopy.id = 'logoGoogle';
@@ -106,8 +118,8 @@
       logoCopy.style.cssText = `
         position: absolute !important;
         left: 50% !important;
-        top: 0px !important;
-        transform: translateX(-50%) !important;
+        top: ${marginTop} !important;
+        transform: ${transform} !important;
         z-index: 999 !important;
         opacity: 0 !important;
         filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)) !important;
@@ -121,7 +133,7 @@
     }
     const inp = $id('inputLogo');
     if (inp) {
-      inp.value = (num === 13) ? 0 : num; // Show 0 for default logo
+      inp.value = (num === 13) ? 0 : num;
     }
     GM_setValue('logoImageNum', num);
   }
@@ -216,7 +228,6 @@
     const dtEl = document.getElementById('dateTime');
     if (!dtEl) return;
     if (!e.shiftKey && !e.ctrlKey) {
-      //const willBeHidden = !dtEl.hidden; // what it will become after toggle
       const isHidden = GM_getValue('defaultDateTimeView');
       dtEl.hidden = isHidden;
       GM_setValue('defaultDateTimeView', !isHidden);
@@ -328,7 +339,7 @@
     }
     searchLinksWhere();
     if (imageCalendar) {
-      imageCalendar.onclick = null; // remove old handlers
+      imageCalendar.onclick = null;
       imageCalendar.addEventListener('click', dateTimeToggle, false);
   } }
 
@@ -487,6 +498,9 @@
       background: #000 !important;
       border-radius: 6px !important;
       padding: 8px 16px !important;
+    }
+    #gWP1 #LS8OJ > div.k1zIA.rSk4se > svg {
+      fill: #FFF !important;
     }
     #gWP1 > div.L3eUgb > div.o3j99.ikrT4e.KEY6ib > form > div:nth-child(1) > div > div.RNNXgb {
       background: rgba(0,0,0,.1) !important;
