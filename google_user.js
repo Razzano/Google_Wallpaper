@@ -194,7 +194,7 @@
   function handleLogoInput(e) {
     let val = parseInt(e.target.value);
     if (isNaN(val)) return;
-    if (val === 0) val = 13; // 0 = Default Google logo
+    if (val === 0) val = 13;
     val = Math.max(1, Math.min(13, val));
     applyLogo(val);
   }
@@ -231,26 +231,26 @@
     const dtEl = document.getElementById('dateTime');
     if (!dtEl) return;
     if (!e.shiftKey && !e.ctrlKey) {
-      const isHidden = GM_getValue('defaultDateTimeView');
-      dtEl.hidden = isHidden;
-      GM_setValue('defaultDateTimeView', !isHidden);
-      if (isHidden) {
-        dtEl.style.display = 'none';
-        if (clockInterval) clearInterval(clockInterval);
+      const newHiddenState = !dtEl.hidden;
+      dtEl.hidden = newHiddenState;
+      GM_setValue('defaultDateTimeView', newHiddenState);
+      if (newHiddenState) {
+        if (clockInterval) {
+          clearInterval(clockInterval);
+          clockInterval = null;
+        }
       } else {
-        dtEl.style.display = 'block';
         dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
         startClock();
       }
       return;
     }
-    else if (e.shiftKey && !e.ctrlKey) {
+    if (e.shiftKey && !e.ctrlKey) {
       GM_setValue('linkTarget', '_blank');
-    }
-    else if (e.ctrlKey && !e.shiftKey) {
+    } else if (e.ctrlKey && !e.shiftKey) {
       GM_setValue('linkTarget', '_self');
     }
-	   searchLinksWhere();
+    searchLinksWhere();
     if (typeof updateCalendarTooltip === 'function') {
       updateCalendarTooltip();
   } }
@@ -348,7 +348,15 @@
     if (imageCalendar) {
       imageCalendar.onclick = null;
       imageCalendar.addEventListener('click', dateTimeToggle, false);
-  } }
+    }
+    const dtEl = document.getElementById('dateTime');
+    if (dtEl) {
+      const shouldHide = GM_getValue('defaultDateTimeView', false);
+      dtEl.hidden = shouldHide;
+      if (!shouldHide) {
+          dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
+          startClock();
+  } } }
 
   if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
   if (GM_getValue('dateTimeHidden') === undefined) GM_setValue('dateTimeHidden', false);
@@ -373,7 +381,8 @@
     body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.ssOUyb,
     body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > a,
     body#gWP1 > div.L3eUgb div.RNNXgb div.fzj3ad,
-    body#gWP1 > div.L3eUgb > div.o3j99.qarstb > div:nth-child(3) {
+    body#gWP1 > div.L3eUgb > div.o3j99.qarstb > div:nth-child(3),
+    body#gWP1 #EUjKDc {
       display: none !important;
     }
     body#gWP1 #imageCalendar {
@@ -390,7 +399,7 @@
       position: absolute !important;
       top: 10px !important;
     }
-    body#gWP1 #dateTimeContainer > #dateTime {
+    body#gWP1 #dateTime {
       background: rgba(0, 0, 0, .3) !important;
       display: block !important;
       border: 1px solid transparent !important;
@@ -399,18 +408,21 @@
       color: #FFF !important;
       cursor: pointer !important;
       margin: 0px 0px 0px 3px !important;
+      min-width: 0px !important;
       padding: 0px 6px !important;
-    }
-    body#gWP1 #dateTimeContainer > #dateTime[hidden] {
-      display: none !important;
-      min-width: 0 !important;
     }
     body#gWP1 #imageCalendar:hover + #dateTime {
       background: #900 !important;
       border-color: #C00 !important;
       color: #FFF !important;
     }
-    body#gWP1 #dateTimeContainer > #dateTime:hover {
+    body#gWP1 #dateTime[hidden] {
+      background: transparent !important;
+      border: none !important;
+      display: none !important;
+      width: 0px !important;
+    }
+    body#gWP1 #dateTime:hover {
       background: #181A1B !important;
       border: 1px solid #000 !important;
     }
@@ -446,11 +458,12 @@
     body#gWP1 #inputThemer,
     body#gWP1 #inputLogo {
       background: #000 !important;
-      border: 2px solid #FFF !important;
+      border: 1px solid #FFF !important;
       border-radius: 6px !important;
       box-shadow: 0 1px 3px rgba(2555,255,255,0.15) !important;
       color: #FFF !important;
       cursor: pointer !important;
+      filter: brightness(2) !important;
       font: 20px monospace !important;
       height: 22px !important;
       padding-top: 4px !important;
