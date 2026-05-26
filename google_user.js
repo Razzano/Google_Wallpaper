@@ -74,23 +74,14 @@
     });
   };
 
+  let clockInterval = null;
+
   const _CONFIGX_ = {
     aURL: 'https://raw.githubusercontent.com/Razzano/My_Images/master/',
     dateTimeFormatCount: 4,
     githubSite: 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
     timerLong: 10000,
     timerShort: 1000
-  };
-
-  const _TextX_ = {
-    changeWallpaperTooltip: 'Left-click to change wallpaper',
-    inputLogoTooltip: '1 - 12 (13 = Default Google logo)',
-    inputThemerTooltip: '0 - 52 (0 = Default background)',
-    logoChangerText: 'Logo Changer',
-    placeHolderText: 'Search Look-up',
-    switchLogo: 'Left-click to change logos',
-    toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`,
-    wallpaperImageText: 'Wallpaper Image'
   };
 
   const _ImageX_ = {
@@ -111,30 +102,39 @@
     downArrow: _CONFIGX_.aURL + 'downArrow7.png'
   };
 
+  const _TextX_ = {
+    changeWallpaperTooltip: 'Left-click to change wallpaper',
+    inputLogoTooltip: '1 - 12 (13 = Default Google logo)',
+    inputThemerTooltip: '0 - 52 (0 = Default background)',
+    logoChangerText: 'Logo Changer',
+    placeHolderText: 'Search Look-up',
+    switchLogo: 'Left-click to change logos',
+    toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`,
+    wallpaperImageText: 'Wallpaper Image'
+  };
+
   const logos = [null];
   for (let i = 1; i <= 12; i++) {
     logos.push($c('img', {id: 'logoGoogle', class: 'logo', src: _ImageX_[`logo${i}`]}));
   }
 
-  let clockInterval = null;
-
-  function updateCalendarTooltip() {
+  const updateCalendarTooltip = () => {
     const cal = $id('imageCalendar');
     if (cal) cal.title = getTooltipText();
   }
 
-  function getTooltipText() {
-    return `• Left-click to Hide/Show Date/Time Container\n` +
-           `• Shift + Left-click for link target in New Tab: '_blank'\n` +
-           `• Ctrl + Left-click for link target in Active Tab: '_self'\n` +
-           `• Current setting: ⇒ ${
-              GM_getValue('linkTarget', '_blank') === '_blank'
-              ? 'New Tab with target of "_blank"'
-              : 'Active Tab with target of "_self"'
-            }`;
-  }
+  const getTooltipText = () => {
+    const target = GM_getValue('linkTarget', '_blank');
+    const mode = target === '_blank' ? 'New Tab (target = "_blank")' : 'Active Tab (target = "_self")';
+    return `Tooltip Controls:
+       • Left-click  → Toggle Date/Time Container
+       • Shift + Left-click  → Open in ${mode}
+       • Ctrl + Left-click   → Open in Active Tab (target = "_self")
+    Current:
+       • ${target === '_blank' ? 'New Tab (target = "_blank")' : 'Active Tab (target = "_self")'}`;
+  };
 
-  function applyLogo(num) {
+  const applyLogo = (num) => {
     num = parseInt(num) || 1;
     if (num < 1 || num > 13) num = 13;
     $id('logoGoogle')?.remove();
@@ -147,7 +147,10 @@
     //#gWP1 #LS8OJ { display: ${num === 13 ? 'block' : 'none'} !important; } ⇒ In GM_addStyle for logo at top
     //#gWP1 form, #gWP1 .RN6D2c { margin-top: ${marginTop} !important; } ⇒ In GM_addStyle for logo at top
     GM_addStyle(`
-      #gWP1 #LS8OJ > div.k1zIA.rSk4se { display: ${num === 13 ? 'block' : 'none'} !important; }
+      #gWP1 #LS8OJ > .k1zIA.rSk4se,
+      #gWP1 #LS8OJ > .k1zIA.kKvsb {
+        display: ${num === 13 ? 'block' : 'none'} !important;
+      }
       #gWP1 #logoGoogle { margin-top: ${marginTop} !important; }
     `);
     //top: 0 !important; ⇒ In logoCopy.style.cssText for logo at top
@@ -179,20 +182,19 @@
     GM_setValue('logoImageNum', num);
   }
 
-  function applyWallpaper(num) {
+  const applyWallpaper = (num) => {
     num = parseInt(num) || 0;
     if (num === 0) {
       GM_addStyle(`body#gWP1 { background: initial !important; }`);
     } else {
       GM_addStyle(`
         body#gWP1 {
-          background: url(${_CONFIGX_.githubSite}${num}.jpg) no-repeat center center / cover !important;
-          background-attachment: fixed !important;
+          background: url(${_CONFIGX_.githubSite}${num}.jpg) no-repeat center center / cover fixed !important;
         }
       `);
   } }
 
-  function getDateTime(format = 1) {
+  const getDateTime = (format = 1) => {
     const now = new Date();
     const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear();
     let hr = now.getHours(), min = now.getMinutes(), sec = now.getSeconds();
@@ -215,7 +217,7 @@
       default: return `${dayFull} ⇒ ${monthAbbr} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
   } }
 
-  function startClock() {
+  const startClock = () => {
     if (clockInterval) clearInterval(clockInterval);
     const ms = GM_getValue('defaultSecondsView', false) ? _CONFIGX_.timerShort : _CONFIGX_.timerLong;
     clockInterval = setInterval(() => {
@@ -224,7 +226,7 @@
     }, ms);
   }
 
-  function logoClick(id) {
+  const logoClick = (id) => {
     let current = GM_getValue('logoImageNum', 1);
     let next = (id.includes('up') || id === 'buttonLogo')
       ? (current % 13) + 1
@@ -232,7 +234,7 @@
     applyLogo(next);
   }
 
-  function handleLogoInput(e) {
+  const handleLogoInput = (e) => {
     let val = parseInt(e.target.value);
     if (isNaN(val)) return;
     if (val === 0) val = 13;
@@ -240,7 +242,7 @@
     applyLogo(val);
   }
 
-  function wallpaperButtonChanger(e) {
+  const wallpaperButtonChanger = (e) => {
     const inp = $id('inputThemer');
     let val = parseInt(inp.value) || 0;
     val = e.target.id.includes('down') ? val - 1 : val + 1;
@@ -251,7 +253,7 @@
     applyWallpaper(val);
   }
 
-  function wallpaperInputChanger() {
+  const wallpaperInputChanger = () => {
     let val = parseInt(this.value) || 0;
     val = Math.max(0, Math.min(52, val));
     this.value = val;
@@ -259,7 +261,7 @@
     applyWallpaper(val);
   }
 
-  function searchLinksWhere() {
+  const searchLinksWhere = () => {
     const links = $qa('a');
     const target = GM_getValue('linkTarget', '_blank');
     links.forEach(link => {
@@ -267,7 +269,7 @@
     });
   }
 
-  function dateTimeToggle(e) {
+  const dateTimeToggle = (e) => {
     if (e.button !== 0) return;
     const dtEl = $id('dateTime');
     if (!dtEl) return;
@@ -296,7 +298,7 @@
       updateCalendarTooltip();
   } }
 
-  function dateTimeToggleSecondsAmPm(e) {
+  const dateTimeToggleSecondsAmPm = (e) => {
     if (e.button !== 0) return;
     e.preventDefault();
     if (!e.shiftKey && !e.ctrlKey) {
@@ -313,7 +315,7 @@
     if (el) el.textContent = getDateTime(GM_getValue('dateFormat', 1));
   }
 
-  function init() {
+  const init = () => {
     document.removeEventListener('DOMContentLoaded', init);
     const body = document.body;
     if (!body) return;
@@ -505,7 +507,6 @@
       box-shadow: 0 1px 3px rgba(2555,255,255,0.15) !important;
       color: #FFF !important;
       cursor: pointer !important;
-      filter: brightness(2) !important;
       font: 20px monospace !important;
       height: 22px !important;
       padding-top: 4px !important;
@@ -519,6 +520,7 @@
     body#gWP1 #inputLogo:hover,
     body#gWP1 #inputLogo:focus-within {
       border-color: #999 !important;
+      filter: brightness(2) !important;
     }
     body#gWP1 #downThemer,
     body#gWP1 #downLogo {
@@ -554,7 +556,7 @@
       fill: #FFF !important;
     }
     body#gWP1 {
-      background: url(${_CONFIGX_.githubSite}GM_getValue(wallpaperImage)}.jpg) no-repeat center center / cover !important;
+      background: url(${_CONFIGX_.githubSite}GM_getValue(wallpaperImage)}.jpg) no-repeat center center / cover fixed !important;
     }
     body#gWP1 > div.L3eUgb > div:nth-child(13) > div {
       background: transparent !important;
