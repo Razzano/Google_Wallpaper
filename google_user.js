@@ -70,7 +70,9 @@
 
   const removeDupes = (className) => {
     $qa('.' + className).forEach((el, i) => {
-        if (i > 0) el.remove();
+      if (i > 0) {
+        el.remove();
+      }
     });
   };
 
@@ -120,30 +122,33 @@
 
   const updateCalendarTooltip = () => {
     const cal = $id('imageCalendar');
-    if (cal) cal.title = getTooltipText();
-  }
+    if (cal) {
+      cal.title = getTooltipText();
+  } }
 
   const getTooltipText = () => {
-    const target = GM_getValue('linkTarget', '_blank');
-    const mode = target === '_blank' ? 'New Tab (target = "_blank")' : 'Active Tab (target = "_self")';
+    const target = GM_getValue('linkTarget', '_blank'),
+          mode = target === '_blank' ? 'New Tab ( target = "_blank" )' : 'Active Tab ( target = "_self" )';
     return `Tooltip Controls:
        • Left-click  → Toggle Date/Time Container
-       • Shift + Left-click  → Open in ${mode}
-       • Ctrl + Left-click   → Open in Active Tab (target = "_self")
-    Current:
-       • ${target === '_blank' ? 'New Tab (target = "_blank")' : 'Active Tab (target = "_self")'}`;
+       • Shift + Left-click  → Open in New Tab ( target = "_blank" )
+       • Ctrl + Left-click   → Open in Active Tab ( target = "_self" )
+       Current Target:
+              • ${mode}`;
   };
 
   const applyLogo = (num) => {
     num = parseInt(num) || 1;
-    if (num < 1 || num > 13) num = 13;
+    if (num < 1 || num > 13) {
+      num = 13;
+    }
     $id('logoGoogle')?.remove();
     //const margins = { 0: '-86px', 4: '168px', 13: '-86px' }; ⇒ For Logo at top
     //const marginTop = margins[num] ?? '210px'; ⇒ For Logo at top
-    const margins = { 4: '64px', 8: '60px' };
-    const marginTop = margins[num] ?? '40px';
-    const translate = { 8: 'translateX(-180%)' }
-    const transform = translate[num] ?? 'translateX(-50%)';
+    const margins = { 4: '64px', 8: '60px' },
+          marginTop = margins[num] ?? '40px',
+          translate = { 8: 'translateX(-180%)' },
+          transform = translate[num] ?? 'translateX(-50%)';
     //#gWP1 #LS8OJ { display: ${num === 13 ? 'block' : 'none'} !important; } ⇒ In GM_addStyle for logo at top
     //#gWP1 form, #gWP1 .RN6D2c { margin-top: ${marginTop} !important; } ⇒ In GM_addStyle for logo at top
     GM_addStyle(`
@@ -169,7 +174,9 @@
         filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)) !important;
       `;
       const dtContainer = $id('dateTimeContainer');
-      if (dtContainer) dtContainer.after(logoCopy);
+      if (dtContainer) {
+        dtContainer.after(logoCopy);
+      }
       removeDupes('logo');
       requestAnimationFrame(() => {
         logoCopy.style.opacity = '1';
@@ -196,19 +203,19 @@
 
   const getDateTime = (format = 1) => {
     const now = new Date();
-    const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear();
-    let hr = now.getHours(), min = now.getMinutes(), sec = now.getSeconds();
-    const hr12 = hr % 12 || 12;
-    const hr24 = hr;
-    const minStr = min < 10 ? ':0' + min : ':' + min;
-    const secStr = GM_getValue('defaultSecondsView', false) ? (sec < 10 ? ':0' + sec : ':' + sec) : '';
-    const ampm = GM_getValue('defaultAMPM', false) ? (hr < 12 ? 'AM' : 'PM') : '';
-    const dayAbbr = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'][dy];
-    const dayFull = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dy];
-    const monthAbbr = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'][mth];
-    const mPadded = (mth + 1) < 10 ? '0' + (mth + 1) : (mth + 1);
-    const suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th';
-    const ordinal = dt + suffix;
+    const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear(),
+          dayAbbr = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'][dy],
+          dayFull = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dy],
+          monthAbbr = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'][mth],
+          mPadded = (mth + 1) < 10 ? '0' + (mth + 1) : (mth + 1),
+          suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th',
+          ordinal = dt + suffix;
+    const hr = now.getHours(), min = now.getMinutes(), sec = now.getSeconds(),
+          hr12 = hr % 12 || 12,
+          hr24 = hr,
+          minStr = min < 10 ? ':0' + min : ':' + min,
+          secStr = GM_getValue('defaultSecondsView', false) ? (sec < 10 ? ':0' + sec : ':' + sec) : '',
+          ampm = GM_getValue('defaultAMPM', false) ? (hr < 12 ? 'AM' : 'PM') : '';
     switch(format){
       case 1: return `${dayFull} ⇒ ${monthAbbr} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
       case 2: return `${dayAbbr} • ${monthAbbr} ${dt}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
@@ -218,11 +225,15 @@
   } }
 
   const startClock = () => {
-    if (clockInterval) clearInterval(clockInterval);
+    if (clockInterval) {
+      clearInterval(clockInterval);
+    }
     const ms = GM_getValue('defaultSecondsView', false) ? _CONFIGX_.timerShort : _CONFIGX_.timerLong;
     clockInterval = setInterval(() => {
       const el = $id('dateTime');
-      if (el) el.textContent = getDateTime(GM_getValue('dateFormat', 1));
+      if (el) {
+        el.textContent = getDateTime(GM_getValue('dateFormat', 1));
+      }
     }, ms);
   }
 
@@ -237,7 +248,9 @@
   const handleLogoInput = (e) => {
     let val = parseInt(e.target.value);
     if (isNaN(val)) return;
-    if (val === 0) val = 13;
+    if (val === 0) {
+      val = 13;
+    }
     val = Math.max(1, Math.min(13, val));
     applyLogo(val);
   }
@@ -246,24 +259,29 @@
     const inp = $id('inputThemer');
     let val = parseInt(inp.value) || 0;
     val = e.target.id.includes('down') ? val - 1 : val + 1;
-    if (val > 52) val = 0;
-    if (val < 0) val = 52;
+    if (val > 52) {
+      val = 0;
+    }
+    if (val < 0) {
+      val = 52;
+    }
     inp.value = val;
     GM_setValue('wallpaperImage', val);
     applyWallpaper(val);
   }
 
   const wallpaperInputChanger = () => {
-    let val = parseInt(this.value) || 0;
+    const inpThemer = $id('inputThemer');
+    let val = parseInt(inpThemer.value) || 0;
     val = Math.max(0, Math.min(52, val));
-    this.value = val;
+    inpThemer.value = val;
     GM_setValue('wallpaperImage', val);
     applyWallpaper(val);
   }
 
   const searchLinksWhere = () => {
-    const links = $qa('a');
-    const target = GM_getValue('linkTarget', '_blank');
+    const links = $qa('a'),
+          target = GM_getValue('linkTarget', '_blank');
     links.forEach(link => {
       link.setAttribute('target', target);
     });
@@ -439,7 +457,7 @@
       display: inline-flex !important;
       font: 20px monospace !important;
       height: 32px !important;
-      left: 13px !important;
+      left: 10px !important;
       position: absolute !important;
       top: 10px !important;
     }
