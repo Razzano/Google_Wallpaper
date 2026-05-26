@@ -395,7 +395,7 @@
       onclick: e => logoClick(e.target.id)
     });
     changerContainer.append(buttonThemer, inputThemer, downThemer, buttonLogo, inputLogo, downLogo);
-    const header = $q('#gb') || $q('header') || body;
+    const header = $id('gb') || $q('header') || body;
     prepend(header, dtContainer);
     dtContainer.after(changerContainer);
     applyWallpaper(GM_getValue('wallpaperImage', 0));
