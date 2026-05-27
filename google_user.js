@@ -111,7 +111,7 @@
     logoChangerText: 'Logo Changer',
     placeHolderText: 'Search Look-up',
     switchLogo: 'Left-click to change logos',
-    toggleText: `• Left-click: toggle seconds\n• Alt+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`,
+    toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`,
     wallpaperImageText: 'Wallpaper Image'
   };
 
@@ -291,7 +291,7 @@
     if (e.button !== 0) return;
     const dtEl = $id('dateTime');
     if (!dtEl) return;
-    if (!e.shiftKey && !e.ctrlKey) {
+    if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
       const newHiddenState = !dtEl.hidden;
       dtEl.hidden = newHiddenState;
       GM_setValue('defaultDateTimeView', newHiddenState);
@@ -306,9 +306,9 @@
       }
       return;
     }
-    if (e.shiftKey && !e.ctrlKey) {
+    if (e.shiftKey && !e.ctrlKey && !e.altKey) {
       GM_setValue('linkTarget', '_blank');
-    } else if (e.ctrlKey && !e.shiftKey) {
+    } else if (!e.shiftKey && e.ctrlKey && !e.altKey) {
       GM_setValue('linkTarget', '_self');
     }
     searchLinksWhere();
@@ -322,9 +322,9 @@
     if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
       GM_setValue('defaultSecondsView', !GM_getValue('defaultSecondsView', false));
       startClock();
-    } else if (!e.shiftKey && !e.ctrlKey && e.altKey) {
+    } else if (e.shiftKey && !e.ctrlKey && !e.altKey) {
       GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', false));
-    } else if (e.ctrlKey && !e.shiftKey && !e.altKey) {
+    } else if (!e.shiftKey && e.ctrlKey && !e.altKey) {
       let fmt = GM_getValue('dateFormat', 1);
       fmt = (fmt >= _CONFIGX_.dateTimeFormatCount) ? 1 : fmt + 1;
       GM_setValue('dateFormat', fmt);
@@ -473,6 +473,7 @@
       margin: 0px 0px 0px 3px !important;
       min-width: 0px !important;
       padding: 0px 6px !important;
+      user-select: none !important;;
     }
     body#gWP1 #imageCalendar:hover + #dateTime {
       background: #900 !important;
