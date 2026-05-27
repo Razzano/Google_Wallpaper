@@ -19,8 +19,6 @@
 
   'use strict';
 
-  const $id = (id) => document.getElementById(id);
-
   const $c = (type, props = {}, ...children) => {
     const node = document.createElement(type);
     Object.entries(props).forEach(([key, value]) => {
@@ -53,6 +51,8 @@
     });
     return node;
   };
+
+  const $id = (id) => document.getElementById(id);
 
   const $q = (sel, ctx = document) => ctx?.querySelector(sel) ?? null;
 
@@ -238,10 +238,8 @@
   }
 
   const logoClick = (id) => {
-    let current = GM_getValue('logoImageNum', 1);
-    let next = (id.includes('up') || id === 'buttonLogo')
-      ? (current % 13) + 1
-      : ((current - 2) % 13 + 13) % 13 + 1;
+    let current = GM_getValue('logoImageNum', 1),
+        next = (id.includes('up') || id === 'buttonLogo') ? (current % 13) + 1 : ((current - 2) % 13 + 13) % 13 + 1;
     applyLogo(next);
   }
 
