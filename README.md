@@ -1,2 +1,1 @@
-# Google w/Wallpaper + Date/Time + Logo Switcher
-a Tampermonket Script.
+# Google w/Wallpaper + Date/Time + Logo Switcher (a Tampermonkey Script)
