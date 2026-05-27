@@ -111,7 +111,7 @@
     logoChangerText: 'Logo Changer',
     placeHolderText: 'Search Look-up',
     switchLogo: 'Left-click to change logos',
-    toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`,
+    toggleText: `• Left-click: toggle seconds\n• Alt+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`,
     wallpaperImageText: 'Wallpaper Image'
   };
 
@@ -319,19 +319,20 @@
   const dateTimeToggleSecondsAmPm = (e) => {
     if (e.button !== 0) return;
     e.preventDefault();
-    if (!e.shiftKey && !e.ctrlKey) {
+    if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
       GM_setValue('defaultSecondsView', !GM_getValue('defaultSecondsView', false));
       startClock();
-    } else if (e.shiftKey && !e.ctrlKey) {
+    } else if (!e.shiftKey && !e.ctrlKey && e.altKey) {
       GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', false));
-    } else if (e.ctrlKey && !e.shiftKey) {
+    } else if (e.ctrlKey && !e.shiftKey && !e.altKey) {
       let fmt = GM_getValue('dateFormat', 1);
       fmt = (fmt >= _CONFIGX_.dateTimeFormatCount) ? 1 : fmt + 1;
       GM_setValue('dateFormat', fmt);
     }
     const el = $id('dateTime');
-    if (el) el.textContent = getDateTime(GM_getValue('dateFormat', 1));
-  }
+    if (el) {
+      el.textContent = getDateTime(GM_getValue('dateFormat', 1));
+  } }
 
   const init = () => {
     document.removeEventListener('DOMContentLoaded', init);
