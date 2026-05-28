@@ -12,7 +12,6 @@
 // @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_setValue
-// @run-at       document-start
 // ==/UserScript==
 
 (() => {
@@ -59,6 +58,10 @@
   const $qa = (sel, ctx = document) => Array.from(ctx?.querySelectorAll(sel) ?? []);
 
   const insertAfter = (newEl, refEl) => {
+    if (!refEl || !refEl.parentNode) {
+      console.warn('insertAfter: refEl is null or has no parentNode', refEl);
+      return null;
+    }
     refEl.parentNode.insertBefore(newEl, refEl.nextSibling);
     return newEl;
   };
@@ -77,6 +80,8 @@
   };
 
   let clockInterval = null;
+  let currentWallpaperStyle = null;
+  let logoObserver = null;
 
   const _CONFIGX_ = {
     aURL: 'https://raw.githubusercontent.com/Razzano/My_Images/master/',
@@ -86,22 +91,23 @@
     timerShort: 1000
   };
 
+  const _url = _CONFIGX_.aURL;
   const _ImageX_ = {
-    logo1: _CONFIGX_.aURL + 'logoGoogle.png',
-    logo2: _CONFIGX_.aURL + 'imageGoogle.png',
-    logo3: _CONFIGX_.aURL + 'World.png',
-    logo4: _CONFIGX_.aURL + 'search8.png',
-    logo5: _CONFIGX_.aURL + 'googleLogo11.png',
-    logo6: _CONFIGX_.aURL + 'googleLogo12.png',
-    logo7: _CONFIGX_.aURL + 'lightbulb.png',
-    logo8: _CONFIGX_.aURL + 'search2.png',
-    logo9: _CONFIGX_.aURL + 'googleLogo15.png',
-    logo10: _CONFIGX_.aURL + 'googleLogo17.png',
-    logo11: _CONFIGX_.aURL + 'flag.png',
-    logo12: _CONFIGX_.aURL + 'face.png',
-    calendar: _CONFIGX_.aURL + 'imageCalendar.png',
-    upArrow: _CONFIGX_.aURL + 'upArrow5.png',
-    downArrow: _CONFIGX_.aURL + 'downArrow7.png'
+    logo1: _url + 'logoGoogle.png',
+    logo2: _url + 'imageGoogle.png',
+    logo3: _url + 'World.png',
+    logo4: _url + 'search8.png',
+    logo5: _url + 'googleLogo11.png',
+    logo6: _url + 'googleLogo12.png',
+    logo7: _url + 'lightbulb.png',
+    logo8: _url + 'search3.png',
+    logo9: _url + 'googleLogo15.png',
+    logo10: _url + 'googleLogo17.png',
+    logo11: _url + 'flag.png',
+    logo12: _url + 'face.png',
+    calendar: _url + 'imageCalendar.png',
+    upArrow: _url + 'upArrow5.png',
+    downArrow: _url + 'downArrow7.png'
   };
 
   const _TextX_ = {
@@ -138,28 +144,34 @@
   };
 
   const applyLogo = (num) => {
-    num = parseInt(num) || 1;
-    if (num < 1 || num > 13) {
+    const existing = $id('logoGoogle');
+    if (existing) existing.remove();
+    num = parseInt(num, 10);
+    if (isNaN(num) || num < 1 || num > 13) {
       num = 13;
     }
-    $id('logoGoogle')?.remove();
-    //const margins = { 0: '-86px', 4: '168px', 13: '-86px' }; ⇒ For Logo at top
-    //const marginTop = margins[num] ?? '210px'; ⇒ For Logo at top
-    const margins = { 4: '64px', 8: '60px' },
-          marginTop = margins[num] ?? '40px',
-          translate = { 8: 'translateX(-180%)' },
-          transform = translate[num] ?? 'translateX(-50%)';
-    //#gWP1 #LS8OJ { display: ${num === 13 ? 'block' : 'none'} !important; } ⇒ In GM_addStyle for logo at top
-    //#gWP1 form, #gWP1 .RN6D2c { margin-top: ${marginTop} !important; } ⇒ In GM_addStyle for logo at top
+    const logoConfig = {
+      4: { marginTop: '64px', transform: 'translateX(-50%)' },
+      8: { marginTop: '60px', transform: 'translateX(-180%)' },
+    };
+    const config = logoConfig[num] || { marginTop: '40px', transform: 'translateX(-50%)' };
     GM_addStyle(`
-      #gWP1 #LS8OJ > .k1zIA.rSk4se,
-      #gWP1 #LS8OJ > .k1zIA.kKvsb {
+      img[alt="Google"],
+      #hplogo,
+      #logo,
+      .k1zIA img,
+      #gWP1 #LS8OJ img,
+      #gWP1 #LS8OJ .k1zIA {
+        display: ${num === 13 ? 'block' : 'none'} !important;
+        visibility: ${num === 13 ? 'visible' : 'hidden'} !important;
+      }
+      div:has(> img[alt="Google"]) {
         display: ${num === 13 ? 'block' : 'none'} !important;
       }
-      #gWP1 #logoGoogle { margin-top: ${marginTop} !important; }
+      #gWP1 #logoGoogle {
+        margin-top: ${config.marginTop} !important;
+      }
     `);
-    //top: 0 !important; ⇒ In logoCopy.style.cssText for logo at top
-    //transform: translateX(-50%) !important;
     if (num !== 13 && logos[num]) {
       const logoCopy = logos[num].cloneNode(false);
       logoCopy.id = 'logoGoogle';
@@ -167,8 +179,8 @@
       logoCopy.style.cssText = `
         position: absolute !important;
         left: 50% !important;
-        top: ${marginTop} !important;
-        transform: ${transform} !important;
+        top: ${config.marginTop} !important;
+        transform: ${config.transform} !important;
         z-index: 999 !important;
         opacity: 0 !important;
         filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)) !important;
@@ -176,30 +188,63 @@
       const dtContainer = $id('dateTimeContainer');
       if (dtContainer) {
         dtContainer.after(logoCopy);
+        requestAnimationFrame(() => {
+          logoCopy.style.opacity = '1';
+        });
       }
-      removeDupes('logo');
-      requestAnimationFrame(() => {
-        logoCopy.style.opacity = '1';
-      });
+    } else if (num !== 13) {
+        console.warn(`Logo #${num} not found`);
     }
     const inp = $id('inputLogo');
     if (inp) {
       inp.value = (num === 13) ? 0 : num;
     }
     GM_setValue('logoImageNum', num);
+    setupLogoObserver(num);
+  };
+
+  function setupLogoObserver(currentNum) {
+    if (logoObserver) {
+      logoObserver.disconnect();
+    }
+    logoObserver = new MutationObserver((mutations) => {
+      if (currentNum !== 13) {
+        const googleLogos = $qa('img[alt="Google"], #hplogo, #logo');
+        googleLogos.forEach(logo => {
+          logo.style.setProperty('display', 'none', 'important');
+          logo.style.setProperty('visibility', 'hidden', 'important');
+        });
+      }
+      if (currentNum !== 13) {
+        const customLogo = $id('logoGoogle');
+        const dtContainer = $id('dateTimeContainer');
+        if (!customLogo && dtContainer) {
+          console.log('Re-applying custom logo...');
+          applyLogo(currentNum);
+      } }
+    });
+    logoObserver.observe(document.body || document.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['src', 'style', 'class']
+    });
   }
 
   const applyWallpaper = (num) => {
+    if (currentWallpaperStyle) {
+      currentWallpaperStyle.remove();
+      currentWallpaperStyle = null;
+    }
     num = parseInt(num) || 0;
-    if (num === 0) {
-      GM_addStyle(`body#gWP1 { background: initial !important; }`);
-    } else {
-      GM_addStyle(`
-        body#gWP1 {
-          background: url(${_CONFIGX_.githubSite}${num}.jpg) no-repeat center center / cover fixed !important;
-        }
-      `);
-  } }
+    if (num === 0) return;
+    const css = `
+      body#gWP1 {
+        background: url(${_CONFIGX_.githubSite}${num}.jpg) no-repeat center center / cover fixed !important;
+      }
+    `;
+    currentWallpaperStyle = GM_addStyle(css);
+  };
 
   const getDateTime = (format = 1) => {
     const now = new Date();
@@ -593,5 +638,10 @@
     body#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.KEY6ib > form > div:nth-child(1) > div > div.RNNXgb {
       background: rgba(0,0,0,.1) !important;
     }
+    #gb > div.gb_z > div:nth-child(2) {
+      height: calc(-70px + 100vh) !important;
+    }
   `);
 })();
+
+
