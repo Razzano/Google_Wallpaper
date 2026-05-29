@@ -105,6 +105,7 @@
     logo10: _url + 'googleLogo17.png',
     logo11: _url + 'flag.png',
     logo12: _url + 'face.png',
+    logo13: _url + 'eagle4.png',
     calendar: _url + 'imageCalendar.png',
     upArrow: _url + 'upArrow5.png',
     downArrow: _url + 'downArrow7.png'
@@ -122,7 +123,7 @@
   };
 
   const logos = [null];
-  for (let i = 1; i <= 12; i++) {
+  for (let i = 1; i <= 13; i++) {
     logos.push($c('img', {id: 'logoGoogle', class: 'logo', src: _ImageX_[`logo${i}`]}));
   }
 
@@ -147,8 +148,8 @@
     const existing = $id('logoGoogle');
     if (existing) existing.remove();
     num = parseInt(num, 10);
-    if (isNaN(num) || num < 1 || num > 13) {
-      num = 13;
+    if (isNaN(num) || num < 0 || num > 13) {
+      num = 0;
     }
     const logoConfig = {
       4: { marginTop: '64px', transform: 'translateX(-50%)' },
@@ -162,17 +163,17 @@
       .k1zIA img,
       #gWP1 #LS8OJ img,
       #gWP1 #LS8OJ .k1zIA {
-        display: ${num === 13 ? 'block' : 'none'} !important;
-        visibility: ${num === 13 ? 'visible' : 'hidden'} !important;
+        display: ${num === 0 ? 'block' : 'none'} !important;
+        visibility: ${num === 0 ? 'visible' : 'hidden'} !important;
       }
       div:has(> img[alt="Google"]) {
-        display: ${num === 13 ? 'block' : 'none'} !important;
+        display: ${num === 0 ? 'block' : 'none'} !important;
       }
       #gWP1 #logoGoogle {
         margin-top: ${config.marginTop} !important;
       }
     `);
-    if (num !== 13 && logos[num]) {
+    if (num !== 0 && logos[num]) {
       const logoCopy = logos[num].cloneNode(false);
       logoCopy.id = 'logoGoogle';
       logoCopy.className = 'logo';
@@ -192,12 +193,12 @@
           logoCopy.style.opacity = '1';
         });
       }
-    } else if (num !== 13) {
+    } else if (num !== 0) {
         console.warn(`Logo #${num} not found`);
     }
     const inp = $id('inputLogo');
     if (inp) {
-      inp.value = (num === 13) ? 0 : num;
+      inp.value = num;
     }
     GM_setValue('logoImageNum', num);
     setupLogoObserver(num);
@@ -208,14 +209,14 @@
       logoObserver.disconnect();
     }
     logoObserver = new MutationObserver((mutations) => {
-      if (currentNum !== 13) {
+      if (currentNum !== 0) {
         const googleLogos = $qa('img[alt="Google"], #hplogo, #logo');
         googleLogos.forEach(logo => {
           logo.style.setProperty('display', 'none', 'important');
           logo.style.setProperty('visibility', 'hidden', 'important');
         });
       }
-      if (currentNum !== 13) {
+      if (currentNum !== 0) {
         const customLogo = $id('logoGoogle');
         const dtContainer = $id('dateTimeContainer');
         if (!customLogo && dtContainer) {
@@ -284,17 +285,14 @@
 
   const logoClick = (id) => {
     let current = GM_getValue('logoImageNum', 1),
-        next = (id.includes('up') || id === 'buttonLogo') ? (current % 13) + 1 : ((current - 2) % 13 + 13) % 13 + 1;
+        next = (id.includes('up') || id === 'buttonLogo') ? (current + 1) % 14 : (current - 1 + 14) % 14;
     applyLogo(next);
   }
 
   const handleLogoInput = (e) => {
     let val = parseInt(e.target.value);
     if (isNaN(val)) return;
-    if (val === 0) {
-      val = 13;
-    }
-    val = Math.max(1, Math.min(13, val));
+    val = Math.max(0, Math.min(13, val));
     applyLogo(val);
   }
 
