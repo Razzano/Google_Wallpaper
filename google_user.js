@@ -92,6 +92,7 @@
   };
 
   const _url = _CONFIGX_.aURL;
+  // Add logo, make changes in lines 129, 154, 291 & 298
   const _ImageX_ = {
     logo1: _url + 'logoGoogle.png',
     logo2: _url + 'imageGoogle.png',
@@ -105,7 +106,9 @@
     logo10: _url + 'googleLogo17.png',
     logo11: _url + 'flag.png',
     logo12: _url + 'face.png',
-    logo13: _url + 'eagle4.png',
+    logo13: _url + 'eagle6.png',
+    logo14: _url + 'monkey1.png',
+    logo15: _url + 'earth.png',
     calendar: _url + 'imageCalendar.png',
     upArrow: _url + 'upArrow5.png',
     downArrow: _url + 'downArrow7.png'
@@ -115,7 +118,7 @@
     changeWallpaperTooltip: 'Left-click to change wallpaper',
     inputLogoTooltip: '1 - 12 (13 = Default Google logo)',
     inputThemerTooltip: '0 - 52 (0 = Default background)',
-    logoChangerText: 'Logo Changer',
+    logoChangerText: 'Logo Image',
     placeHolderText: 'Search Look-up',
     switchLogo: 'Left-click to change logos',
     toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`,
@@ -123,7 +126,7 @@
   };
 
   const logos = [null];
-  for (let i = 1; i <= 13; i++) {
+  for (let i = 1; i <= 15; i++) { // 1 ← Change 15 to 16
     logos.push($c('img', {id: 'logoGoogle', class: 'logo', src: _ImageX_[`logo${i}`]}));
   }
 
@@ -148,7 +151,7 @@
     const existing = $id('logoGoogle');
     if (existing) existing.remove();
     num = parseInt(num, 10);
-    if (isNaN(num) || num < 0 || num > 13) {
+    if (isNaN(num) || num < 0 || num > 16) { // 2 ← Change 16 to 17
       num = 0;
     }
     const logoConfig = {
@@ -285,14 +288,14 @@
 
   const logoClick = (id) => {
     let current = GM_getValue('logoImageNum', 1),
-        next = (id.includes('up') || id === 'buttonLogo') ? (current + 1) % 14 : (current - 1 + 14) % 14;
+        next = (id.includes('up') || id === 'buttonLogo') ? (current + 1) % 16 : (current - 1 + 16) % 16; // 3 ← Change 16 to 17
     applyLogo(next);
   }
 
   const handleLogoInput = (e) => {
     let val = parseInt(e.target.value);
     if (isNaN(val)) return;
-    val = Math.max(0, Math.min(13, val));
+    val = Math.max(0, Math.min(16, val)); // 4 ← Change 16 to 17
     applyLogo(val);
   }
 
@@ -558,7 +561,7 @@
       width: 224px !important;
     }
     body#gWP1 #buttonLogo {
-      width: 190px !important;
+      width: 170px !important;
     }
     body#gWP1 #inputThemer,
     body#gWP1 #inputLogo {
