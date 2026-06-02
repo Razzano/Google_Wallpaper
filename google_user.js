@@ -113,8 +113,8 @@
 
   const _Text = {
     changeWallpaperTooltip: 'Left-click to change wallpaper',
-    inputLogoTooltip: '1 - 16 (0 = Default Google logo)',
-    inputThemerTooltip: '0 - 52 (0 = Default background)',
+    inputLogoTooltip: '1 - 16 (0 = Default Google Logo)',
+    inputThemerTooltip: '1 - 52 (0 = Default Google Background)',
     switchLogo: 'Left-click to change logos',
     toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`
   };
@@ -365,7 +365,7 @@
     });
     const buttonThemer = $c('button', {
       id: 'buttonThemer',
-      textContent: 'Wallpaper 🡅',
+      textContent: 'Wallpaper 🠉',
       title: _Text.changeWallpaperTooltip,
       onclick: wallpaperButtonChanger
     });
@@ -378,7 +378,8 @@
     });
     const downThemer = $c('button', {
       id: 'downThemer',
-      textContent: '🡇 Wallpaper',
+      textContent: '🠋 Wallpaper',
+      title: _Text.changeWallpaperTooltip,
       onclick: wallpaperButtonChanger
     });
     const spacer = $c('span', {
@@ -387,7 +388,7 @@
     });
     const buttonLogo = $c('button', {
       id: 'buttonLogo',
-      textContent: 'Logo 🡅',
+      textContent: 'Logo 🠉',
       title: _Text.switchLogo,
       onclick: e => logoClick(e.target.id)
     });
@@ -400,7 +401,8 @@
     });
     const downLogo = $c('button', {
       id: 'downLogo',
-      textContent: '🡇 Logo',
+      textContent: '🠋 Logo',
+      title: _Text.switchLogo,
       onclick: e => logoClick(e.target.id)
     });
     changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo);
@@ -627,6 +629,9 @@
     body#gWP1 > div.L3eUgb div.RNNXgb,
     body#gWP1 > div.L3eUgb input.gNO89b {
       background: rgba(0,0,0,.2) !important;
+    }
+    body#gWP1 #APjFqb {
+      filter: brightness(2) !important;
     }
     body#gWP1 #gb > div.gb_z > div:nth-child(2) {
       height: calc(-70px + 100vh) !important;
