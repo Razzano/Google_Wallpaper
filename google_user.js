@@ -79,39 +79,39 @@
     });
   };
 
-  const aURL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/';
-  const githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image';
-  const dateTimeFormatCount = 4;
-  const timerLong = 10000;
-  const timerShort = 1000;
+  const _aURL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/';
+  const _githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image';
+  const _dateTimeFormatCount = 4;
+  const _timerLong = 10000;
+  const _timerShort = 1000;
 
-  // If adding logo, make changes in lines 109, 147, 253 & 260
-  const _ImageX_ = {
-    logo1: aURL + 'logoGoogle.png',
-    logo2: aURL + 'imageGoogle.png',
-    logo3: aURL + 'World.png',
-    logo4: aURL + 'search8.png',
-    logo5: aURL + 'googleLogo11.png',
-    logo6: aURL + 'googleLogo12.png',
-    logo7: aURL + 'lightbulb.png',
-    logo8: aURL + 'search3.png',
-    logo9: aURL + 'googleLogo15.png',
-    logo10: aURL + 'googleLogo17.png',
-    logo11: aURL + 'flag.png',
-    logo12: aURL + 'face2.png',
-    logo13: aURL + 'eagle6.png',
-    logo14: aURL + 'monkey1.png',
-    logo15: aURL + 'globe.png',
-    logo16: aURL + 'eyes7.png',
-    calendar: aURL + 'imageCalendar.png'
+  // If adding logo, make changes in lines 110, 146, 252 & 259
+  const _Image = {
+    logo1: _aURL + 'logoGoogle.png',
+    logo2: _aURL + 'imageGoogle.png',
+    logo3: _aURL + 'World.png',
+    logo4: _aURL + 'search8.png',
+    logo5: _aURL + 'googleLogo11.png',
+    logo6: _aURL + 'googleLogo12.png',
+    logo7: _aURL + 'lightbulb.png',
+    logo8: _aURL + 'search3.png',
+    logo9: _aURL + 'googleLogo15.png',
+    logo10: _aURL + 'googleLogo17.png',
+    logo11: _aURL + 'flag.png',
+    logo12: _aURL + 'face2.png',
+    logo13: _aURL + 'eagle6.png',
+    logo14: _aURL + 'monkey1.png',
+    logo15: _aURL + 'globe.png',
+    logo16: _aURL + 'eyes7.png',
+    calendar: _aURL + 'imageCalendar.png'
   };
 
-  const _LogoX_ = [null];
+  const _Logo = [null];
   for (let i = 1; i <= 16; i++) { // 1 ← Change 16 to 17
-    _LogoX_.push($c('img', {id: 'logoGoogle', class: 'logo', src: _ImageX_[`logo${i}`]}));
+    _Logo.push($c('img', {id: 'logoGoogle', class: 'logo', src: _Image[`logo${i}`]}));
   }
 
-  const _TextX_ = {
+  const _Text = {
     changeWallpaperTooltip: 'Left-click to change wallpaper',
     inputLogoTooltip: '1 - 12 (13 = Default Google logo)',
     inputThemerTooltip: '0 - 52 (0 = Default background)',
@@ -119,8 +119,8 @@
     toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`
   };
 
-  let clockInterval = null;
-  let currentWallpaperStyle = null;
+  let _clockInterval = null;
+  let _currentWallpaperStyle = null;
 
   const updateCalendarTooltip = () => {
     const cal = $id('imageCalendar');
@@ -171,8 +171,8 @@
         margin-top: ${config.marginTop} !important;
       }
     `);
-    if (num !== 0 && _LogoX_[num]) {
-      const logoCopy = _LogoX_[num].cloneNode(false);
+    if (num !== 0 && _Logo[num]) {
+      const logoCopy = _Logo[num].cloneNode(false);
       logoCopy.id = 'logoGoogle';
       logoCopy.className = 'logo';
       logoCopy.style.cssText = `
@@ -197,18 +197,18 @@
   };
 
   const applyWallpaper = (num) => {
-    if (currentWallpaperStyle) {
-      currentWallpaperStyle.remove();
-      currentWallpaperStyle = null;
+    if (_currentWallpaperStyle) {
+      _currentWallpaperStyle.remove();
+      _currentWallpaperStyle = null;
     }
     num = parseInt(num) || 0;
     if (num === 0) return;
     const css = `
       body#gWP1 {
-        background: url(${githubSite}${num}.jpg) no-repeat center center / cover fixed !important;
+        background: url(${_githubSite}${num}.jpg) no-repeat center center / cover fixed !important;
       }
     `;
-    currentWallpaperStyle = GM_addStyle(css);
+    _currentWallpaperStyle = GM_addStyle(css);
   };
 
   const getDateTime = (format = 1) => {
@@ -235,11 +235,11 @@
   } }
 
   const startClock = () => {
-    if (clockInterval) {
-      clearInterval(clockInterval);
+    if (_clockInterval) {
+      clearInterval(_clockInterval);
     }
-    const ms = GM_getValue('defaultSecondsView', false) ? timerShort : timerLong;
-    clockInterval = setInterval(() => {
+    const ms = GM_getValue('defaultSecondsView', false) ? _timerShort : _timerLong;
+    _clockInterval = setInterval(() => {
       const el = $id('dateTime');
       if (el) {
         el.textContent = getDateTime(GM_getValue('dateFormat', 1));
@@ -301,9 +301,9 @@
       dtEl.hidden = newHiddenState;
       GM_setValue('defaultDateTimeView', newHiddenState);
       if (newHiddenState) {
-        if (clockInterval) {
-          clearInterval(clockInterval);
-          clockInterval = null;
+        if (_clockInterval) {
+          clearInterval(_clockInterval);
+          _clockInterval = null;
         }
       } else {
         dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
@@ -331,7 +331,7 @@
       GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', false));
     } else if (!e.shiftKey && e.ctrlKey && !e.altKey) {
       let fmt = GM_getValue('dateFormat', 1);
-      fmt = (fmt >= dateTimeFormatCount) ? 1 : fmt + 1;
+      fmt = (fmt >= _dateTimeFormatCount) ? 1 : fmt + 1;
       GM_setValue('dateFormat', fmt);
     }
     const el = $id('dateTime');
@@ -350,13 +350,13 @@
     });
     const imageCalendar = $c('img', {
       id: 'imageCalendar',
-      src: _ImageX_.calendar,
+      src: _Image.calendar,
       title: getTooltipText(),
       onclick: dateTimeToggle
     });
     const dateTimeEl = $c('span', {
       id: 'dateTime',
-      title: _TextX_.toggleText,
+      title: _Text.toggleText,
       onclick: dateTimeToggleSecondsAmPm
     });
     dtContainer.append(imageCalendar, dateTimeEl);
@@ -366,14 +366,14 @@
     const buttonThemer = $c('button', {
       id: 'buttonThemer',
       textContent: 'Wallpaper 🡅',
-      title: _TextX_.changeWallpaperTooltip,
+      title: _Text.changeWallpaperTooltip,
       onclick: wallpaperButtonChanger
     });
     const inputThemer = $c('input', {
       id: 'inputThemer',
       type: 'number',
       value: GM_getValue('wallpaperImage', 0),
-      title: _TextX_.inputThemerTooltip,
+      title: _Text.inputThemerTooltip,
       oninput: wallpaperInputChanger
     });
     const downThemer = $c('button', {
@@ -381,17 +381,21 @@
       textContent: '🡇 Wallpaper',
       onclick: wallpaperButtonChanger
     });
+    const spacer = $c('span', {
+      id: 'spacerX',
+      textContent: '|'
+    });
     const buttonLogo = $c('button', {
       id: 'buttonLogo',
-      textContent: '| \u2007 Logo 🡅',
-      title: _TextX_.switchLogo,
+      textContent: 'Logo 🡅',
+      title: _Text.switchLogo,
       onclick: e => logoClick(e.target.id)
     });
     const inputLogo = $c('input', {
       id: 'inputLogo',
       type: 'number',
       value: GM_getValue('logoImageNum', 1),
-      title: _TextX_.inputLogoTooltip,
+      title: _Text.inputLogoTooltip,
       oninput: handleLogoInput
     });
     const downLogo = $c('button', {
@@ -399,7 +403,7 @@
       textContent: '🡇 Logo',
       onclick: e => logoClick(e.target.id)
     });
-    changerContainer.append(buttonThemer, inputThemer, downThemer, buttonLogo, inputLogo, downLogo);
+    changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo);
     const header = $id('gb') || $q('header') || body;
     prepend(header, dtContainer);
     dtContainer.after(changerContainer);
@@ -507,7 +511,7 @@
       z-index: 999 !important;
     }
     body#gWP1 #changerContainer {
-      background: rgba(0,0,0,.3) !important;
+      background: rgba(0,0,0,.2) !important;
       border-radius: 6px !important;
       height: 33px !important;
       margin: 4px 4px 0px 0px !important;
@@ -520,7 +524,7 @@
       text-shadow: 1px 1px 2px #000 !important;
     }
     body#gWP1 #inputThemer {
-      background: rgba(0,0,0,.3) !important;
+      background: rgba(0,0,0,.2) !important;
       border: 1px solid #FFF !important;
       border-radius: 6px !important;
       box-shadow: 0 1px 3px rgba(2555,255,255,0.15) !important;
@@ -528,29 +532,34 @@
       cursor: pointer !important;
       height: 22px !important;
       margin: 0px 4px !important;
+      opacity: .7 !important;
       padding-top: 4px !important;
       position: relative !important;
       text-align: center !important;
       top: 1px !important;
-      width: 32px !important;
+      width: 30px !important;
     }
     body#gWP1 #downThemer {
       cursor: pointer !important;
       height: 32px !important;
-      margin-right: 12px !important;
-      opacity: .8 !important;
+      margin-right: 15px !important;
+      opacity: .7 !important;
     }
-    body#gWP1 #downThemer:hover {
+    body#gWP1 #spacerX {
+      color: #FFF !important;
+      filter: brightness(2) !important;
       opacity: 1 !important;
+      pointer-events: none !important;
     }
     body#gWP1 #buttonLogo {
       color: #FFF !important;
       cursor: pointer !important;
+      margin-left: 14px !important;
       opacity: .7 !important;
       text-shadow: 1px 1px 2px #000 !important;
     }
     body#gWP1 #inputLogo {
-      background: rgba(0,0,0,.3) !important;
+      background: rgba(0,0,0,.2) !important;
       border: 1px solid #FFF !important;
       border-radius: 6px !important;
       box-shadow: 0 1px 3px rgba(2555,255,255,0.15) !important;
@@ -558,18 +567,20 @@
       cursor: pointer !important;
       height: 22px !important;
       margin: 0px 4px !important;
+      opacity: .7 !important;
       padding-top: 4px !important;
       position: relative !important;
       text-align: center !important;
       top: 1px !important;
-      width: 32px !important;
+      width: 30px !important;
     }
     body#gWP1 #downLogo {
       cursor: pointer !important;
       height: 32px !important;
-      opacity: .8 !important;
+      opacity: .7 !important;
     }
-    body#gWP1 #downLogo:hover {
+    body#gWP1 #changerContainer > button:hover {
+      filter: brightness(2) !important;
       opacity: 1 !important;
     }
     body#gWP1 #inputThemer:hover,
@@ -578,11 +589,6 @@
     body#gWP1 #inputLogo:focus-within {
       border-color: #999 !important;
       filter: brightness(2) !important;
-    }
-    body#gWP1 #changerContainer > button:hover,
-    body#gWP1 #changerContainer > button:focus-within,
-    body#gWP1 #changerContainer > input:hover,
-    body#gWP1 #changerContainer > input:focus-within {
       opacity: 1 !important;
     }
     body#gWP1 ::-webkit-inner-spin-button,
@@ -602,7 +608,7 @@
       fill: #FFF !important;
     }
     body#gWP1 {
-      background: url(${githubSite}GM_getValue(wallpaperImage)}.jpg) no-repeat center center / cover fixed !important;
+      background: url(${_githubSite}GM_getValue(wallpaperImage)}.jpg) no-repeat center center / cover fixed !important;
     }
     body#gWP1 > div.L3eUgb > div:nth-child(13) > div {
       background: transparent !important;
@@ -618,8 +624,9 @@
     body#gWP1 #LS8OJ > div.k1zIA.rSk4se > svg {
       fill: #FFF !important;
     }
-    body#gWP1 > div.L3eUgb div.RNNXgb {
-      background: rgba(0,0,0,.3) !important;
+    body#gWP1 > div.L3eUgb div.RNNXgb,
+    body#gWP1 > div.L3eUgb input.gNO89b {
+      background: rgba(0,0,0,.2) !important;
     }
     body#gWP1 #gb > div.gb_z > div:nth-child(2) {
       height: calc(-70px + 100vh) !important;
