@@ -3,7 +3,7 @@
 // @namespace    srazzano
 // @version      2.4.5
 // @description  Modernized Google with centered logo (no flash), wallpaper & date/time
-// @author       Sonny Razzano
+// @author       Sonny Razzano a.k.a. srazzano
 // @match        https://www.google.com/*
 // @match        https://google.com/*
 // @exclude      https://www.google.com/search*
@@ -72,63 +72,55 @@
   };
 
   const removeDupes = (className) => {
-    $qa('.' + className).forEach((el, i) => {
+    document.querySelectorAll('.' + className).forEach((el, i) => {
       if (i > 0) {
         el.remove();
       }
     });
   };
 
-  let clockInterval = null;
-  let currentWallpaperStyle = null;
-  let logoObserver = null;
+  const aURL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/';
+  const githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image';
+  const dateTimeFormatCount = 4;
+  const timerLong = 10000;
+  const timerShort = 1000;
 
-  const _CONFIGX_ = {
-    aURL: 'https://raw.githubusercontent.com/Razzano/My_Images/master/',
-    dateTimeFormatCount: 4,
-    githubSite: 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image',
-    timerLong: 10000,
-    timerShort: 1000
-  };
-
-  const _url = _CONFIGX_.aURL;
-  // Add logo, make changes in lines 129, 154, 291 & 298
+  // If adding logo, make changes in lines 109, 147, 253 & 260
   const _ImageX_ = {
-    logo1: _url + 'logoGoogle.png',
-    logo2: _url + 'imageGoogle.png',
-    logo3: _url + 'World.png',
-    logo4: _url + 'search8.png',
-    logo5: _url + 'googleLogo11.png',
-    logo6: _url + 'googleLogo12.png',
-    logo7: _url + 'lightbulb.png',
-    logo8: _url + 'search3.png',
-    logo9: _url + 'googleLogo15.png',
-    logo10: _url + 'googleLogo17.png',
-    logo11: _url + 'flag.png',
-    logo12: _url + 'face.png',
-    logo13: _url + 'eagle6.png',
-    logo14: _url + 'monkey1.png',
-    logo15: _url + 'earth.png',
-    calendar: _url + 'imageCalendar.png',
-    upArrow: _url + 'upArrow5.png',
-    downArrow: _url + 'downArrow7.png'
+    logo1: aURL + 'logoGoogle.png',
+    logo2: aURL + 'imageGoogle.png',
+    logo3: aURL + 'World.png',
+    logo4: aURL + 'search8.png',
+    logo5: aURL + 'googleLogo11.png',
+    logo6: aURL + 'googleLogo12.png',
+    logo7: aURL + 'lightbulb.png',
+    logo8: aURL + 'search3.png',
+    logo9: aURL + 'googleLogo15.png',
+    logo10: aURL + 'googleLogo17.png',
+    logo11: aURL + 'flag.png',
+    logo12: aURL + 'face2.png',
+    logo13: aURL + 'eagle6.png',
+    logo14: aURL + 'monkey1.png',
+    logo15: aURL + 'globe.png',
+    logo16: aURL + 'eyes7.png',
+    calendar: aURL + 'imageCalendar.png'
   };
+
+  const _LogoX_ = [null];
+  for (let i = 1; i <= 16; i++) { // 1 ← Change 16 to 17
+    _LogoX_.push($c('img', {id: 'logoGoogle', class: 'logo', src: _ImageX_[`logo${i}`]}));
+  }
 
   const _TextX_ = {
     changeWallpaperTooltip: 'Left-click to change wallpaper',
     inputLogoTooltip: '1 - 12 (13 = Default Google logo)',
     inputThemerTooltip: '0 - 52 (0 = Default background)',
-    logoChangerText: 'Logo Image',
-    placeHolderText: 'Search Look-up',
     switchLogo: 'Left-click to change logos',
-    toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`,
-    wallpaperImageText: 'Wallpaper Image'
+    toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`
   };
 
-  const logos = [null];
-  for (let i = 1; i <= 15; i++) { // 1 ← Change 15 to 16
-    logos.push($c('img', {id: 'logoGoogle', class: 'logo', src: _ImageX_[`logo${i}`]}));
-  }
+  let clockInterval = null;
+  let currentWallpaperStyle = null;
 
   const updateCalendarTooltip = () => {
     const cal = $id('imageCalendar');
@@ -151,12 +143,15 @@
     const existing = $id('logoGoogle');
     if (existing) existing.remove();
     num = parseInt(num, 10);
-    if (isNaN(num) || num < 0 || num > 16) { // 2 ← Change 16 to 17
+    if (isNaN(num) || num < 0 || num > 17) { // 2 ← Change 17 to 18
       num = 0;
     }
     const logoConfig = {
       4: { marginTop: '64px', transform: 'translateX(-50%)' },
       8: { marginTop: '60px', transform: 'translateX(-180%)' },
+      12: { marginTop: '0px', transform: 'translateX(-50%)' },
+      13: { marginTop: '15px', transform: 'translateX(-50%)' },
+      15: { marginTop: '5px', transform: 'translateX(-50%)' },
     };
     const config = logoConfig[num] || { marginTop: '40px', transform: 'translateX(-50%)' };
     GM_addStyle(`
@@ -176,18 +171,13 @@
         margin-top: ${config.marginTop} !important;
       }
     `);
-    if (num !== 0 && logos[num]) {
-      const logoCopy = logos[num].cloneNode(false);
+    if (num !== 0 && _LogoX_[num]) {
+      const logoCopy = _LogoX_[num].cloneNode(false);
       logoCopy.id = 'logoGoogle';
       logoCopy.className = 'logo';
       logoCopy.style.cssText = `
-        position: absolute !important;
-        left: 50% !important;
         top: ${config.marginTop} !important;
         transform: ${config.transform} !important;
-        z-index: 999 !important;
-        opacity: 0 !important;
-        filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)) !important;
       `;
       const dtContainer = $id('dateTimeContainer');
       if (dtContainer) {
@@ -204,36 +194,7 @@
       inp.value = num;
     }
     GM_setValue('logoImageNum', num);
-    setupLogoObserver(num);
   };
-
-  function setupLogoObserver(currentNum) {
-    if (logoObserver) {
-      logoObserver.disconnect();
-    }
-    logoObserver = new MutationObserver((mutations) => {
-      if (currentNum !== 0) {
-        const googleLogos = $qa('img[alt="Google"], #hplogo, #logo');
-        googleLogos.forEach(logo => {
-          logo.style.setProperty('display', 'none', 'important');
-          logo.style.setProperty('visibility', 'hidden', 'important');
-        });
-      }
-      if (currentNum !== 0) {
-        const customLogo = $id('logoGoogle');
-        const dtContainer = $id('dateTimeContainer');
-        if (!customLogo && dtContainer) {
-          console.log('Re-applying custom logo...');
-          applyLogo(currentNum);
-      } }
-    });
-    logoObserver.observe(document.body || document.documentElement, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['src', 'style', 'class']
-    });
-  }
 
   const applyWallpaper = (num) => {
     if (currentWallpaperStyle) {
@@ -244,7 +205,7 @@
     if (num === 0) return;
     const css = `
       body#gWP1 {
-        background: url(${_CONFIGX_.githubSite}${num}.jpg) no-repeat center center / cover fixed !important;
+        background: url(${githubSite}${num}.jpg) no-repeat center center / cover fixed !important;
       }
     `;
     currentWallpaperStyle = GM_addStyle(css);
@@ -277,7 +238,7 @@
     if (clockInterval) {
       clearInterval(clockInterval);
     }
-    const ms = GM_getValue('defaultSecondsView', false) ? _CONFIGX_.timerShort : _CONFIGX_.timerLong;
+    const ms = GM_getValue('defaultSecondsView', false) ? timerShort : timerLong;
     clockInterval = setInterval(() => {
       const el = $id('dateTime');
       if (el) {
@@ -288,14 +249,14 @@
 
   const logoClick = (id) => {
     let current = GM_getValue('logoImageNum', 1),
-        next = (id.includes('up') || id === 'buttonLogo') ? (current + 1) % 16 : (current - 1 + 16) % 16; // 3 ← Change 16 to 17
+        next = (id.includes('up') || id === 'buttonLogo') ? (current + 1) % 17 : (current - 1 + 17) % 17; // 3 ← Change 17 to 18
     applyLogo(next);
   }
 
   const handleLogoInput = (e) => {
     let val = parseInt(e.target.value);
     if (isNaN(val)) return;
-    val = Math.max(0, Math.min(16, val)); // 4 ← Change 16 to 17
+    val = Math.max(0, Math.min(17, val)); // 4 ← Change 17 to 18
     applyLogo(val);
   }
 
@@ -324,12 +285,12 @@
   }
 
   const searchLinksWhere = () => {
-    const links = $qa('a'),
-          target = GM_getValue('linkTarget', '_blank');
-    links.forEach(link => {
-      link.setAttribute('target', target);
+    const target = GM_getValue('linkTarget', '_blank');
+    $qa('a[href]').forEach(link => {
+      link.target = target;
+      link.rel = 'noopener noreferrer';
     });
-  }
+  };
 
   const dateTimeToggle = (e) => {
     if (e.button !== 0) return;
@@ -370,7 +331,7 @@
       GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', false));
     } else if (!e.shiftKey && e.ctrlKey && !e.altKey) {
       let fmt = GM_getValue('dateFormat', 1);
-      fmt = (fmt >= _CONFIGX_.dateTimeFormatCount) ? 1 : fmt + 1;
+      fmt = (fmt >= dateTimeFormatCount) ? 1 : fmt + 1;
       GM_setValue('dateFormat', fmt);
     }
     const el = $id('dateTime');
@@ -381,6 +342,7 @@
   const init = () => {
     document.removeEventListener('DOMContentLoaded', init);
     const body = document.body;
+    const textArea = $id('APjFqb');
     if (!body) return;
     body.id = 'gWP1';
     const dtContainer = $c('div', {
@@ -403,8 +365,7 @@
     });
     const buttonThemer = $c('button', {
       id: 'buttonThemer',
-      innerHTML: _TextX_.wallpaperImageText,
-      style: `background-image: url(${_ImageX_.upArrow}) !important;`,
+      textContent: 'Wallpaper 🡅',
       title: _TextX_.changeWallpaperTooltip,
       onclick: wallpaperButtonChanger
     });
@@ -417,13 +378,12 @@
     });
     const downThemer = $c('button', {
       id: 'downThemer',
-      style: `background-image: url(${_ImageX_.downArrow}) !important;`,
+      textContent: '🡇 Wallpaper',
       onclick: wallpaperButtonChanger
     });
     const buttonLogo = $c('button', {
       id: 'buttonLogo',
-      innerHTML: _TextX_.logoChangerText,
-      style: `background-image: url(${_ImageX_.upArrow}) !important;`,
+      textContent: '| \u2007 Logo 🡅',
       title: _TextX_.switchLogo,
       onclick: e => logoClick(e.target.id)
     });
@@ -436,7 +396,7 @@
     });
     const downLogo = $c('button', {
       id: 'downLogo',
-      style: `background-image: url(${_ImageX_.downArrow}) !important;`,
+      textContent: '🡇 Logo',
       onclick: e => logoClick(e.target.id)
     });
     changerContainer.append(buttonThemer, inputThemer, downThemer, buttonLogo, inputLogo, downLogo);
@@ -445,6 +405,7 @@
     dtContainer.after(changerContainer);
     applyWallpaper(GM_getValue('wallpaperImage', 0));
     applyLogo(GM_getValue('logoImageNum', 1));
+    textArea.placeholder = 'Search Look-up';
     if (GM_getValue('defaultDateTimeView', true)) {
       dateTimeEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
       startClock();
@@ -489,7 +450,9 @@
     body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > a,
     body#gWP1 > div.L3eUgb div.RNNXgb div.fzj3ad,
     body#gWP1 > div.L3eUgb > div.o3j99.qarstb > div:nth-child(3),
-    body#gWP1 #EUjKDc {
+    body#gWP1 #EUjKDc,
+    #gbqfbb,
+    #LS8OJ > div.k1zIA.kKvsb > div.IzOpfd {
       display: none !important;
     }
     body#gWP1 #imageCalendar {
@@ -507,7 +470,7 @@
       top: 10px !important;
     }
     body#gWP1 #dateTime {
-      background: rgba(0, 0, 0, .3) !important;
+      background: rgba(0,0,0,.3) !important;
       display: block !important;
       border: 1px solid transparent !important;
       border-radius: 8px !important;
@@ -531,53 +494,83 @@
       width: 0px !important;
     }
     body#gWP1 #dateTime:hover {
-      background: #181A1B !important;
       border: 1px solid #000 !important;
     }
     body#gWP1 #logoGoogle {
-      max-height: 100% !important;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)) !important;
+      height: auto !important;
+      left: 50% !important;
       max-width: 100% !important;
+      opacity: 1 !important;
       position: absolute !important;
       top: 0px !important;
+      z-index: 999 !important;
     }
     body#gWP1 #changerContainer {
-      height: 52px !important;
-      margin: 0px !important;
-      position: relative !important;
-      top: -3px !important;
+      background: rgba(0,0,0,.3) !important;
+      border-radius: 6px !important;
+      height: 33px !important;
+      margin: 4px 4px 0px 0px !important;
+      padding: 0px 10px !important;
     }
-    body#gWP1 #buttonThemer,
-    body#gWP1 #buttonLogo {
-      background-position: bottom 6px right !important;
-      background-repeat: no-repeat !important;
+    body#gWP1 #buttonThemer {
       color: #FFF !important;
       cursor: pointer !important;
-      font: 20px monospace !important;
-      margin-right: 13px !important;
       opacity: .7 !important;
       text-shadow: 1px 1px 2px #000 !important;
     }
-    body#gWP1 #buttonThemer {
-      width: 224px !important;
-    }
-    body#gWP1 #buttonLogo {
-      width: 170px !important;
-    }
-    body#gWP1 #inputThemer,
-    body#gWP1 #inputLogo {
-      background: #000 !important;
+    body#gWP1 #inputThemer {
+      background: rgba(0,0,0,.3) !important;
       border: 1px solid #FFF !important;
       border-radius: 6px !important;
       box-shadow: 0 1px 3px rgba(2555,255,255,0.15) !important;
       color: #FFF !important;
       cursor: pointer !important;
-      font: 20px monospace !important;
       height: 22px !important;
+      margin: 0px 4px !important;
       padding-top: 4px !important;
       position: relative !important;
       text-align: center !important;
-      top: -1px !important;
+      top: 1px !important;
       width: 32px !important;
+    }
+    body#gWP1 #downThemer {
+      cursor: pointer !important;
+      height: 32px !important;
+      margin-right: 12px !important;
+      opacity: .8 !important;
+    }
+    body#gWP1 #downThemer:hover {
+      opacity: 1 !important;
+    }
+    body#gWP1 #buttonLogo {
+      color: #FFF !important;
+      cursor: pointer !important;
+      opacity: .7 !important;
+      text-shadow: 1px 1px 2px #000 !important;
+    }
+    body#gWP1 #inputLogo {
+      background: rgba(0,0,0,.3) !important;
+      border: 1px solid #FFF !important;
+      border-radius: 6px !important;
+      box-shadow: 0 1px 3px rgba(2555,255,255,0.15) !important;
+      color: #FFF !important;
+      cursor: pointer !important;
+      height: 22px !important;
+      margin: 0px 4px !important;
+      padding-top: 4px !important;
+      position: relative !important;
+      text-align: center !important;
+      top: 1px !important;
+      width: 32px !important;
+    }
+    body#gWP1 #downLogo {
+      cursor: pointer !important;
+      height: 32px !important;
+      opacity: .8 !important;
+    }
+    body#gWP1 #downLogo:hover {
+      opacity: 1 !important;
     }
     body#gWP1 #inputThemer:hover,
     body#gWP1 #inputThemer:focus-within,
@@ -585,17 +578,6 @@
     body#gWP1 #inputLogo:focus-within {
       border-color: #999 !important;
       filter: brightness(2) !important;
-    }
-    body#gWP1 #downThemer,
-    body#gWP1 #downLogo {
-      background-repeat: no-repeat !important;
-      cursor: pointer !important;
-      height: 32px !important;
-      margin: 0px !important;
-      opacity: .6 !important;
-      position: relative !important;
-      top: 7px !important;
-      width: 47px !important;
     }
     body#gWP1 #changerContainer > button:hover,
     body#gWP1 #changerContainer > button:focus-within,
@@ -620,7 +602,7 @@
       fill: #FFF !important;
     }
     body#gWP1 {
-      background: url(${_CONFIGX_.githubSite}GM_getValue(wallpaperImage)}.jpg) no-repeat center center / cover fixed !important;
+      background: url(${githubSite}GM_getValue(wallpaperImage)}.jpg) no-repeat center center / cover fixed !important;
     }
     body#gWP1 > div.L3eUgb > div:nth-child(13) > div {
       background: transparent !important;
@@ -629,17 +611,17 @@
       float: right !important;
     }
     body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span > span > g-popup > div.CcNe6e > div {
-      background: #000 !important;
+      background: rgba(0,0,0,.3) !important;
       border-radius: 6px !important;
       padding: 8px 16px !important;
     }
     body#gWP1 #LS8OJ > div.k1zIA.rSk4se > svg {
       fill: #FFF !important;
     }
-    body#gWP1 > div.L3eUgb > div.o3j99.ikrT4e.KEY6ib > form > div:nth-child(1) > div > div.RNNXgb {
-      background: rgba(0,0,0,.1) !important;
+    body#gWP1 > div.L3eUgb div.RNNXgb {
+      background: rgba(0,0,0,.3) !important;
     }
-    #gb > div.gb_z > div:nth-child(2) {
+    body#gWP1 #gb > div.gb_z > div:nth-child(2) {
       height: calc(-70px + 100vh) !important;
     }
   `);
