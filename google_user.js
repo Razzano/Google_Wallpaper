@@ -113,7 +113,7 @@
 
   const _Text = {
     changeWallpaperTooltip: 'Left-click to change wallpaper',
-    inputLogoTooltip: '1 - 12 (13 = Default Google logo)',
+    inputLogoTooltip: '1 - 16 (0 = Default Google logo)',
     inputThemerTooltip: '0 - 52 (0 = Default background)',
     switchLogo: 'Left-click to change logos',
     toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`
