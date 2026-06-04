@@ -533,7 +533,7 @@
       height: 33px !important;
       left: 50% !important;
       margin: 4px 4px 0px 0px !important;
-      padding: 3px 16px 0px 16px !important;
+      padding: 1px 16px 0px 16px !important;
       position: absolute !important;
       top: 516px !important;
       transform: translateX(-50%) !important;
