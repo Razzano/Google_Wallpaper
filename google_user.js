@@ -533,7 +533,7 @@
       height: 33px !important;
       left: 50% !important;
       margin: 4px 4px 0px 0px !important;
-      padding: 4px 16px 0px 16px !important;
+      padding: 3px 16px 0px 16px !important;
       position: absolute !important;
       top: 516px !important;
       transform: translateX(-50%) !important;
@@ -563,19 +563,19 @@
     body#gWP1 #downThemer {
       cursor: pointer !important;
       height: 32px !important;
-      margin-right: 15px !important;
       opacity: .7 !important;
     }
     body#gWP1 #spacerX {
       color: #FFF !important;
       filter: brightness(2) !important;
+      margin: 9px 16px 0px 16px !important;
       opacity: 1 !important;
       pointer-events: none !important;
+      text-align: center !important;
     }
     body#gWP1 #buttonLogo {
       color: #FFF !important;
       cursor: pointer !important;
-      margin-left: 14px !important;
       opacity: .7 !important;
       text-shadow: 1px 1px 2px #000 !important;
     }
