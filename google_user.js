@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Google w/Wallpaper + Date/Time + Logo Switcher
+// @name         Google w/Wallpaper + Date/Time + Logos
 // @namespace    srazzano
 // @version      2.4.5
 // @description  Modernized Google with centered logo (no flash), wallpaper & date/time
@@ -89,11 +89,11 @@
   const _Image = {
     logo1: _aURL + 'logoGoogle.png',
     logo2: _aURL + 'imageGoogle.png',
-    logo3: _aURL + 'World.png',
+    logo3: _aURL + 'world.png',
     logo4: _aURL + 'search8.png',
-    logo5: _aURL + 'googleLogo11.png',
+    logo5: _aURL + 'silverG.png',
     logo6: _aURL + 'googleLogo12.png',
-    logo7: _aURL + 'lightbulb.png',
+    logo7: _aURL + 'bulb.png',
     logo8: _aURL + 'search3.png',
     logo9: _aURL + 'googleLogo15.png',
     logo10: _aURL + 'googleLogo17.png',
@@ -101,7 +101,7 @@
     logo12: _aURL + 'face2.png',
     logo13: _aURL + 'eagle6.png',
     logo14: _aURL + 'monkey1.png',
-    logo15: _aURL + 'globe.png',
+    logo15: _aURL + 'globe2.png',
     logo16: _aURL + 'eyes7.png',
     calendar: _aURL + 'imageCalendar.png'
   };
@@ -147,11 +147,14 @@
       num = 0;
     }
     const logoConfig = {
+      3: { marginTop: '15px', transform: 'translateX(-50%)' },
       4: { marginTop: '64px', transform: 'translateX(-50%)' },
+      5: { marginTop: '5px', transform: 'translateX(-50%)' },
+      7: { marginTop: '25px', transform: 'translateX(-50%)' },
       8: { marginTop: '60px', transform: 'translateX(-180%)' },
-      12: { marginTop: '0px', transform: 'translateX(-50%)' },
+      12: { marginTop: '5px', transform: 'translateX(-50%)' },
       13: { marginTop: '15px', transform: 'translateX(-50%)' },
-      15: { marginTop: '5px', transform: 'translateX(-50%)' },
+      15: { marginTop: '25px', transform: 'translateX(-50%)' }
     };
     const config = logoConfig[num] || { marginTop: '40px', transform: 'translateX(-50%)' };
     GM_addStyle(`
@@ -285,10 +288,19 @@
   }
 
   const searchLinksWhere = () => {
-    const target = GM_getValue('linkTarget', '_blank');
-    $qa('a[href]').forEach(link => {
-      link.target = target;
-      link.rel = 'noopener noreferrer';
+    const mode = GM_getValue('linkTarget', '_blank');
+    document.querySelectorAll('a[href]').forEach(link => {
+      if (!link.href?.startsWith('http')) return;
+      if (link.getAttribute('href').startsWith('#')) return;
+      const url = new URL(link.href, location.href);
+      const isExternal = !url.hostname.includes('google');
+      if (isExternal || mode === '_blank') {
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+      } else {
+        link.target = '_self';
+        link.rel = '';
+      }
     });
   };
 
@@ -471,9 +483,10 @@
       display: inline-flex !important;
       font: 20px monospace !important;
       height: 32px !important;
-      left: 10px !important;
+      left: 50% !important;
       position: absolute !important;
-      top: 10px !important;
+      top: 590px !important;
+      transform: translateX(-50%) !important;
     }
     body#gWP1 #dateTime {
       background: rgba(0,0,0,.3) !important;
@@ -514,10 +527,16 @@
     }
     body#gWP1 #changerContainer {
       background: rgba(0,0,0,.2) !important;
-      border-radius: 6px !important;
+      border: 1px solid #FFF !important;
+      border-radius: 8px !important;
+      box-shadow: 0 1px 3px rgba(2555, 255, 255, 0.15) !important;
       height: 33px !important;
+      left: 50% !important;
       margin: 4px 4px 0px 0px !important;
-      padding: 0px 10px !important;
+      padding: 4px 16px 0px 16px !important;
+      position: absolute !important;
+      top: 516px !important;
+      transform: translateX(-50%) !important;
     }
     body#gWP1 #buttonThemer {
       color: #FFF !important;
@@ -529,7 +548,7 @@
       background: rgba(0,0,0,.2) !important;
       border: 1px solid #FFF !important;
       border-radius: 6px !important;
-      box-shadow: 0 1px 3px rgba(2555,255,255,0.15) !important;
+      box-shadow: 0 1px 3px rgba(2555, 255, 255, 0.15) !important;
       color: #FFF !important;
       cursor: pointer !important;
       height: 22px !important;
@@ -538,7 +557,7 @@
       padding-top: 4px !important;
       position: relative !important;
       text-align: center !important;
-      top: 1px !important;
+      top: 0px !important;
       width: 30px !important;
     }
     body#gWP1 #downThemer {
@@ -573,13 +592,18 @@
       padding-top: 4px !important;
       position: relative !important;
       text-align: center !important;
-      top: 1px !important;
+      top: 0px !important;
       width: 30px !important;
     }
     body#gWP1 #downLogo {
       cursor: pointer !important;
       height: 32px !important;
       opacity: .7 !important;
+    }
+    body#gWP1 #changerContainer > button,
+    body#gWP1 #changerContainer > input {
+      font-family: monospace !important;
+      font-size: 120% !important;
     }
     body#gWP1 #changerContainer > button:hover {
       filter: brightness(2) !important;
@@ -616,10 +640,11 @@
       background: transparent !important;
     }
     body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe {
+      background: transparent !important;
       float: right !important;
     }
     body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span > span > g-popup > div.CcNe6e > div {
-      background: rgba(0,0,0,.3) !important;
+      background: rgba(0, 0, 0, .2) !important;
       border-radius: 6px !important;
       padding: 8px 16px !important;
     }
