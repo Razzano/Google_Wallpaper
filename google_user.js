@@ -440,8 +440,8 @@
       const shouldHide = GM_getValue('defaultDateTimeView', false);
       dtEl.hidden = shouldHide;
       if (!shouldHide) {
-          dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
-          startClock();
+        dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
+        startClock();
   } } }
 
   if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
@@ -469,8 +469,9 @@
     body#gWP1 > div.L3eUgb div.RNNXgb div.fzj3ad,
     body#gWP1 > div.L3eUgb > div.o3j99.qarstb > div:nth-child(3),
     body#gWP1 #EUjKDc,
-    #gbqfbb,
-    #LS8OJ > div.k1zIA.kKvsb > div.IzOpfd {
+    body#gWP1 #gbqfbb,
+    body#gWP1 #LS8OJ > div.k1zIA.kKvsb > div.IzOpfd,
+    body#gWP1 > div.L3eUgb > div.o3j99.qarstb > div:nth-child(2){
       display: none !important;
     }
     body#gWP1 #imageCalendar {
@@ -485,6 +486,7 @@
       height: 32px !important;
       left: 50% !important;
       position: absolute !important;
+      text-shadow: 1px 1px 2px #000 !important;
       top: 590px !important;
       transform: translateX(-50%) !important;
     }
@@ -561,9 +563,11 @@
       width: 30px !important;
     }
     body#gWP1 #downThemer {
+      color: #FFF !important;
       cursor: pointer !important;
-      height: 32px !important;
+      /*height: 32px !important;*/
       opacity: .7 !important;
+      text-shadow: 1px 1px 2px #000 !important;
     }
     body#gWP1 #spacerX {
       color: #FFF !important;
@@ -596,9 +600,11 @@
       width: 30px !important;
     }
     body#gWP1 #downLogo {
+      color: #FFF !important;
       cursor: pointer !important;
-      height: 32px !important;
+      /*height: 32px !important;*/
       opacity: .7 !important;
+      text-shadow: 1px 1px 2px #000 !important;
     }
     body#gWP1 #changerContainer > button,
     body#gWP1 #changerContainer > input {
@@ -657,6 +663,10 @@
     }
     body#gWP1 #APjFqb {
       filter: brightness(2) !important;
+      text-shadow: 1px 1px 2px #000 !important;
+    }
+    #gWP1 > div.L3eUgb div.RNNXgb > div.SDkEP > div.fM33ce.dRYYxd > div.ywK6Rd {
+      background: none !important;
     }
     body#gWP1 #gb > div.gb_z > div:nth-child(2) {
       height: calc(-70px + 100vh) !important;
