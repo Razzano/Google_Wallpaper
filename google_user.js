@@ -424,28 +424,37 @@
       children.flat().forEach(child => child && el.appendChild(child));
       return el;
     }
-    const hourNumbers = [];
     const ticks = [];
+    const hourNumbers = [];
+    // 60 tick marks
+    for (let i = 0; i < 60; i++) {
+      const angleDeg = i * 6 - 90;
+      const rad = angleDeg * Math.PI / 180;
+      const isHourMark = (i % 5 === 0);
+      // Longer ticks for hours
+      const innerRadius = isHourMark ? 42 : 44.5;
+      const outerRadius = 47;
+      const isQuarter = (i % 15 === 0);
+      ticks.push($x('line', {
+        x1: 50 + innerRadius * Math.cos(rad),
+        y1: 50 + innerRadius * Math.sin(rad),
+        x2: 50 + outerRadius * Math.cos(rad),
+        y2: 50 + outerRadius * Math.sin(rad),
+        stroke: '#2c3e50',
+        stroke: isHourMark ? '#2c3e50' : '#7f8c8d',
+        'stroke-width': isHourMark ? '1.5' : '0.75',
+        'stroke-linecap': 'round'
+      }));
+    }
     for (let i = 0; i < 12; i++) {
-      const hour = (i === 0) ? 12 : i;
+      const hour = i === 0 ? 12 : i;
       const angleDeg = i * 30 - 90;
       const rad = angleDeg * Math.PI / 180;
       const radius = 37;
-      const x = 50 + radius * Math.cos(rad);
-      const y = 50 + radius * Math.sin(rad);
-      ticks.push($x('line', {
-        x1: 50 + 42 * Math.cos(rad),
-        y1: 50 + 42 * Math.sin(rad),
-        x2: 50 + 47 * Math.cos(rad),
-        y2: 50 + 47 * Math.sin(rad),
-        stroke: '#2c3e50',
-        'stroke-width': '1',
-        'stroke-linecap': 'round'
-      }));
       hourNumbers.push($x('text', {
         className: 'Analog-Number',
-        x: x.toFixed(3),
-        y: (y + 2.8).toFixed(3),
+        x: (50 + radius * Math.cos(rad)).toFixed(3),
+        y: (50 + radius * Math.sin(rad) + 2.8).toFixed(3),
         textContent: hour,
         'text-anchor': 'middle',
         'dominant-baseline': 'middle'
