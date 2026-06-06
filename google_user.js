@@ -79,7 +79,6 @@
         elmnt.style.left = rect.left + 'px';
         elmnt.style.top = rect.top + 'px';
         elmnt.style.transform = 'none';
-
         elmnt.classList.add('dragged');
       }
       startX = e.clientX;
@@ -102,14 +101,14 @@
         0,
         Math.min(
           newLeft,
-          window.innerWidth - elmnt.offsetWidth - 20
+          window.innerWidth - elmnt.offsetWidth
         )
       );
       newTop = Math.max(
-        50,
+        0,
         Math.min(
           newTop,
-          window.innerHeight - elmnt.offsetHeight - 30
+          window.innerHeight - elmnt.offsetHeight
         )
       );
       elmnt.style.left = `${newLeft}px`;
@@ -167,8 +166,10 @@
   }
   const _Text = {
     changeWallpaperTooltip: 'Left-click to change wallpaper',
+    hideAnalogClock: '🕑Hide',
     inputLogoTooltip: '1 - 16 (0 = Default Google Logo)',
     inputThemerTooltip: '1 - 52 (0 = Default Google Background)',
+    showAnalogClock: '🕑Show',
     switchLogo: 'Left-click to change logos',
     toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`
   };
@@ -371,8 +372,6 @@
     if (el) {
       el.textContent = getDateTime(GM_getValue('dateFormat', 1));
   } }
-
-  // ============ Clock ============
   const startClock = () => {
     if (_clockInterval) {
       clearInterval(_clockInterval);
@@ -507,23 +506,42 @@
     const doDrag = (e) => {
       if (!isDragging) return;
       e.preventDefault();
-      container.style.left = (e.clientX - offsetX) + 'px';
-      container.style.top = (e.clientY - offsetY) + 'px';
-    }
+      let left = e.clientX - offsetX;
+      let top = e.clientY - offsetY;
+      left = Math.max(
+        0,
+        Math.min(left, window.innerWidth - container.offsetWidth)
+      );
+      top = Math.max(
+        0,
+        Math.min(top, window.innerHeight - container.offsetHeight)
+      );
+      container.style.left = `${left}px`;
+      container.style.top = `${top}px`;
+    };
     const stopDrag = () => {
       if (!isDragging) return;
       isDragging = false;
-      container.style.transition = '';
-      container.style.cursor = 'move';
-      const left = parseInt(container.style.left) || 50;
-      const top = parseInt(container.style.top) || 100;
-      localStorage.setItem('clockPosition', JSON.stringify({ left, top }));
-    }
+      const left = Math.max(0, parseInt(container.style.left, 10) || 0);
+      const top = Math.max(0, parseInt(container.style.top, 10) || 0);
+      localStorage.setItem(
+        'clockPosition',
+        JSON.stringify({ left, top })
+      );
+    };
     const savedPos = localStorage.getItem('clockPosition');
     if (savedPos) {
       const pos = JSON.parse(savedPos);
-      container.style.left = pos.left + 'px';
-      container.style.top = pos.top + 'px';
+      const left = Math.max(
+        0,
+        Math.min(pos.left, window.innerWidth - container.offsetWidth)
+      );
+      const top = Math.max(
+        0,
+        Math.min(pos.top, window.innerHeight - container.offsetHeight)
+      );
+      container.style.left = `${left}px`;
+      container.style.top = `${top}px`;
     }
     container.addEventListener('mousedown', startDrag);
     document.addEventListener('mousemove', doDrag);
@@ -570,8 +588,8 @@
     }
     $id('analogClock').textContent =
       GM_getValue('analogClock')
-        ? 'Hide Clock'
-        : 'Show Clock';
+        ? _Text.hideAnalogClock
+        : _Text.showAnalogClock;
   };
 
   // ============ Initialize ============
@@ -641,11 +659,11 @@
       if (showClock) {
         getClock();
       }
-      analogClock.textContent = showClock ? 'Hide Clock' : 'Show Clock';
+      analogClock.textContent = showClock ? _Text.hideAnalogClock : _Text.showAnalogClock;
     }
   };
 
-  // Default settings
+  // ============ Default Settings ============
   if (GM_getValue('analogClock') === undefined) GM_setValue('analogClock', false);
   if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
   if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', true);
@@ -853,7 +871,7 @@
     body#gWP1 #dateTimeContainer,
     body#gWP1 #changerContainer {
       position: fixed !important;
-      z-index: 2147483647 !important;
+      z-index: 2 !important;
       user-select: none !important;
       pointer-events: auto !important;
       box-sizing: border-box !important;
