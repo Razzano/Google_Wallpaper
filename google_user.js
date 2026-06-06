@@ -501,7 +501,6 @@
       offsetX = e.clientX - rect.left;
       offsetY = e.clientY - rect.top;
       container.style.transition = 'none';
-      container.style.cursor = 'grabbing';
     }
     const doDrag = (e) => {
       if (!isDragging) return;
@@ -907,7 +906,6 @@
       transform: none !important;
     }
     .ClockContainer {
-      cursor: move !important;
       display: inline-block !important;
       font-family: system-ui, Arial, sans-serif !important;
       left: 50px;
@@ -917,6 +915,7 @@
       z-index: 9999 !important;
     }
     .Analog-Bigclock {
+      cursor: move !important;
       height: var(--clock-size, 260px) !important;
       width: var(--clock-size, 260px) !important;
     }
@@ -999,7 +998,7 @@
       color: white !important;
       cursor: pointer !important;
       font-size: 14px !important;
-      padding: 9px 10px !important;
+      padding: 8px 10px 9px 10px !important;
       margin: 9px 0 0 0 !important;
       text-align: center !important;
       width: 80px !important;
@@ -1007,13 +1006,13 @@
     .scaler-controls {
       align-items: center !important;
       background: #34495e !important;
-      border-radius: 6px !important;
+      border-radius: 30px !important;
       display: flex !important;
       float: right !important;
       gap: 12px !important;
       justify-content: center !important;
       margin: 8px 0px 0px 0px !important;
-      padding: 6px 12px !important;
+      padding: 6px 12px 5px 12px !important;
       width: fit-content !important;
     }
     .scaler-reset {
