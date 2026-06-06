@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Google w/Wallpaper + Date/Time + Logos
 // @namespace    srazzano
-// @version      2.4.5
-// @description  Modernized Google with centered logo (no flash), wallpaper & date/time
+// @version      2.4.9
+// @description  Modernized Google with centered logo, wallpaper, date/time + draggable containers
 // @author       Sonny Razzano a.k.a. srazzano
 // @match        https://www.google.com/*
 // @match        https://google.com/*
@@ -15,9 +15,8 @@
 // ==/UserScript==
 
 (() => {
-
   'use strict';
-
+  // ============ Helpers ============
   const $c = (type, props = {}, ...children) => {
     const node = document.createElement(type);
     Object.entries(props).forEach(([key, value]) => {
@@ -25,38 +24,26 @@
       if (key.startsWith('on') && typeof value === 'function') {
         const event = key.substring(2).toLowerCase();
         node.addEventListener(event, value);
-      }
-      else if (key === 'style' && typeof value === 'object') {
+      } else if (key === 'style' && typeof value === 'object') {
         Object.assign(node.style, value);
-      }
-      else if (key === 'className' || key === 'class') {
+      } else if (key === 'className' || key === 'class') {
         node.className = Array.isArray(value) ? value.join(' ') : value;
-      }
-      else if (key in node) {
+      } else if (key in node) {
         node[key] = value;
-      }
-      else {
+      } else {
         node.setAttribute(key, value);
       }
     });
     children.flat(Infinity).forEach(child => {
       if (child == null) return;
-      if (typeof child === 'string' || typeof child === 'number') {
-        node.appendChild(document.createTextNode(child));
-      }
-      else if (child instanceof Node) {
-        node.appendChild(child);
-      }
+      if (typeof child === 'string' || typeof child === 'number') node.appendChild(document.createTextNode(child));
+      else if (child instanceof Node) node.appendChild(child);
     });
     return node;
   };
-
   const $id = (id) => document.getElementById(id);
-
   const $q = (sel, ctx = document) => ctx?.querySelector(sel) ?? null;
-
   const $qa = (sel, ctx = document) => Array.from(ctx?.querySelectorAll(sel) ?? []);
-
   const insertAfter = (newEl, refEl) => {
     if (!refEl || !refEl.parentNode) {
       console.warn('insertAfter: refEl is null or has no parentNode', refEl);
@@ -65,12 +52,10 @@
     refEl.parentNode.insertBefore(newEl, refEl.nextSibling);
     return newEl;
   };
-
   const prepend = (parent, child) => {
     parent.insertBefore(child, parent.firstChild);
     return child;
   };
-
   const removeDupes = (className) => {
     document.querySelectorAll('.' + className).forEach((el, i) => {
       if (i > 0) {
@@ -79,13 +64,84 @@
     });
   };
 
+  // ============ Drag ============
+  const makeDraggable = (elmnt, storageKey) => {
+    let startX, startY, startLeft, startTop;
+    let isDragging = false;
+    const dragMouseDown = (e) => {
+      if (['BUTTON', 'INPUT'].includes(e.target.tagName)) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      // Force fixed positioning
+      if (elmnt.style.position !== 'fixed') {
+        const rect = elmnt.getBoundingClientRect();
+        elmnt.style.position = 'fixed';
+        elmnt.style.left = rect.left + 'px';
+        elmnt.style.top = rect.top + 'px';
+        elmnt.style.transform = 'none';
+
+        elmnt.classList.add('dragged');
+      }
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = parseFloat(elmnt.style.left) || 0;
+      startTop = parseFloat(elmnt.style.top) || 0;
+      isDragging = true;
+      console.log('✅ Drag started on', elmnt.id);
+      document.addEventListener('mousemove', elementDrag, { passive: false });
+      document.addEventListener('mouseup', closeDragElement, { once: true });
+    };
+    const elementDrag = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      let newLeft = startLeft + dx;
+      let newTop = startTop + dy;
+      newLeft = Math.max(
+        0,
+        Math.min(
+          newLeft,
+          window.innerWidth - elmnt.offsetWidth - 20
+        )
+      );
+      newTop = Math.max(
+        50,
+        Math.min(
+          newTop,
+          window.innerHeight - elmnt.offsetHeight - 30
+        )
+      );
+      elmnt.style.left = `${newLeft}px`;
+      elmnt.style.top = `${newTop}px`;
+    };
+    const closeDragElement = () => {
+      isDragging = false;
+      document.removeEventListener('mousemove', elementDrag);
+      GM_setValue(storageKey + '_top', elmnt.style.top);
+      GM_setValue(storageKey + '_left', elmnt.style.left);
+      console.log('✅ Position saved for', elmnt.id);
+    };
+    elmnt.style.cursor = 'move';
+    elmnt.style.userSelect = 'none';
+    elmnt.addEventListener('mousedown', dragMouseDown);
+  };
+  const restorePosition = (el, key) => {
+    const savedTop = GM_getValue(key + '_top');
+    const savedLeft = GM_getValue(key + '_left');
+    if (savedTop && savedLeft) {
+        el.style.top = savedTop;
+        el.style.left = savedLeft;
+        el.style.transform = 'none';
+    }
+  };
+
+  // ==================== ORIGINAL CODE ====================
   const _aURL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/';
   const _githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image';
   const _dateTimeFormatCount = 4;
   const _timerLong = 10000;
   const _timerShort = 1000;
-
-  // If adding logo, make changes in lines 110, 146, 252 & 259
   const _Image = {
     logo1: _aURL + 'logoGoogle.png',
     logo2: _aURL + 'imageGoogle.png',
@@ -105,12 +161,10 @@
     logo16: _aURL + 'eyes7.png',
     calendar: _aURL + 'imageCalendar.png'
   };
-
   const _Logo = [null];
-  for (let i = 1; i <= 16; i++) { // 1 ← Change 16 to 17
+  for (let i = 1; i <= 16; i++) {
     _Logo.push($c('img', {id: 'logoGoogle', class: 'logo', src: _Image[`logo${i}`]}));
   }
-
   const _Text = {
     changeWallpaperTooltip: 'Left-click to change wallpaper',
     inputLogoTooltip: '1 - 16 (0 = Default Google Logo)',
@@ -118,27 +172,26 @@
     switchLogo: 'Left-click to change logos',
     toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`
   };
-
   let _clockInterval = null;
   let _currentWallpaperStyle = null;
 
+  // ============ Tooltip ============
   const updateCalendarTooltip = () => {
     const cal = $id('imageCalendar');
-    if (cal) {
-      cal.title = getTooltipText();
-  } }
-
+    if (cal) cal.title = getTooltipText();
+  };
   const getTooltipText = () => {
     const target = GM_getValue('linkTarget', '_blank'),
           mode = target === '_blank' ? 'New Tab ( target = "_blank" )' : 'Active Tab ( target = "_self" )';
     return `Tooltip Controls:
-       • Left-click  → Toggle Date/Time Container
-       • Shift + Left-click  → Open in New Tab ( target = "_blank" )
-       • Ctrl + Left-click   → Open in Active Tab ( target = "_self" )
+       • Left-click → Toggle Date/Time Container
+       • Shift + Left-click → Open in New Tab ( target = "_blank" )
+       • Ctrl + Left-click → Open in Active Tab ( target = "_self" )
        Current Target:
               • ${mode}`;
   };
 
+  // ============ Logos ============
   const applyLogo = (num) => {
     const existing = $id('logoGoogle');
     if (existing) existing.remove();
@@ -198,7 +251,19 @@
     }
     GM_setValue('logoImageNum', num);
   };
+  const logoClick = (id) => {
+    let current = GM_getValue('logoImageNum', 1),
+        next = (id.includes('up') || id === 'buttonLogo') ? (current + 1) % 17 : (current - 1 + 17) % 17; // 3 ← Change 17 to 18
+    applyLogo(next);
+  }
+  const handleLogoInput = (e) => {
+    let val = parseInt(e.target.value);
+    if (isNaN(val)) return;
+    val = Math.max(0, Math.min(17, val)); // 4 ← Change 17 to 18
+    applyLogo(val);
+  }
 
+  // ============ Wallpaper ============
   const applyWallpaper = (num) => {
     if (_currentWallpaperStyle) {
       _currentWallpaperStyle.remove();
@@ -213,56 +278,6 @@
     `;
     _currentWallpaperStyle = GM_addStyle(css);
   };
-
-  const getDateTime = (format = 1) => {
-    const now = new Date();
-    const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear(),
-          dayAbbr = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'][dy],
-          dayFull = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dy],
-          monthAbbr = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'][mth],
-          mPadded = (mth + 1) < 10 ? '0' + (mth + 1) : (mth + 1),
-          suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th',
-          ordinal = dt + suffix;
-    const hr = now.getHours(), min = now.getMinutes(), sec = now.getSeconds(),
-          hr12 = hr % 12 || 12,
-          hr24 = hr,
-          minStr = min < 10 ? ':0' + min : ':' + min,
-          secStr = GM_getValue('defaultSecondsView', false) ? (sec < 10 ? ':0' + sec : ':' + sec) : '',
-          ampm = GM_getValue('defaultAMPM', false) ? (hr < 12 ? 'AM' : 'PM') : '';
-    switch(format){
-      case 1: return `${dayFull} ⇒ ${monthAbbr} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
-      case 2: return `${dayAbbr} • ${monthAbbr} ${dt}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
-      case 3: return `${dayAbbr} • ${mPadded}/${dt < 10 ? '0'+dt : dt}/${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
-      case 4: return `${dayFull}, ${monthAbbr} ${dt}, ${yr} ⏰ ${hr24}${minStr}${secStr} ${ampm}`;
-      default: return `${dayFull} ⇒ ${monthAbbr} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
-  } }
-
-  const startClock = () => {
-    if (_clockInterval) {
-      clearInterval(_clockInterval);
-    }
-    const ms = GM_getValue('defaultSecondsView', false) ? _timerShort : _timerLong;
-    _clockInterval = setInterval(() => {
-      const el = $id('dateTime');
-      if (el) {
-        el.textContent = getDateTime(GM_getValue('dateFormat', 1));
-      }
-    }, ms);
-  }
-
-  const logoClick = (id) => {
-    let current = GM_getValue('logoImageNum', 1),
-        next = (id.includes('up') || id === 'buttonLogo') ? (current + 1) % 17 : (current - 1 + 17) % 17; // 3 ← Change 17 to 18
-    applyLogo(next);
-  }
-
-  const handleLogoInput = (e) => {
-    let val = parseInt(e.target.value);
-    if (isNaN(val)) return;
-    val = Math.max(0, Math.min(17, val)); // 4 ← Change 17 to 18
-    applyLogo(val);
-  }
-
   const wallpaperButtonChanger = (e) => {
     const inp = $id('inputThemer');
     let val = parseInt(inp.value) || 0;
@@ -287,23 +302,29 @@
     applyWallpaper(val);
   }
 
-  const searchLinksWhere = () => {
-    const mode = GM_getValue('linkTarget', '_blank');
-    document.querySelectorAll('a[href]').forEach(link => {
-      if (!link.href?.startsWith('http')) return;
-      if (link.getAttribute('href').startsWith('#')) return;
-      const url = new URL(link.href, location.href);
-      const isExternal = !url.hostname.includes('google');
-      if (isExternal || mode === '_blank') {
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-      } else {
-        link.target = '_self';
-        link.rel = '';
-      }
-    });
-  };
-
+  // ============ Date Time ============
+  const getDateTime = (format = 1) => {
+    const now = new Date();
+    const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear(),
+          dayAbbr = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'][dy],
+          dayFull = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dy],
+          monthAbbr = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'][mth],
+          mPadded = (mth + 1) < 10 ? '0' + (mth + 1) : (mth + 1),
+          suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th',
+          ordinal = dt + suffix;
+    const hr = now.getHours(), min = now.getMinutes(), sec = now.getSeconds(),
+          hr12 = hr % 12 || 12,
+          hr24 = hr,
+          minStr = min < 10 ? ':0' + min : ':' + min,
+          secStr = GM_getValue('defaultSecondsView', false) ? (sec < 10 ? ':0' + sec : ':' + sec) : '',
+          ampm = GM_getValue('defaultAMPM', false) ? (hr < 12 ? 'AM' : 'PM') : '';
+    switch(format){
+      case 1: return `${dayFull} ⇒ ${monthAbbr} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
+      case 2: return `${dayAbbr} • ${monthAbbr} ${dt}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
+      case 3: return `${dayAbbr} • ${mPadded}/${dt < 10 ? '0'+dt : dt}/${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
+      case 4: return `${dayFull}, ${monthAbbr} ${dt}, ${yr} ⏰ ${hr24}${minStr}${secStr} ${ampm}`;
+      default: return `${dayFull} ⇒ ${monthAbbr} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
+  } }
   const dateTimeToggle = (e) => {
     if (e.button !== 0) return;
     const dtEl = $id('dateTime');
@@ -332,7 +353,6 @@
     if (typeof updateCalendarTooltip === 'function') {
       updateCalendarTooltip();
   } }
-
   const dateTimeToggleSecondsAmPm = (e) => {
     if (e.button !== 0) return;
     e.preventDefault();
@@ -351,15 +371,46 @@
       el.textContent = getDateTime(GM_getValue('dateFormat', 1));
   } }
 
+  // ============ Clock ============
+  const startClock = () => {
+    if (_clockInterval) {
+      clearInterval(_clockInterval);
+    }
+    const ms = GM_getValue('defaultSecondsView', false) ? _timerShort : _timerLong;
+    _clockInterval = setInterval(() => {
+      const el = $id('dateTime');
+      if (el) {
+        el.textContent = getDateTime(GM_getValue('dateFormat', 1));
+      }
+    }, ms);
+  }
+
+  // ============ Targets ============
+  const searchLinksWhere = () => {
+    const mode = GM_getValue('linkTarget', '_blank');
+    document.querySelectorAll('a[href]').forEach(link => {
+      if (!link.href?.startsWith('http')) return;
+      if (link.getAttribute('href').startsWith('#')) return;
+      const url = new URL(link.href, location.href);
+      const isExternal = !url.hostname.includes('google');
+      if (isExternal || mode === '_blank') {
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+      } else {
+        link.target = '_self';
+        link.rel = '';
+      }
+    });
+  };
+
+  // ============ Initialize ============
   const init = () => {
     document.removeEventListener('DOMContentLoaded', init);
     const body = document.body;
-    const textArea = $id('APjFqb');
     if (!body) return;
     body.id = 'gWP1';
-    const dtContainer = $c('div', {
-      id: 'dateTimeContainer'
-    });
+    const textArea = $id('APjFqb');
+    const dtContainer = $c('div', { id: 'dateTimeContainer' });
     const imageCalendar = $c('img', {
       id: 'imageCalendar',
       src: _Image.calendar,
@@ -372,69 +423,40 @@
       onclick: dateTimeToggleSecondsAmPm
     });
     dtContainer.append(imageCalendar, dateTimeEl);
-    const changerContainer = $c('div', {
-      id: 'changerContainer'
-    });
-    const buttonThemer = $c('button', {
-      id: 'buttonThemer',
-      textContent: 'Wallpaper 🠉',
-      title: _Text.changeWallpaperTooltip,
-      onclick: wallpaperButtonChanger
-    });
-    const inputThemer = $c('input', {
-      id: 'inputThemer',
-      type: 'number',
-      value: GM_getValue('wallpaperImage', 0),
-      title: _Text.inputThemerTooltip,
-      oninput: wallpaperInputChanger
-    });
-    const downThemer = $c('button', {
-      id: 'downThemer',
-      textContent: '🠋 Wallpaper',
-      title: _Text.changeWallpaperTooltip,
-      onclick: wallpaperButtonChanger
-    });
-    const spacer = $c('span', {
-      id: 'spacerX',
-      textContent: '|'
-    });
-    const buttonLogo = $c('button', {
-      id: 'buttonLogo',
-      textContent: 'Logo 🠉',
-      title: _Text.switchLogo,
-      onclick: e => logoClick(e.target.id)
-    });
-    const inputLogo = $c('input', {
-      id: 'inputLogo',
-      type: 'number',
-      value: GM_getValue('logoImageNum', 1),
-      title: _Text.inputLogoTooltip,
-      oninput: handleLogoInput
-    });
-    const downLogo = $c('button', {
-      id: 'downLogo',
-      textContent: '🠋 Logo',
-      title: _Text.switchLogo,
-      onclick: e => logoClick(e.target.id)
-    });
+    const changerContainer = $c('div', { id: 'changerContainer' });
+    const buttonThemer = $c('button', {id: 'buttonThemer', textContent: 'Wallpaper 🠉', title: _Text.changeWallpaperTooltip, onclick: wallpaperButtonChanger});
+    const inputThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: _Text.inputThemerTooltip, oninput: wallpaperInputChanger});
+    const downThemer = $c('button', {id: 'downThemer', textContent: '🠋 Wallpaper', title: _Text.changeWallpaperTooltip, onclick: wallpaperButtonChanger});
+    const spacer = $c('span', {id: 'spacerX', textContent: '|'});
+    const buttonLogo = $c('button', {id: 'buttonLogo', textContent: 'Logo 🠉', title: _Text.switchLogo, onclick: e => logoClick(e.target.id)});
+    const inputLogo = $c('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: _Text.inputLogoTooltip, oninput: handleLogoInput});
+    const downLogo = $c('button', {id: 'downLogo', textContent: '🠋 Logo', title: _Text.switchLogo, onclick: e => logoClick(e.target.id)});
     changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo);
-    const header = $id('gb') || $q('header') || body;
-    prepend(header, dtContainer);
-    dtContainer.after(changerContainer);
+    // Append directly to body - this is the key fix
+    body.appendChild(dtContainer);
+    body.appendChild(changerContainer);
+    dtContainer.style.position = 'fixed';
+    dtContainer.style.top = '590px';
+    dtContainer.style.left = '50%';
+    dtContainer.style.transform = 'translateX(-50%)';
+    changerContainer.style.position = 'fixed';
+    changerContainer.style.top = '516px';
+    changerContainer.style.left = '50%';
+    changerContainer.style.transform = 'translateX(-50%)';
+    // Make draggable
+    makeDraggable(dtContainer, 'dtContainer');
+    makeDraggable(changerContainer, 'changerContainer');
+    restorePosition(dtContainer, 'dtContainer');
+    restorePosition(changerContainer, 'changerContainer');
     applyWallpaper(GM_getValue('wallpaperImage', 0));
     applyLogo(GM_getValue('logoImageNum', 1));
-    textArea.placeholder = 'Search Look-up';
+    if (textArea) textArea.placeholder = 'Search Look-up';
     if (GM_getValue('defaultDateTimeView', true)) {
       dateTimeEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
       startClock();
-    } else {
-      dateTimeEl.style.display = 'none';
     }
     searchLinksWhere();
-    if (imageCalendar) {
-      imageCalendar.onclick = null;
-      imageCalendar.addEventListener('click', dateTimeToggle, false);
-    }
+    if (imageCalendar) imageCalendar.addEventListener('click', dateTimeToggle, false);
     const dtEl = $id('dateTime');
     if (dtEl) {
       const shouldHide = GM_getValue('defaultDateTimeView', false);
@@ -442,10 +464,11 @@
       if (!shouldHide) {
         dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
         startClock();
-  } } }
+    } }
+  };
 
+  // Default settings
   if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
-  if (GM_getValue('dateTimeHidden') === undefined) GM_setValue('dateTimeHidden', false);
   if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', true);
   if (GM_getValue('defaultSecondsView') === undefined) GM_setValue('defaultSecondsView', false);
   if (GM_getValue('defaultAMPM') === undefined) GM_setValue('defaultAMPM', true);
@@ -459,6 +482,7 @@
     init();
   }
 
+  // ============ CSS ============
   GM_addStyle(`
     body#gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
     body#gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f > div:nth-child(2) > a,
@@ -479,16 +503,6 @@
       margin: 0px !important;
       position: relative !important;
       top: -1px !important;
-    }
-    body#gWP1 #dateTimeContainer {
-      display: inline-flex !important;
-      font: 20px monospace !important;
-      height: 32px !important;
-      left: 50% !important;
-      position: absolute !important;
-      text-shadow: 1px 1px 2px #000 !important;
-      top: 590px !important;
-      transform: translateX(-50%) !important;
     }
     body#gWP1 #dateTime {
       background: rgba(0,0,0,.3) !important;
@@ -527,19 +541,6 @@
       top: 0px !important;
       z-index: 999 !important;
     }
-    body#gWP1 #changerContainer {
-      background: rgba(0,0,0,.2) !important;
-      border: 1px solid #FFF !important;
-      border-radius: 8px !important;
-      box-shadow: 0 1px 3px rgba(2555, 255, 255, 0.15) !important;
-      height: 33px !important;
-      left: 50% !important;
-      margin: 4px 4px 0px 0px !important;
-      padding: 1px 16px 0px 16px !important;
-      position: absolute !important;
-      top: 516px !important;
-      transform: translateX(-50%) !important;
-    }
     body#gWP1 #buttonThemer {
       color: #FFF !important;
       cursor: pointer !important;
@@ -565,7 +566,6 @@
     body#gWP1 #downThemer {
       color: #FFF !important;
       cursor: pointer !important;
-      /*height: 32px !important;*/
       opacity: .7 !important;
       text-shadow: 1px 1px 2px #000 !important;
     }
@@ -602,7 +602,6 @@
     body#gWP1 #downLogo {
       color: #FFF !important;
       cursor: pointer !important;
-      /*height: 32px !important;*/
       opacity: .7 !important;
       text-shadow: 1px 1px 2px #000 !important;
     }
@@ -671,7 +670,41 @@
     body#gWP1 #gb > div.gb_z > div:nth-child(2) {
       height: calc(-70px + 100vh) !important;
     }
+    body#gWP1 #dateTimeContainer,
+    body#gWP1 #changerContainer {
+      position: fixed !important;
+      z-index: 2147483647 !important;
+      user-select: none !important;
+      pointer-events: auto !important;
+      box-sizing: border-box !important;
+    }
+    body#gWP1 #dateTimeContainer {
+      display: inline-flex !important;
+      font: 20px monospace !important;
+      height: 32px !important;
+      background: rgba(0,0,0,0.5) !important;
+      border: 2px solid rgba(255,255,255,0.4) !important;
+      border-radius: 8px !important;
+      padding: 4px 16px !important;
+      align-items: center !important;
+      min-width: 200px !important; /* helps click area */
+    }
+    body#gWP1 #changerContainer {
+      background: rgba(0,0,0,0.35) !important;
+      border: 2px solid #FFF !important;
+      border-radius: 8px !important;
+      height: 35px !important;
+      padding: 0px 16px !important;
+      align-items: center !important;
+      min-width: 380px !important;
+    }
+    body#gWP1 #dateTimeContainer > *,
+    body#gWP1 #changerContainer > * {
+      pointer-events: auto !important;
+    }
+    #dateTimeContainer.dragged,
+    #changerContainer.dragged {
+      transform: none !important;
+    }
   `);
 })();
-
-
