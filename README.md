@@ -1,2 +1,3 @@
-# Google w/Wallpaper + Date/Time + Logo Switcher (Tampermonkey Script)
+# Tampermonkey Script
+# Google w/Wallpaper + Date/Time + Logo Switcher
 Date/Time and Wallpaper/Logo Containers Draggable
