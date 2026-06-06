@@ -616,12 +616,13 @@
     const buttonThemer = $c('button', {id: 'buttonThemer', textContent: 'Wallpaper 🠉', title: _Text.changeWallpaperTooltip, onclick: wallpaperButtonChanger});
     const inputThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: _Text.inputThemerTooltip, oninput: wallpaperInputChanger});
     const downThemer = $c('button', {id: 'downThemer', textContent: '🠋 Wallpaper', title: _Text.changeWallpaperTooltip, onclick: wallpaperButtonChanger});
-    const spacer = $c('span', {id: 'spacerX', textContent: '|'});
+    const spacer = $c('span', {class: 'spacerX', textContent: '|'});
     const buttonLogo = $c('button', {id: 'buttonLogo', textContent: 'Logo 🠉', title: _Text.switchLogo, onclick: e => logoClick(e.target.id)});
     const inputLogo = $c('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: _Text.inputLogoTooltip, oninput: handleLogoInput});
     const downLogo = $c('button', {id: 'downLogo', textContent: '🠋 Logo', title: _Text.switchLogo, onclick: e => logoClick(e.target.id)});
+    const spacer2 = $c('span', {class: 'spacerX', textContent: '|'});
     const analogClock = $c('button', {id: 'analogClock', onclick: toggleAnalogClock});
-    changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo, analogClock);
+    changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo, spacer2, analogClock);
     // Append directly to body - this is the key fix
     body.appendChild(dtContainer);
     body.appendChild(changerContainer);
@@ -767,7 +768,7 @@
       opacity: .7 !important;
       text-shadow: 1px 1px 2px #000 !important;
     }
-    body#gWP1 #spacerX {
+    body#gWP1 .spacerX {
       color: #FFF !important;
       filter: brightness(2) !important;
       margin: 9px 16px 0px 16px !important;
@@ -897,7 +898,7 @@
       min-width: 380px !important;
     }
     body#gWP1 #analogClock {
-      margin-left: 16px !important;
+      margin: 0px !important;
     }
     body#gWP1 #dateTimeContainer > *,
     body#gWP1 #changerContainer > * {
