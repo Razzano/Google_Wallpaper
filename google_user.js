@@ -69,7 +69,7 @@
     let startX, startY, startLeft, startTop;
     let isDragging = false;
     const dragMouseDown = (e) => {
-      if (['BUTTON', 'INPUT'].includes(e.target.tagName)) return;
+      if (e.target !== elmnt) return;
       e.preventDefault();
       e.stopImmediatePropagation();
       // Force fixed positioning
@@ -871,31 +871,29 @@
     }
     body#gWP1 #dateTimeContainer,
     body#gWP1 #changerContainer {
-      position: fixed !important;
-      z-index: 2 !important;
-      user-select: none !important;
-      pointer-events: auto !important;
       box-sizing: border-box !important;
+      pointer-events: auto !important;
+      position: fixed !important;
+      user-select: none !important;
+      z-index: 2 !important;
     }
     body#gWP1 #dateTimeContainer {
+      align-items: center !important;
+      border-radius: 8px !important;
       display: inline-flex !important;
       font: 20px monospace !important;
       height: 32px !important;
-      background: rgba(0,0,0,0.5) !important;
-      border: 2px solid rgba(255,255,255,0.4) !important;
-      border-radius: 8px !important;
-      padding: 4px 16px !important;
-      align-items: center !important;
       min-width: 32px !important;
+      padding: 4px 16px !important;
     }
     body#gWP1 #changerContainer {
+      align-items: center !important;
       background: rgba(0,0,0,0.35) !important;
       border: 2px solid #FFF !important;
       border-radius: 8px !important;
       height: 35px !important;
-      padding: 0px 16px !important;
-      align-items: center !important;
       min-width: 380px !important;
+      padding: 0px 16px !important;
     }
     body#gWP1 #analogClock {
       margin: 0px !important;
