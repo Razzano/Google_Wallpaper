@@ -456,16 +456,14 @@
       const angleDeg = i * 30 - 90;
       const rad = angleDeg * Math.PI / 180;
       const radius = 37;
-      hourNumbers.push(
-        $el('text', {
-          className: 'Analog-Number',
-          x: (50 + radius * Math.cos(rad)).toFixed(3),
-          y: (50 + radius * Math.sin(rad) + 2.8).toFixed(3),
-          textContent: hour,
-          textAnchor: 'middle',
-          dominantBaseline: 'middle'
-        })
-      );
+      hourNumbers.push($el('text', {
+        className: 'Analog-Number',
+        x: (50 + radius * Math.cos(rad)).toFixed(3),
+        y: (50 + radius * Math.sin(rad) + 2.8).toFixed(3),
+        textContent: hour,
+        'text-anchor': 'middle',
+        'dominant-baseline': 'middle'
+      }));
     }
     const dateText = $el('text', {
       className: 'Analog-DateText',
@@ -511,7 +509,7 @@
       step: '1',
       oninput(e) {
         const val = e.target.value;
-        if (val === '') return; // allow empty while typing
+        if (val === '') return;
         const num = parseInt(val, 10);
         if (!isNaN(num)) {
           currentPercent = Math.max(40, Math.min(200, num));
@@ -803,7 +801,7 @@
       background: rgba(0,0,0,.2) !important;
       border: 1px solid #FFF !important;
       border-radius: 6px !important;
-      box-shadow: 0 1px 3px rgba(2555,255,255,0.15) !important;
+      box-shadow: 0 1px 3px rgba(255,255,255,0.15) !important;
       color: #FFF !important;
       cursor: pointer !important;
       height: 22px !important;
