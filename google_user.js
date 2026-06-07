@@ -479,6 +479,13 @@
       textAnchor: 'middle',
       dominantBaseline: 'middle'
     });
+    const ampmText = $el('text', {
+      className: 'Analog-AMPMText',
+      x: 45,
+      y: 80,
+      textAnchor: 'middle',
+      dominantBaseline: 'middle'
+    });
     const svg = $el('svg', { className: 'Analog', viewBox: '0 0 100 100' },
       $el('circle', {
         cx: 50,
@@ -492,6 +499,7 @@
       ...hourNumbers,
       dateText,
       dayText,
+      ampmText,
       $el('line', { className: 'Analog-Hour-Hand', x1: 50, y1: 50, x2: 50, y2: 30 }),
       $el('line', { className: 'Analog-Minute-Hand', x1: 50, y1: 50, x2: 50, y2: 22 }),
       $el('line', { className: 'Analog-Second-Hand', x1: 50, y1: 55, x2: 50, y2: 15 }),
@@ -590,6 +598,7 @@
         'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
       ];
       dayText.textContent = dayNames[now.getDay()];
+      ampmText.textContent = now.getHours() < 12 ? 'AM' : 'PM';
     };
     setInterval(updateClock, 16);
     updateClock();
@@ -1078,7 +1087,7 @@
     .Analog-Bigclock.dark .Analog-DateWindow,
     .Analog-Bigclock.dark .Analog-DayWindow {
       fill: none !important;
-    }*/
+    }
     .Analog-DateText,
     .Analog-DayText	{
       font-size: 6px !important;
@@ -1087,6 +1096,29 @@
     .Analog-Bigclock.dark .Analog-DateText,
     .Analog-Bigclock.dark .Analog-DayText {
       fill: #fff !important;
-    }
+    }*/
+
+.Analog-DateText,
+.Analog-DayText,
+.Analog-AMPMText {
+  font-size: 6px !important;
+  fill: #000 !important;
+}
+
+.Analog-Bigclock.dark .Analog-DateText,
+.Analog-Bigclock.dark .Analog-DayText,
+.Analog-Bigclock.dark .Analog-AMPMText {
+  fill: #fff !important;
+}
+
+.Analog-AMPMText {
+  font-size: 7px !important;
+  font-weight: bold !important;
+  fill: #0078d7 !important;
+}
+
+.Analog-Bigclock.dark .Analog-AMPMText {
+  fill: #4da3ff !important;
+}
   `);
 })();
