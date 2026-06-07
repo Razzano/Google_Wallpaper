@@ -1095,13 +1095,13 @@
     .scaler-text {
       background: rgba(255,255,255,.1) !important;
       border: 1px solid #666 !important;
-      border-radius: 4px !important;
+      border-radius: 14px !important;
       color: #5294e2 !important;
       font-size: 14px !important;
       font-weight: 500 !important;
       text-align: center !important;
-      width: 55px !important;
-      padding: 2px 4px !important;
+      min-width: 32px !important;
+      padding: 1px 2px 0px 0px !important;
     }
 	   .scaler-text::-webkit-inner-spin-button,
     .scaler-text::-webkit-outer-spin-button {
