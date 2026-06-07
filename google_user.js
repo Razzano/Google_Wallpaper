@@ -95,7 +95,7 @@
       if (dragSelector) {
         if (!e.target.closest(dragSelector)) return;
       } else {
-        if (e.target.closest('button,input,select,textarea')) return;
+        if (e.target.closest('button,input,select,textarea,img,span')) return;
       }
       e.preventDefault();
       e.stopImmediatePropagation();
