@@ -65,11 +65,15 @@
   };
 
   // ============ Drag ============
-  const makeDraggable = (elmnt, storageKey) => {
+  const makeDraggable = (elmnt, storageKey, dragSelector = null) => {
     let startX, startY, startLeft, startTop;
     let isDragging = false;
     const dragMouseDown = (e) => {
-      if (e.target !== elmnt) return;
+      if (dragSelector) {
+        if (!e.target.closest(dragSelector)) return;
+      } else {
+        if (e.target.closest('button,input,select,textarea')) return;
+      }
       e.preventDefault();
       e.stopImmediatePropagation();
       if (elmnt.style.position !== 'fixed') {
@@ -85,7 +89,6 @@
       startLeft = parseFloat(elmnt.style.left) || 0;
       startTop = parseFloat(elmnt.style.top) || 0;
       isDragging = true;
-      console.log('✅ Drag started on', elmnt.id);
       document.addEventListener('mousemove', elementDrag, { passive: false });
       document.addEventListener('mouseup', closeDragElement, { once: true });
     };
@@ -538,71 +541,15 @@
       setClockPercentage(100);
     }
     const container = $x('div', {id: 'analogClockContainer', className: 'ClockContainer'}, Clock, themeBtn, scalerControls);
-    let isDragging = false;
-    let offsetX = 0, offsetY = 0;
-    const startDrag = (e) => {
-      if (e.target.closest('.ClockThemeToggle') || e.target.closest('.scaler-controls')) return;
-      isDragging = true;
-      const rect = container.getBoundingClientRect();
-      offsetX = e.clientX - rect.left;
-      offsetY = e.clientY - rect.top;
-      container.style.transition = 'none';
-    }
-    const doDrag = (e) => {
-      if (!isDragging) return;
-      e.preventDefault();
-      let left = e.clientX - offsetX;
-      let top = e.clientY - offsetY;
-      left = Math.max(
-        0,
-        Math.min(left, window.innerWidth - container.offsetWidth)
-      );
-      top = Math.max(
-        0,
-        Math.min(top, window.innerHeight - container.offsetHeight)
-      );
-      container.style.left = `${left}px`;
-      container.style.top = `${top}px`;
-    };
-    const stopDrag = () => {
-      if (!isDragging) return;
-      isDragging = false;
-      const left = Math.max(0, parseInt(container.style.left, 10) || 0);
-      const top = Math.max(0, parseInt(container.style.top, 10) || 0);
-      localStorage.setItem(
-        'clockPosition',
-        JSON.stringify({ left, top })
-      );
-    };
-    const savedPos = localStorage.getItem('clockPosition');
-    if (savedPos) {
-      const pos = JSON.parse(savedPos);
-      const left = Math.max(
-        0,
-        Math.min(pos.left, window.innerWidth - container.offsetWidth)
-      );
-      const top = Math.max(
-        0,
-        Math.min(pos.top, window.innerHeight - container.offsetHeight)
-      );
-      container.style.left = `${left}px`;
-      container.style.top = `${top}px`;
-    }
-    container.addEventListener('mousedown', startDrag);
-    document.addEventListener('mousemove', doDrag);
-    document.addEventListener('mouseup', stopDrag);
-    container.addEventListener('touchstart', e => {
-      if (e.target.closest('.ClockThemeToggle') || e.target.closest('.scaler-controls')) return;
-      const touch = e.touches[0];
-      startDrag({ clientX: touch.clientX, clientY: touch.clientY, target: e.target });
-    });
-    document.addEventListener('touchmove', e => {
-      if (isDragging) {
-        const touch = e.touches[0];
-        doDrag({ clientX: touch.clientX, clientY: touch.clientY });
-      }
-    });
-    document.addEventListener('touchend', stopDrag);
+    makeDraggable(
+      container,
+      'analogClockContainer',
+      '.Analog-Bigclock'
+    );
+    restorePosition(
+      container,
+      'analogClockContainer'
+    );
     document.body.appendChild(container);
     let displayedSecondDeg = 0;
     const updateClock = () => {
@@ -628,7 +575,7 @@
         'Friday',
         'Saturday'
       ];
-	  dayText.textContent = dayNames[now.getDay()];
+	     dayText.textContent = dayNames[now.getDay()];
     }
     setInterval(updateClock, 16);
     updateClock();
