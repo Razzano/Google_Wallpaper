@@ -482,7 +482,7 @@
     const ampmText = $el('text', {
       className: 'Analog-AMPMText',
       x: 45,
-      y: 80,
+      y: 77,
       textAnchor: 'middle',
       dominantBaseline: 'middle'
     });
@@ -919,9 +919,6 @@
       min-width: 380px !important;
       padding: 0px 16px !important;
     }
-    #analogClock {
-      margin: 0px !important;
-    }
     #dateTimeContainer > *,
     #changerContainer > * {
       pointer-events: auto !important;
@@ -945,7 +942,7 @@
       width: var(--clock-size, 260px) !important;
     }
     .Analog {
-    background: radial-gradient(circle at 50% 50%, #f8f9fa 0%, #e9ecef 100%) !important;
+      background: radial-gradient(circle at 50% 50%, #f8f9fa 0%, #e9ecef 100%) !important;
       border-radius: 50% !important;
       box-shadow: inset 0 0 25px rgba(0,0,0,0.08), 0 15px 35px rgba(0,0,0,0.25) !important;
       height: 100% !important;
@@ -969,7 +966,7 @@
       fill: #2c3e50 !important;
       stroke: #2c3e50 !important;
       stroke-linecap: round !important;
-      stroke-width: 4 !important;
+      stroke-width: 3 !important;
     }
     .Analog-Minute-Hand {
       fill: #34495e !important;
@@ -1000,9 +997,6 @@
       background: radial-gradient(circle at 50% 50%, #2c3e50 0%, #1a252f 100%) !important;
       border-color: #ecf0f1 !important;
     }
-    .Analog-Bigclock.dark .Analog-Number {
-      fill: #fff !important;
-    }
     .Analog-Bigclock.dark .Analog-Hour-Hand,
     .Analog-Bigclock.dark .Analog-Minute-Hand {
       fill: #ecf0f1 !important;
@@ -1012,9 +1006,42 @@
       fill: #ff6b6b !important;
       stroke: #ff6b6b !important;
     }
+    .Analog-Bigclock.dark .Analog-Number {
+      fill: #fff !important;
+    }
     .Analog-Bigclock.dark .Analog-CenterCutout {
       fill: #ecf0f1 !important;
       stroke: #2c3e50 !important;
+    }
+    .Analog-DateText,
+    .Analog-DayText,
+    .Analog-AMPMText {
+      font-size: 6px !important;
+      fill: #000 !important;
+    }
+    .Analog-DateWindow,
+    .Analog-DayWindow {
+      fill: none !important;
+    }
+    .Analog-Bigclock.dark .Analog-DateText,
+    .Analog-Bigclock.dark .Analog-DayText,
+    .Analog-Bigclock.dark .Analog-AMPMText {
+      fill: #fff !important;
+    }
+    .Analog-Bigclock.dark .Analog-DateWindow,
+    .Analog-Bigclock.dark .Analog-DayWindow {
+      fill: none !important;
+    }
+    .Analog-Bigclock.dark .Analog-DateText,
+    .Analog-Bigclock.dark .Analog-DayText {
+      fill: #fff !important;
+    }
+    .Analog-AMPMText {
+      font-size: 6px !important;
+      fill: #0078d7 !important;
+    }
+    .Analog-Bigclock.dark .Analog-AMPMText {
+      fill: #4da3ff !important;
     }
     .ClockThemeToggle {
       background: #34495e !important;
@@ -1076,49 +1103,9 @@
       width: 55px !important;
       padding: 2px 4px !important;
     }
-	.scaler-text::-webkit-inner-spin-button,
+	   .scaler-text::-webkit-inner-spin-button,
     .scaler-text::-webkit-outer-spin-button {
       display: none !important;
     }
-	 /*.Analog-DateWindow,
-    .Analog-DayWindow {
-      fill: none !important;
-    }
-    .Analog-Bigclock.dark .Analog-DateWindow,
-    .Analog-Bigclock.dark .Analog-DayWindow {
-      fill: none !important;
-    }
-    .Analog-DateText,
-    .Analog-DayText	{
-      font-size: 6px !important;
-      fill: #000 !important;
-    }
-    .Analog-Bigclock.dark .Analog-DateText,
-    .Analog-Bigclock.dark .Analog-DayText {
-      fill: #fff !important;
-    }*/
-
-.Analog-DateText,
-.Analog-DayText,
-.Analog-AMPMText {
-  font-size: 6px !important;
-  fill: #000 !important;
-}
-
-.Analog-Bigclock.dark .Analog-DateText,
-.Analog-Bigclock.dark .Analog-DayText,
-.Analog-Bigclock.dark .Analog-AMPMText {
-  fill: #fff !important;
-}
-
-.Analog-AMPMText {
-  font-size: 7px !important;
-  font-weight: bold !important;
-  fill: #0078d7 !important;
-}
-
-.Analog-Bigclock.dark .Analog-AMPMText {
-  fill: #4da3ff !important;
-}
   `);
 })();
