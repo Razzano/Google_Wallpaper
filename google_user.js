@@ -459,7 +459,7 @@
       hourNumbers.push($el('text', {
         className: 'Analog-Number',
         x: (50 + radius * Math.cos(rad)).toFixed(3),
-        y: (50 + radius * Math.sin(rad) + 2.8).toFixed(3),
+        y: (48 + radius * Math.sin(rad) + 2.8).toFixed(3),
         textContent: hour,
         'text-anchor': 'middle',
         'dominant-baseline': 'middle'
