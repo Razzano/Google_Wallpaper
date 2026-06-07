@@ -17,29 +17,52 @@
 (() => {
   'use strict';
   // ============ Helpers ============
-  const $c = (type, props = {}, ...children) => {
-    const node = document.createElement(type);
-    Object.entries(props).forEach(([key, value]) => {
-      if (value === undefined || value === null) return;
-      if (key.startsWith('on') && typeof value === 'function') {
-        const event = key.substring(2).toLowerCase();
-        node.addEventListener(event, value);
-      } else if (key === 'style' && typeof value === 'object') {
-        Object.assign(node.style, value);
-      } else if (key === 'className' || key === 'class') {
-        node.className = Array.isArray(value) ? value.join(' ') : value;
-      } else if (key in node) {
-        node[key] = value;
-      } else {
-        node.setAttribute(key, value);
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const SVG_TAGS = new Set([
+    "svg","g","path","circle","text","line","rect","polyline","polygon",
+    "foreignObject","defs","marker","stop","use"
+  ]);
+  const $el = (tag, props = {}, ...children) => {
+    const isSVG = SVG_TAGS.has(tag);
+    const el = isSVG
+      ? document.createElementNS(SVG_NS, tag)
+      : document.createElement(tag);
+    for (const [key, value] of Object.entries(props)) {
+      if (value == null) continue;
+      if (key.startsWith("on") && typeof value === "function") {
+        el.addEventListener(key.slice(2).toLowerCase(), value);
+        continue;
       }
-    });
+      if (key === "className" || key === "class") {
+        el.setAttribute("class", Array.isArray(value) ? value.join(" ") : value);
+        continue;
+      }
+      if (key === "style" && typeof value === "object") {
+        Object.assign(el.style, value);
+        continue;
+      }
+      if (key === "textContent") {
+        el.textContent = value;
+        continue;
+      }
+      if (isSVG) {
+        el.setAttribute(key, value);
+        continue;
+      }
+      if (key in el) {
+        el[key] = value;
+      } else {
+        el.setAttribute(key, value);
+    } }
     children.flat(Infinity).forEach(child => {
       if (child == null) return;
-      if (typeof child === 'string' || typeof child === 'number') node.appendChild(document.createTextNode(child));
-      else if (child instanceof Node) node.appendChild(child);
+      el.appendChild(
+        child instanceof Node
+          ? child
+          : document.createTextNode(child)
+      );
     });
-    return node;
+    return el;
   };
   const $id = (id) => document.getElementById(id);
   const $q = (sel, ctx = document) => ctx?.querySelector(sel) ?? null;
@@ -164,7 +187,7 @@
   };
   const _Logo = [null];
   for (let i = 1; i <= 16; i++) {
-    _Logo.push($c('img', {id: 'logoGoogle', class: 'logo', src: _Image[`logo${i}`]}));
+    _Logo.push($el('img', {id: 'logoGoogle', class: 'logo', src: _Image[`logo${i}`]}));
   }
   const _Text = {
     changeWallpaperTooltip: 'Left-click to change wallpaper',
@@ -408,24 +431,6 @@
   // ============ Analog Clock ============
   const getClock = () => {
     if ($id('analogClockContainer')) return;
-    const $x = (tag, props = {}, ...children) => {
-      const svgTags = ['svg','g','path','circle','text','line', 'rect'];
-      const el = document.createElementNS(
-        svgTags.includes(tag) ? 'http://www.w3.org/2000/svg' : 'http://www.w3.org/1999/xhtml',
-        tag
-      );
-      if (props.className) el.setAttribute('class', props.className);
-      if (props.style) Object.assign(el.style, props.style);
-      if (props.textContent !== undefined) el.textContent = props.textContent;
-      Object.keys(props).forEach(key => {
-        if (!['className','style','textContent','onclick'].includes(key)) {
-          el.setAttribute(key, props[key]);
-        }
-      });
-      if (props.onclick) el.onclick = props.onclick;
-      children.flat().forEach(child => child && el.appendChild(child));
-      return el;
-    }
     const ticks = [];
     const hourNumbers = [];
     for (let i = 0; i < 60; i++) {
@@ -434,99 +439,112 @@
       const isHourMark = (i % 5 === 0);
       const innerRadius = isHourMark ? 42 : 44.5;
       const outerRadius = 47;
-      const isQuarter = (i % 15 === 0);
-      ticks.push($x('line', {
-        x1: 50 + innerRadius * Math.cos(rad),
-        y1: 50 + innerRadius * Math.sin(rad),
-        x2: 50 + outerRadius * Math.cos(rad),
-        y2: 50 + outerRadius * Math.sin(rad),
-        stroke: isHourMark ? '#2c3e50' : '#7f8c8d',
-        'stroke-width': isHourMark ? '1.5' : '0.75',
-        'stroke-linecap': 'round'
-      }));
+      ticks.push(
+        $el('line', {
+          x1: 50 + innerRadius * Math.cos(rad),
+          y1: 50 + innerRadius * Math.sin(rad),
+          x2: 50 + outerRadius * Math.cos(rad),
+          y2: 50 + outerRadius * Math.sin(rad),
+          stroke: isHourMark ? '#2c3e50' : '#7f8c8d',
+          strokeWidth: isHourMark ? '1.5' : '0.75',
+          strokeLinecap: 'round'
+        })
+      );
     }
     for (let i = 0; i < 12; i++) {
       const hour = i === 0 ? 12 : i;
       const angleDeg = i * 30 - 90;
       const rad = angleDeg * Math.PI / 180;
       const radius = 37;
-      hourNumbers.push($x('text', {
-        className: 'Analog-Number',
-        x: (50 + radius * Math.cos(rad)).toFixed(3),
-        y: (50 + radius * Math.sin(rad) + 2.8).toFixed(3),
-        textContent: hour,
-        'text-anchor': 'middle',
-        'dominant-baseline': 'middle'
-      }));
+      hourNumbers.push(
+        $el('text', {
+          className: 'Analog-Number',
+          x: (50 + radius * Math.cos(rad)).toFixed(3),
+          y: (50 + radius * Math.sin(rad) + 2.8).toFixed(3),
+          textContent: hour,
+          textAnchor: 'middle',
+          dominantBaseline: 'middle'
+        })
+      );
     }
-    const dateText = $x('text', {
+    const dateText = $el('text', {
       className: 'Analog-DateText',
-      x: 50,
+      x: 35,
       y: 70,
-      'text-anchor': 'middle',
-      'dominant-baseline': 'middle'
+      textAnchor: 'middle',
+      dominantBaseline: 'middle'
     });
-    const dayText = $x('text', {
+    const dayText = $el('text', {
       className: 'Analog-DayText',
-      x: 50,
+      x: 40,
       y: 63,
-      'text-anchor': 'middle',
-      'dominant-baseline': 'middle'
+      textAnchor: 'middle',
+      dominantBaseline: 'middle'
     });
-    const svg = $x('svg', { className: 'Analog', viewBox: '0 0 100 100' },
-      $x('circle', {
+    const svg = $el('svg', { className: 'Analog', viewBox: '0 0 100 100' },
+      $el('circle', {
         cx: 50,
         cy: 50,
         r: 47,
         fill: 'none',
         stroke: '#ccc',
-        'stroke-width': 2
+        strokeWidth: 2
       }),
       ...ticks,
       ...hourNumbers,
-      // Date box
-      /*$x('rect', {
-        className: 'Analog-DateWindow',
-        x: 35,
-        y: 68,
-        width: 30,
-        height: 8,
-        rx: 2
-      }),*/
       dateText,
-      // Day box
-      /*$x('rect', {
-        className: 'Analog-DayWindow',
-        x: 36,
-        y: 58,
-        width: 28,
-        height: 8,
-        rx: 2
-      }),*/
       dayText,
-      $x('line', { className:'Analog-Hour-Hand', x1:50,y1:50,x2:50,y2:30 }),
-      $x('line', { className:'Analog-Minute-Hand', x1:50,y1:50,x2:50,y2:22 }),
-      $x('line', { className:'Analog-Second-Hand', x1:50,y1:55,x2:50,y2:15 }),
-      $x('circle', { className:'Analog-CenterCutout', cx:50, cy:50, r:3 })
+      $el('line', { className: 'Analog-Hour-Hand', x1: 50, y1: 50, x2: 50, y2: 30 }),
+      $el('line', { className: 'Analog-Minute-Hand', x1: 50, y1: 50, x2: 50, y2: 22 }),
+      $el('line', { className: 'Analog-Second-Hand', x1: 50, y1: 55, x2: 50, y2: 15 }),
+      $el('circle', { className: 'Analog-CenterCutout', cx: 50, cy: 50, r: 3 })
     );
-    const Clock = $x('div', { className: 'Analog-Bigclock' }, svg);
+    const Clock = $el('div', { className: 'Analog-Bigclock' }, svg);
     const BASE_SIZE = 260;
     let currentPercent = 100;
-    const percentageDisplay = $x('span', { className: 'scaler-text', textContent: '100 %' });
+    const percentageDisplay = $el('input', {
+      className: 'scaler-text',
+      type: 'number',
+      value: '100',
+      min: '40',
+      max: '200',
+      step: '1',
+      oninput(e) {
+        const val = e.target.value;
+        if (val === '') return; // allow empty while typing
+        const num = parseInt(val, 10);
+        if (!isNaN(num)) {
+          currentPercent = Math.max(40, Math.min(200, num));
+          Clock.style.setProperty('--clock-size', Math.round((currentPercent / 100) * BASE_SIZE) + 'px');
+      } }
+    });
     const setClockPercentage = (percent) => {
       currentPercent = Math.max(40, Math.min(200, percent));
       const pixelSize = Math.round((currentPercent / 100) * BASE_SIZE);
+      console.log('Setting clock size:', currentPercent, pixelSize + 'px');
       Clock.style.setProperty('--clock-size', pixelSize + 'px');
-      percentageDisplay.textContent = currentPercent + ' %';
+      percentageDisplay.value = String(currentPercent);
       localStorage.setItem('clockSizePercent', currentPercent);
-    }
-    const scalerControls = $x('div', { className: 'scaler-controls' },
-      $x('button', { className: 'scaler-reset', textContent: 'Reset', onclick: () => setClockPercentage(100) }),
-      $x('button', { className: 'scaler-btn', textContent: '-', onclick: () => setClockPercentage(currentPercent - 5) }),
+    };
+    const scalerControls = $el('div', { className: 'scaler-controls' },
+      $el('button', {
+        className: 'scaler-reset',
+        textContent: 'Reset',
+        onclick: () => setClockPercentage(100)
+      }),
+      $el('button', {
+        className: 'scaler-btn',
+        textContent: '-',
+        onclick: () => setClockPercentage(currentPercent - 5)
+      }),
       percentageDisplay,
-      $x('button', { className: 'scaler-btn', textContent: '+', onclick: () => setClockPercentage(currentPercent + 5) })
+      $el('button', {
+        className: 'scaler-btn',
+        textContent: '+',
+        onclick: () => setClockPercentage(currentPercent + 5)
+      })
     );
-    const themeBtn = $x('button', {
+    const themeBtn = $el('button', {
       className: 'ClockThemeToggle',
       textContent: '🌙 Dark',
       onclick() {
@@ -540,46 +558,44 @@
     } else {
       setClockPercentage(100);
     }
-    const container = $x('div', {id: 'analogClockContainer', className: 'ClockContainer'}, Clock, themeBtn, scalerControls);
-    makeDraggable(
-      container,
-      'analogClockContainer',
-      '.Analog-Bigclock'
+    const container = $el(
+      'div',
+      { id: 'analogClockContainer', className: 'ClockContainer' },
+      Clock,
+      themeBtn,
+      scalerControls
     );
-    restorePosition(
-      container,
-      'analogClockContainer'
-    );
+    makeDraggable(container, 'analogClockContainer', '.Analog-Bigclock');
+    restorePosition(container, 'analogClockContainer');
     document.body.appendChild(container);
     let displayedSecondDeg = 0;
     const updateClock = () => {
       const now = new Date();
       const seconds = now.getSeconds() + now.getMilliseconds() / 1000;
       const secondDeg = seconds * 6;
-      Clock.style.setProperty('--secondDeg', `${secondDeg}deg`);
-      let targetDeg = seconds * 6;
+      let targetDeg = secondDeg;
       if (targetDeg < displayedSecondDeg - 180) targetDeg += 360;
       displayedSecondDeg = targetDeg;
       const minuteDeg = now.getMinutes() * 6 + seconds * 0.1;
-      const hourDeg = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5 + seconds * (0.5 / 60);
+      const hourDeg =
+        (now.getHours() % 12) * 30 +
+        now.getMinutes() * 0.5 +
+        seconds * (0.5 / 60);
       Clock.style.setProperty('--secondDeg', `${displayedSecondDeg}deg`);
       Clock.style.setProperty('--minuteDeg', `${minuteDeg}deg`);
       Clock.style.setProperty('--hourDeg', `${hourDeg}deg`);
-      dateText.textContent = `${String(now.getMonth() + 1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}/`+now.getFullYear();
+      dateText.textContent =
+        `${String(now.getMonth() + 1).padStart(2, '0')}/` +
+        `${String(now.getDate()).padStart(2, '0')}/` +
+        now.getFullYear();
       const dayNames = [
-        'Sunday',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday'
+        'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
       ];
-	     dayText.textContent = dayNames[now.getDay()];
-    }
+      dayText.textContent = dayNames[now.getDay()];
+    };
     setInterval(updateClock, 16);
     updateClock();
-  }
+  };
   const toggleAnalogClock = () => {
     const clock = $id('analogClockContainer');
     if (clock) {
@@ -602,29 +618,29 @@
     if (!body) return;
     body.id = 'gWP1';
     const textArea = $id('APjFqb');
-    const dtContainer = $c('div', { id: 'dateTimeContainer' });
-    const imageCalendar = $c('img', {
+    const dtContainer = $el('div', { id: 'dateTimeContainer' });
+    const imageCalendar = $el('img', {
       id: 'imageCalendar',
       src: _Image.calendar,
       title: getTooltipText(),
       onclick: dateTimeToggle
     });
-    const dateTimeEl = $c('span', {
+    const dateTimeEl = $el('span', {
       id: 'dateTime',
       title: _Text.toggleText,
       onclick: dateTimeToggleSecondsAmPm
     });
     dtContainer.append(imageCalendar, dateTimeEl);
-    const changerContainer = $c('div', { id: 'changerContainer' });
-    const buttonThemer = $c('button', {id: 'buttonThemer', textContent: 'Wallpaper 🠉', title: _Text.changeWallpaperTooltip, onclick: wallpaperButtonChanger});
-    const inputThemer = $c('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: _Text.inputThemerTooltip, oninput: wallpaperInputChanger});
-    const downThemer = $c('button', {id: 'downThemer', textContent: '🠋 Wallpaper', title: _Text.changeWallpaperTooltip, onclick: wallpaperButtonChanger});
-    const spacer = $c('span', {class: 'spacerX', textContent: '|'});
-    const buttonLogo = $c('button', {id: 'buttonLogo', textContent: 'Logo 🠉', title: _Text.switchLogo, onclick: e => logoClick(e.target.id)});
-    const inputLogo = $c('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: _Text.inputLogoTooltip, oninput: handleLogoInput});
-    const downLogo = $c('button', {id: 'downLogo', textContent: '🠋 Logo', title: _Text.switchLogo, onclick: e => logoClick(e.target.id)});
-    const spacer2 = $c('span', {class: 'spacerX', textContent: '|'});
-    const analogClock = $c('button', {id: 'analogClock', onclick: toggleAnalogClock});
+    const changerContainer = $el('div', { id: 'changerContainer' });
+    const buttonThemer = $el('button', {id: 'buttonThemer', textContent: 'Wallpaper 🠉', title: _Text.changeWallpaperTooltip, onclick: wallpaperButtonChanger});
+    const inputThemer = $el('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: _Text.inputThemerTooltip, oninput: wallpaperInputChanger});
+    const downThemer = $el('button', {id: 'downThemer', textContent: '🠋 Wallpaper', title: _Text.changeWallpaperTooltip, onclick: wallpaperButtonChanger});
+    const spacer = $el('span', {class: 'spacerX', textContent: '|'});
+    const buttonLogo = $el('button', {id: 'buttonLogo', textContent: 'Logo 🠉', title: _Text.switchLogo, onclick: e => logoClick(e.target.id)});
+    const inputLogo = $el('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: _Text.inputLogoTooltip, oninput: handleLogoInput});
+    const downLogo = $el('button', {id: 'downLogo', textContent: '🠋 Logo', title: _Text.switchLogo, onclick: e => logoClick(e.target.id)});
+    const spacer2 = $el('span', {class: 'spacerX', textContent: '|'});
+    const analogClock = $el('button', {id: 'analogClock', onclick: toggleAnalogClock});
     changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo, spacer2, analogClock);
     body.appendChild(dtContainer);
     body.appendChild(changerContainer);
@@ -1043,15 +1059,21 @@
       opacity: 0.8 !important;
     }
     .scaler-text {
+      background: rgba(255,255,255,.1) !important;
+      border: 1px solid #666 !important;
+      border-radius: 4px !important;
       color: #5294e2 !important;
-      cursor: pointer !important;
       font-size: 14px !important;
       font-weight: 500 !important;
-      min-width: 45px !important;
-      pointer-events: none !important;
       text-align: center !important;
+      width: 55px !important;
+      padding: 2px 4px !important;
     }
-	   /*.Analog-DateWindow,
+	.scaler-text::-webkit-inner-spin-button,
+    .scaler-text::-webkit-outer-spin-button {
+      display: none !important;
+    }
+	 /*.Analog-DateWindow,
     .Analog-DayWindow {
       fill: none !important;
     }
