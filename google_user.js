@@ -165,10 +165,10 @@
   }
   const _Text = {
     changeWallpaperTooltip: 'Left-click to change wallpaper',
-    hideAnalogClock: '🕑Hide',
+    hideAnalogClock: '🕑 Hide',
     inputLogoTooltip: '1 - 16 (0 = Default Google Logo)',
     inputThemerTooltip: '1 - 52 (0 = Default Google Background)',
-    showAnalogClock: '🕑Show',
+    showAnalogClock: '🕑 Show',
     switchLogo: 'Left-click to change logos',
     toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`
   };
@@ -406,7 +406,7 @@
   const getClock = () => {
     if ($id('analogClockContainer')) return;
     const $x = (tag, props = {}, ...children) => {
-      const svgTags = ['svg','g','path','circle','text','line'];
+      const svgTags = ['svg','g','path','circle','text','line', 'rect'];
       const el = document.createElementNS(
         svgTags.includes(tag) ? 'http://www.w3.org/2000/svg' : 'http://www.w3.org/1999/xhtml',
         tag
@@ -437,7 +437,6 @@
         y1: 50 + innerRadius * Math.sin(rad),
         x2: 50 + outerRadius * Math.cos(rad),
         y2: 50 + outerRadius * Math.sin(rad),
-        stroke: '#2c3e50',
         stroke: isHourMark ? '#2c3e50' : '#7f8c8d',
         'stroke-width': isHourMark ? '1.5' : '0.75',
         'stroke-linecap': 'round'
@@ -457,32 +456,55 @@
         'dominant-baseline': 'middle'
       }));
     }
-    const dateWindow = $x('rect', {
-      className: 'Analog-Date-Window',
-      x: 28,
-      y: 62,
-      width: 44,
-      height: 10,
-      rx: 2,
-      ry: 2
-    });
     const dateText = $x('text', {
-      className: 'Analog-Date-Text',
+      className: 'Analog-DateText',
       x: 50,
-      y: 67,
+      y: 70,
+      'text-anchor': 'middle',
+      'dominant-baseline': 'middle'
+    });
+    const dayText = $x('text', {
+      className: 'Analog-DayText',
+      x: 50,
+      y: 63,
       'text-anchor': 'middle',
       'dominant-baseline': 'middle'
     });
     const svg = $x('svg', { className: 'Analog', viewBox: '0 0 100 100' },
-      $x('circle', { cx: 50, cy: 50, r: 47, fill: 'none', stroke: '#ccc', 'stroke-width': 2 }),
+      $x('circle', {
+        cx: 50,
+        cy: 50,
+        r: 47,
+        fill: 'none',
+        stroke: '#ccc',
+        'stroke-width': 2
+      }),
       ...ticks,
       ...hourNumbers,
-      dateWindow,
+      // Date box
+      /*$x('rect', {
+        className: 'Analog-DateWindow',
+        x: 35,
+        y: 68,
+        width: 30,
+        height: 8,
+        rx: 2
+      }),*/
       dateText,
-      $x('line', { className: 'Analog-Hour-Hand', x1: 50, y1: 50, x2: 50, y2: 30 }),
-      $x('line', { className: 'Analog-Minute-Hand', x1: 50, y1: 50, x2: 50, y2: 22 }),
-      $x('line', { className: 'Analog-Second-Hand', x1: 50, y1: 55, x2: 50, y2: 15 }),
-      $x('circle', { className: 'Analog-CenterCutout', cx: 50, cy: 50, r: 3 })
+      // Day box
+      /*$x('rect', {
+        className: 'Analog-DayWindow',
+        x: 36,
+        y: 58,
+        width: 28,
+        height: 8,
+        rx: 2
+      }),*/
+      dayText,
+      $x('line', { className:'Analog-Hour-Hand', x1:50,y1:50,x2:50,y2:30 }),
+      $x('line', { className:'Analog-Minute-Hand', x1:50,y1:50,x2:50,y2:22 }),
+      $x('line', { className:'Analog-Second-Hand', x1:50,y1:55,x2:50,y2:15 }),
+      $x('circle', { className:'Analog-CenterCutout', cx:50, cy:50, r:3 })
     );
     const Clock = $x('div', { className: 'Analog-Bigclock' }, svg);
     const BASE_SIZE = 260;
@@ -572,7 +594,7 @@
     container.addEventListener('touchstart', e => {
       if (e.target.closest('.ClockThemeToggle') || e.target.closest('.scaler-controls')) return;
       const touch = e.touches[0];
-      startDrag({ clientX: touch.clientX, clientY: touch.clientY });
+      startDrag({ clientX: touch.clientX, clientY: touch.clientY, target: e.target });
     });
     document.addEventListener('touchmove', e => {
       if (isDragging) {
@@ -596,13 +618,17 @@
       Clock.style.setProperty('--secondDeg', `${displayedSecondDeg}deg`);
       Clock.style.setProperty('--minuteDeg', `${minuteDeg}deg`);
       Clock.style.setProperty('--hourDeg', `${hourDeg}deg`);
-      //dateText.textContent =
-        //`${String(now.getMonth() + 1).padStart(2,'0')}/` +
-        //`${String(now.getDate()).padStart(2,'0')}`;
-      dateText.textContent =
-        `${String(now.getMonth() + 1).padStart(2,'0')}/` +
-        `${String(now.getDate()).padStart(2,'0')}/` +
-        now.getFullYear();
+      dateText.textContent = `${String(now.getMonth() + 1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}/`+now.getFullYear();
+      const dayNames = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday'
+      ];
+	  dayText.textContent = dayNames[now.getDay()];
     }
     setInterval(updateClock, 16);
     updateClock();
@@ -923,11 +949,11 @@
       min-width: 380px !important;
       padding: 0px 16px !important;
     }
-    body#gWP1 #analogClock {
+    #analogClock {
       margin: 0px !important;
     }
-    body#gWP1 #dateTimeContainer > *,
-    body#gWP1 #changerContainer > * {
+    #dateTimeContainer > *,
+    #changerContainer > * {
       pointer-events: auto !important;
     }
     #dateTimeContainer.dragged,
@@ -1078,23 +1104,22 @@
       pointer-events: none !important;
       text-align: center !important;
     }
-    .Analog-Date-Window {
-      fill: #ffffff;
-      stroke: #2c3e50;
-      stroke-width: 0.5;
+	   /*.Analog-DateWindow,
+    .Analog-DayWindow {
+      fill: none !important;
     }
-    .Analog-Date-Text {
-      fill: #2c3e50;
-      font-size: 5px;
-      font-weight: 700;
-      font-family: monospace;
+    .Analog-Bigclock.dark .Analog-DateWindow,
+    .Analog-Bigclock.dark .Analog-DayWindow {
+      fill: none !important;
+    }*/
+    .Analog-DateText,
+    .Analog-DayText	{
+      font-size: 6px !important;
+      fill: #000 !important;
     }
-    .Analog-Bigclock.dark .Analog-Date-Window {
-      fill: #2c3e50;
-      stroke: #ecf0f1;
-    }
-    .Analog-Bigclock.dark .Analog-Date-Text {
-      fill: #ecf0f1;
+    .Analog-Bigclock.dark .Analog-DateText,
+    .Analog-Bigclock.dark .Analog-DayText {
+      fill: #fff !important;
     }
   `);
 })();
