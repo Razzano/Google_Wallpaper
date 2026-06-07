@@ -72,7 +72,6 @@
       if (e.target !== elmnt) return;
       e.preventDefault();
       e.stopImmediatePropagation();
-      // Force fixed positioning
       if (elmnt.style.position !== 'fixed') {
         const rect = elmnt.getBoundingClientRect();
         elmnt.style.position = 'fixed';
@@ -426,12 +425,10 @@
     }
     const ticks = [];
     const hourNumbers = [];
-    // 60 tick marks
     for (let i = 0; i < 60; i++) {
       const angleDeg = i * 6 - 90;
       const rad = angleDeg * Math.PI / 180;
       const isHourMark = (i % 5 === 0);
-      // Longer ticks for hours
       const innerRadius = isHourMark ? 42 : 44.5;
       const outerRadius = 47;
       const isQuarter = (i % 15 === 0);
@@ -460,10 +457,28 @@
         'dominant-baseline': 'middle'
       }));
     }
+    const dateWindow = $x('rect', {
+      className: 'Analog-Date-Window',
+      x: 28,
+      y: 62,
+      width: 44,
+      height: 10,
+      rx: 2,
+      ry: 2
+    });
+    const dateText = $x('text', {
+      className: 'Analog-Date-Text',
+      x: 50,
+      y: 67,
+      'text-anchor': 'middle',
+      'dominant-baseline': 'middle'
+    });
     const svg = $x('svg', { className: 'Analog', viewBox: '0 0 100 100' },
       $x('circle', { cx: 50, cy: 50, r: 47, fill: 'none', stroke: '#ccc', 'stroke-width': 2 }),
       ...ticks,
       ...hourNumbers,
+      dateWindow,
+      dateText,
       $x('line', { className: 'Analog-Hour-Hand', x1: 50, y1: 50, x2: 50, y2: 30 }),
       $x('line', { className: 'Analog-Minute-Hand', x1: 50, y1: 50, x2: 50, y2: 22 }),
       $x('line', { className: 'Analog-Second-Hand', x1: 50, y1: 55, x2: 50, y2: 15 }),
@@ -581,6 +596,13 @@
       Clock.style.setProperty('--secondDeg', `${displayedSecondDeg}deg`);
       Clock.style.setProperty('--minuteDeg', `${minuteDeg}deg`);
       Clock.style.setProperty('--hourDeg', `${hourDeg}deg`);
+      //dateText.textContent =
+        //`${String(now.getMonth() + 1).padStart(2,'0')}/` +
+        //`${String(now.getDate()).padStart(2,'0')}`;
+      dateText.textContent =
+        `${String(now.getMonth() + 1).padStart(2,'0')}/` +
+        `${String(now.getDate()).padStart(2,'0')}/` +
+        now.getFullYear();
     }
     setInterval(updateClock, 16);
     updateClock();
@@ -631,7 +653,6 @@
     const spacer2 = $c('span', {class: 'spacerX', textContent: '|'});
     const analogClock = $c('button', {id: 'analogClock', onclick: toggleAnalogClock});
     changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo, spacer2, analogClock);
-    // Append directly to body - this is the key fix
     body.appendChild(dtContainer);
     body.appendChild(changerContainer);
     dtContainer.style.position = 'fixed';
@@ -642,7 +663,6 @@
     changerContainer.style.top = '516px';
     changerContainer.style.left = '50%';
     changerContainer.style.transform = 'translateX(-50%)';
-    // Make draggable
     makeDraggable(dtContainer, 'dtContainer');
     makeDraggable(changerContainer, 'changerContainer');
     restorePosition(dtContainer, 'dtContainer');
@@ -1057,6 +1077,24 @@
       min-width: 45px !important;
       pointer-events: none !important;
       text-align: center !important;
+    }
+    .Analog-Date-Window {
+      fill: #ffffff;
+      stroke: #2c3e50;
+      stroke-width: 0.5;
+    }
+    .Analog-Date-Text {
+      fill: #2c3e50;
+      font-size: 5px;
+      font-weight: 700;
+      font-family: monospace;
+    }
+    .Analog-Bigclock.dark .Analog-Date-Window {
+      fill: #2c3e50;
+      stroke: #ecf0f1;
+    }
+    .Analog-Bigclock.dark .Analog-Date-Text {
+      fill: #ecf0f1;
     }
   `);
 })();
