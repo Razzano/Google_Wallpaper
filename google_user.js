@@ -509,7 +509,7 @@
       min: '30',
       max: '200',
       step: '1',
-      title: 'Manually Enter Percentage:\n • Min. 30% = 90px Ø\n • Reset 100% = 300px Ø\n • nMax. 200% = 600px Ø',
+      title: 'Manually Enter Percentage:\n • Min. 30% = 90px Ø\n • Reset 100% = 300px Ø\n • Max. 200% = 600px Ø',
       oninput(e) {
         const val = e.target.value;
         if (val === '') return;
