@@ -75,19 +75,6 @@
     refEl.parentNode.insertBefore(newEl, refEl.nextSibling);
     return newEl;
   };
-  const prepend = (parent, child) => {
-    parent.insertBefore(child, parent.firstChild);
-    return child;
-  };
-  const removeDupes = (className) => {
-    document.querySelectorAll('.' + className).forEach((el, i) => {
-      if (i > 0) {
-        el.remove();
-      }
-    });
-  };
-
-  // ============ Drag ============
   const makeDraggable = (elmnt, storageKey, dragSelector = null) => {
     let startX, startY, startLeft, startTop;
     let isDragging = false;
@@ -96,6 +83,7 @@
         if (!e.target.closest(dragSelector)) return;
       } else {
         if (e.target.closest('button,input,select,textarea,img,span')) return;
+        if (e.target !== elmnt) return;
       }
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -150,6 +138,17 @@
     elmnt.style.userSelect = 'none';
     elmnt.addEventListener('mousedown', dragMouseDown);
   };
+  const prepend = (parent, child) => {
+    parent.insertBefore(child, parent.firstChild);
+    return child;
+  };
+  const removeDupes = (className) => {
+    document.querySelectorAll('.' + className).forEach((el, i) => {
+      if (i > 0) {
+        el.remove();
+      }
+    });
+  };
   const restorePosition = (el, key) => {
     const savedTop = GM_getValue(key + '_top');
     const savedLeft = GM_getValue(key + '_left');
@@ -159,8 +158,11 @@
         el.style.transform = 'none';
     }
   };
-
   // ==================== ORIGINAL CODE ====================
+  const DAY_ABBR = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'];
+  const DAY_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const MONTH_ABBR = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'];
+  const MONTH_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const _aURL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/';
   const _githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image';
   const _dateTimeFormatCount = 4;
@@ -194,10 +196,13 @@
     hideAnalogClock: '🕑 Hide',
     inputLogoTooltip: '1 - 16 (0 = Default Google Logo)',
     inputThemerTooltip: '1 - 52 (0 = Default Google Background)',
+    scalerInputTooltip: 'Min. 40% = 120px Ø\nReset 100% = 300px Ø\nnMax. 200% = 600px Ø',
     showAnalogClock: '🕑 Show',
     switchLogo: 'Left-click to change logos',
-    toggleText: `• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)`
+    toggleText: '• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)'
   };
+
+  // ============ Global variables ============
   let _clockInterval = null;
   let _currentWallpaperStyle = null;
 
@@ -318,7 +323,6 @@
     GM_setValue('wallpaperImage', val);
     applyWallpaper(val);
   }
-
   const wallpaperInputChanger = () => {
     const inpThemer = $id('inputThemer');
     let val = parseInt(inpThemer.value) || 0;
@@ -331,11 +335,12 @@
   // ============ Date Time ============
   const getDateTime = (format = 1) => {
     const now = new Date();
-    const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear(),
-          dayAbbr = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'][dy],
-          dayFull = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dy],
-          monthAbbr = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'][mth],
-          mPadded = (mth + 1) < 10 ? '0' + (mth + 1) : (mth + 1),
+    const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear();
+    const dayAbbr = DAY_ABBR[dy];
+    const dayFull = DAY_FULL[dy];
+    const monthAbbr = MONTH_ABBR[mth];
+    const monthFull = MONTH_FULL[mth];
+    const mPadded = (mth + 1) < 10 ? '0' + (mth + 1) : (mth + 1),
           suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th',
           ordinal = dt + suffix;
     const hr = now.getHours(), min = now.getMinutes(), sec = now.getSeconds(),
@@ -345,11 +350,11 @@
           secStr = GM_getValue('defaultSecondsView', false) ? (sec < 10 ? ':0' + sec : ':' + sec) : '',
           ampm = GM_getValue('defaultAMPM', false) ? (hr < 12 ? 'AM' : 'PM') : '';
     switch(format){
-      case 1: return `${dayFull} ⇒ ${monthAbbr} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
+      case 1: return `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
       case 2: return `${dayAbbr} • ${monthAbbr} ${dt}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
       case 3: return `${dayAbbr} • ${mPadded}/${dt < 10 ? '0'+dt : dt}/${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
       case 4: return `${dayFull}, ${monthAbbr} ${dt}, ${yr} ⏰ ${hr24}${minStr}${secStr} ${ampm}`;
-      default: return `${dayFull} ⇒ ${monthAbbr} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
+      default: return `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
   } }
   const dateTimeToggle = (e) => {
     if (e.button !== 0) return;
@@ -410,7 +415,7 @@
     }, ms);
   }
 
-  // ============ Targets ============
+  // ============ Tab Targets ============
   const searchLinksWhere = () => {
     const mode = GM_getValue('linkTarget', '_blank');
     document.querySelectorAll('a[href]').forEach(link => {
@@ -465,24 +470,13 @@
         'dominant-baseline': 'middle'
       }));
     }
-    const dateText = $el('text', {
-      className: 'Analog-DateText',
-      x: 35,
-      y: 70,
-      textAnchor: 'middle',
-      dominantBaseline: 'middle'
-    });
-    const dayText = $el('text', {
-      className: 'Analog-DayText',
-      x: 40,
-      y: 63,
-      textAnchor: 'middle',
-      dominantBaseline: 'middle'
+    const calendarText = $el('div', {
+      className: 'Analog-CalendarText'
     });
     const ampmText = $el('text', {
       className: 'Analog-AMPMText',
-      x: 45,
-      y: 77,
+      x: 50,
+      y: 78,
       textAnchor: 'middle',
       dominantBaseline: 'middle'
     });
@@ -497,8 +491,6 @@
       }),
       ...ticks,
       ...hourNumbers,
-      dateText,
-      dayText,
       ampmText,
       $el('line', { className: 'Analog-Hour-Hand', x1: 50, y1: 50, x2: 50, y2: 30 }),
       $el('line', { className: 'Analog-Minute-Hand', x1: 50, y1: 50, x2: 50, y2: 22 }),
@@ -506,7 +498,7 @@
       $el('circle', { className: 'Analog-CenterCutout', cx: 50, cy: 50, r: 3 })
     );
     const Clock = $el('div', { className: 'Analog-Bigclock' }, svg);
-    const BASE_SIZE = 260;
+    const BASE_SIZE = 314;
     let currentPercent = 100;
     const percentageDisplay = $el('input', {
       className: 'scaler-text',
@@ -515,6 +507,7 @@
       min: '40',
       max: '200',
       step: '1',
+      title: _Text.scalerInputTooltip,
       oninput(e) {
         const val = e.target.value;
         if (val === '') return;
@@ -532,6 +525,10 @@
       percentageDisplay.value = String(currentPercent);
       localStorage.setItem('clockSizePercent', currentPercent);
     };
+	   const clockInfo = $el( 'div', {
+	     className: 'Analog-Info' },
+      calendarText
+    );
     const scalerControls = $el('div', { className: 'scaler-controls' },
       $el('button', {
         className: 'scaler-reset',
@@ -564,12 +561,18 @@
     } else {
       setClockPercentage(100);
     }
+	   const controlsRow = $el(
+      'div',
+      { className: 'ControlsRow' },
+      themeBtn,
+      scalerControls
+    );
     const container = $el(
       'div',
       { id: 'analogClockContainer', className: 'ClockContainer' },
       Clock,
-      themeBtn,
-      scalerControls
+      clockInfo,
+      controlsRow
     );
     makeDraggable(container, 'analogClockContainer', '.Analog-Bigclock');
     restorePosition(container, 'analogClockContainer');
@@ -577,30 +580,28 @@
     let displayedSecondDeg = 0;
     const updateClock = () => {
       const now = new Date();
+      const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear();
+      const dayAbbr = DAY_ABBR[dy], dayFull = DAY_FULL[dy], monthAbbr = MONTH_ABBR[mth], monthFull = MONTH_FULL[mth];
+      const suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th';
+      const ordinal = dt + suffix;
       const seconds = now.getSeconds() + now.getMilliseconds() / 1000;
       const secondDeg = seconds * 6;
       let targetDeg = secondDeg;
       if (targetDeg < displayedSecondDeg - 180) targetDeg += 360;
       displayedSecondDeg = targetDeg;
       const minuteDeg = now.getMinutes() * 6 + seconds * 0.1;
-      const hourDeg =
-        (now.getHours() % 12) * 30 +
-        now.getMinutes() * 0.5 +
-        seconds * (0.5 / 60);
+      const hourDeg = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5 + seconds * (0.5 / 60);
       Clock.style.setProperty('--secondDeg', `${displayedSecondDeg}deg`);
       Clock.style.setProperty('--minuteDeg', `${minuteDeg}deg`);
       Clock.style.setProperty('--hourDeg', `${hourDeg}deg`);
-      dateText.textContent =
-        `${String(now.getMonth() + 1).padStart(2, '0')}/` +
-        `${String(now.getDate()).padStart(2, '0')}/` +
-        now.getFullYear();
-      const dayNames = [
-        'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
-      ];
-      dayText.textContent = dayNames[now.getDay()];
-      ampmText.textContent = now.getHours() < 12 ? 'AM' : 'PM';
+      ampmText.textContent = GM_getValue('defaultAMPM', false) ? (now.getHours() < 12 ? 'AM' : 'PM') : '';
+      calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}`;
     };
-    setInterval(updateClock, 16);
+    const tick = () => {
+      updateClock();
+      requestAnimationFrame(tick);
+    };
+    tick();
     updateClock();
   };
   const toggleAnalogClock = () => {
@@ -723,8 +724,6 @@
     body#gWP1 #imageCalendar {
       cursor: pointer !important;
       margin: 0px !important;
-      position: relative !important;
-      top: -1px !important;
     }
     body#gWP1 #dateTime {
       background: rgba(0,0,0,.3) !important;
@@ -734,9 +733,10 @@
       box-shadow: none !important;
       color: #FFF !important;
       cursor: pointer !important;
+      height: 28px !important;
       margin: 0px 0px 0px 3px !important;
       min-width: 0px !important;
-      padding: 0px 6px !important;
+      padding: 1px 6px !important;
       user-select: none !important;;
     }
     body#gWP1 #imageCalendar:hover + #dateTime {
@@ -928,7 +928,10 @@
       transform: none !important;
     }
     .ClockContainer {
-      display: inline-block !important;
+      /*display: inline-block !important;*/
+	  display: flex;
+	  flex-direction: column;
+      align-items: center;
       font-family: system-ui, Arial, sans-serif !important;
       left: 50px;
       position: absolute !important;
@@ -938,8 +941,11 @@
     }
     .Analog-Bigclock {
       cursor: move !important;
-      height: var(--clock-size, 260px) !important;
-      width: var(--clock-size, 260px) !important;
+      width: var(--clock-size);
+      height: var(--clock-size);
+      flex-shrink: 0;
+	  margin: 0 auto;
+	  align-self: center;
     }
     .Analog {
       background: radial-gradient(circle at 50% 50%, #f8f9fa 0%, #e9ecef 100%) !important;
@@ -1013,8 +1019,7 @@
       fill: #ecf0f1 !important;
       stroke: #2c3e50 !important;
     }
-    .Analog-DateText,
-    .Analog-DayText,
+    .Analog-CalendarText,
     .Analog-AMPMText {
       font-size: 6px !important;
       fill: #000 !important;
@@ -1023,8 +1028,7 @@
     .Analog-DayWindow {
       fill: none !important;
     }
-    .Analog-Bigclock.dark .Analog-DateText,
-    .Analog-Bigclock.dark .Analog-DayText,
+    .Analog-Bigclock.dark .Analog-CalendarText
     .Analog-Bigclock.dark .Analog-AMPMText {
       fill: #fff !important;
     }
@@ -1032,16 +1036,12 @@
     .Analog-Bigclock.dark .Analog-DayWindow {
       fill: none !important;
     }
-    .Analog-Bigclock.dark .Analog-DateText,
-    .Analog-Bigclock.dark .Analog-DayText {
+    .Analog-Bigclock.dark .Analog-CalendarText {
       fill: #fff !important;
     }
     .Analog-AMPMText {
       font-size: 6px !important;
       fill: #0078d7 !important;
-    }
-    .Analog-Bigclock.dark .Analog-AMPMText {
-      fill: #4da3ff !important;
     }
     .ClockThemeToggle {
       background: #34495e !important;
@@ -1103,9 +1103,35 @@
       min-width: 32px !important;
       padding: 1px 2px 0px 0px !important;
     }
-	   .scaler-text::-webkit-inner-spin-button,
+    .scaler-text:hover,
+    .scaler-text:focus-within {
+      border-color: #ffffff !important;
+      color: #ffffff !important;
+    }
+    .scaler-text::-webkit-inner-spin-button,
     .scaler-text::-webkit-outer-spin-button {
       display: none !important;
+    }
+    .Analog-Info {
+      display: inline-flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 12px !important;
+      margin: 4px 0px 2px 0px !important;
+	  text-align: center;
+      width: 100% !important;
+    }
+    .Analog-CalendarText {
+      display: inline-block !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      white-space: nowrap !important;
+    }
+    .ControlsRow {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 12px !important;
     }
   `);
 })();
