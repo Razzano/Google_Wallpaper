@@ -197,7 +197,6 @@
     hideAnalogClock: '🕑 Hide',
     inputLogoTooltip: '1 - 17 (0 = Default Google Logo, 17 = No Logo)',
     inputThemerTooltip: '1 - 52 (0 = Default Google Background)',
-    scalerInputTooltip: 'Min. 40% = 120px Ø\nReset 100% = 300px Ø\nnMax. 200% = 600px Ø',
     showAnalogClock: '🕑 Show',
     switchLogo: 'Left-click to change logos',
     toggleText: '• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)'
@@ -436,7 +435,7 @@
 
   // ============ Analog Clock ============
   const getClock = () => {
-    if ($id('analogClockContainer')) return;
+    if (document.getElementById('analogClockContainer')) return;
     const ticks = [];
     const hourNumbers = [];
     for (let i = 0; i < 60; i++) {
@@ -477,7 +476,7 @@
     const ampmBorder = $el('rect', {
       className: 'Analog-AMPMBorder',
       x: 44,
-      y: 75,
+      y: 74,
       width: 13,
       height: 7,
       rx: 2,
@@ -486,7 +485,7 @@
     const ampmText = $el('text', {
       className: 'Analog-AMPMText',
       x: 45,
-      y: 81,
+      y: 80,
       textAnchor: 'middle',
       dominantBaseline: 'middle'
     });
@@ -518,7 +517,7 @@
       min: '30',
       max: '200',
       step: '1',
-      title: _Text.scalerInputTooltip,
+      title: 'Min. 30% = 90px Ø\nReset 100% = 300px Ø\nnMax. 200% = 600px Ø',
       oninput(e) {
         const val = e.target.value;
         if (val === '') return;
