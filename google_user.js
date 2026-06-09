@@ -475,8 +475,8 @@
     });
     const ampmText = $el('text', {
       className: 'Analog-AMPMText',
-      x: 50,
-      y: 78,
+      x: 72,
+      y: 52,
       textAnchor: 'middle',
       dominantBaseline: 'middle'
     });
@@ -928,9 +928,8 @@
       transform: none !important;
     }
     .ClockContainer {
-      /*display: inline-block !important;*/
-	  display: flex;
-	  flex-direction: column;
+	   display: flex;
+	   flex-direction: column;
       align-items: center;
       font-family: system-ui, Arial, sans-serif !important;
       left: 50px;
@@ -944,8 +943,8 @@
       width: var(--clock-size);
       height: var(--clock-size);
       flex-shrink: 0;
-	  margin: 0 auto;
-	  align-self: center;
+	     margin: 0 auto;
+	     align-self: center;
     }
     .Analog {
       background: radial-gradient(circle at 50% 50%, #f8f9fa 0%, #e9ecef 100%) !important;
@@ -959,7 +958,7 @@
     .Analog-Second-Hand {
       transform-origin: 50% 50% !important;
     }
-    .Analog-Hour-Hand   {
+    .Analog-Hour-Hand {
       transform: rotate(var(--hourDeg, 0deg)) !important;
     }
     .Analog-Minute-Hand {
@@ -1019,29 +1018,37 @@
       fill: #ecf0f1 !important;
       stroke: #2c3e50 !important;
     }
-    .Analog-CalendarText,
-    .Analog-AMPMText {
-      font-size: 6px !important;
-      fill: #000 !important;
-    }
-    .Analog-DateWindow,
-    .Analog-DayWindow {
-      fill: none !important;
-    }
-    .Analog-Bigclock.dark .Analog-CalendarText
-    .Analog-Bigclock.dark .Analog-AMPMText {
-      fill: #fff !important;
-    }
-    .Analog-Bigclock.dark .Analog-DateWindow,
-    .Analog-Bigclock.dark .Analog-DayWindow {
-      fill: none !important;
-    }
-    .Analog-Bigclock.dark .Analog-CalendarText {
-      fill: #fff !important;
-    }
     .Analog-AMPMText {
       font-size: 6px !important;
       fill: #0078d7 !important;
+    }
+    .Analog-Bigclock.dark .Analog-AMPMText {
+      fill: #fff !important;
+    }
+    .ControlsRow {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 12px !important;
+    }
+    .Analog-Info {
+      background: #34495e !important;
+      border-radius: 30px !important;
+      display: inline-flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 12px !important;
+      margin: auto !important;
+      padding: 4px 12px !important;
+	     text-align: center;
+      width: auto !important;
+    }
+    .Analog-CalendarText {
+      display: inline-block !important;
+      color: #fff !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      white-space: nowrap !important;
     }
     .ClockThemeToggle {
       background: #34495e !important;
@@ -1111,27 +1118,6 @@
     .scaler-text::-webkit-inner-spin-button,
     .scaler-text::-webkit-outer-spin-button {
       display: none !important;
-    }
-    .Analog-Info {
-      display: inline-flex !important;
-      justify-content: center !important;
-      align-items: center !important;
-      gap: 12px !important;
-      margin: 4px 0px 2px 0px !important;
-	  text-align: center;
-      width: 100% !important;
-    }
-    .Analog-CalendarText {
-      display: inline-block !important;
-      font-size: 16px !important;
-      font-weight: 600 !important;
-      white-space: nowrap !important;
-    }
-    .ControlsRow {
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 12px !important;
     }
   `);
 })();
