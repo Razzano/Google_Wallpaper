@@ -509,7 +509,7 @@
       min: '30',
       max: '200',
       step: '1',
-      title: 'Min. 30% = 90px Ø\nReset 100% = 300px Ø\nnMax. 200% = 600px Ø',
+      title: 'Manually Enter Percentage:\n • Min. 30% = 90px Ø\n • Reset 100% = 300px Ø\n • nMax. 200% = 600px Ø',
       oninput(e) {
         const val = e.target.value;
         if (val === '') return;
@@ -534,17 +534,20 @@
       $el('button', {
         className: 'scaler-reset',
         textContent: 'Reset',
+        title: 'Reset To 100%',
         onclick: () => setClockPercentage(100)
       }),
       $el('button', {
         className: 'scaler-btn',
         textContent: '-',
+        title: 'Scale Down By 5% Increments',
         onclick: () => setClockPercentage(currentPercent - 5)
       }),
       percentageDisplay,
       $el('button', {
         className: 'scaler-btn',
         textContent: '+',
+        title: 'Scale Up By 5% Increments',
         onclick: () => setClockPercentage(currentPercent + 5)
       })
     );
@@ -642,11 +645,11 @@
     dtContainer.append(imageCalendar, dateTimeEl);
     const changerContainer = $el('div', { id: 'changerContainer' });
     const buttonThemer = $el('button', {id: 'buttonThemer', textContent: 'Wallpaper 🠉', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
-    const inputThemer = $el('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: '1 - 52 (0 = Default Google Background)', oninput: wallpaperInputChanger});
+    const inputThemer = $el('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: 'Manually Enter:\n • 1 - 52 (0 = Default Google Background)', oninput: wallpaperInputChanger});
     const downThemer = $el('button', {id: 'downThemer', textContent: '🠋 Wallpaper', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
     const spacer = $el('span', {class: 'spacerX', textContent: '|'});
     const buttonLogo = $el('button', {id: 'buttonLogo', textContent: 'Logo 🠉', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
-    const inputLogo = $el('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: '1 - 17 (0 = Default Google Logo, 17 = No Logo)', oninput: handleLogoInput});
+    const inputLogo = $el('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: 'Manually Enter:\n • 1 - 17 (0 = Default Google Logo, 17 = No Logo)', oninput: handleLogoInput});
     const downLogo = $el('button', {id: 'downLogo', textContent: '🠋 Logo', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
     const spacer2 = $el('span', {class: 'spacerX', textContent: '|'});
     const analogClock = $el('button', {id: 'analogClock', onclick: toggleAnalogClock});
