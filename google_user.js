@@ -185,6 +185,7 @@
     logo14: _aURL + 'monkey1.png',
     logo15: _aURL + 'globe2.png',
     logo16: _aURL + 'eyes7.png',
+    logo17: '',
     calendar: _aURL + 'imageCalendar.png'
   };
   const _Logo = [null];
@@ -194,7 +195,7 @@
   const _Text = {
     changeWallpaperTooltip: 'Left-click to change wallpaper',
     hideAnalogClock: '🕑 Hide',
-    inputLogoTooltip: '1 - 16 (0 = Default Google Logo)',
+    inputLogoTooltip: '1 - 17 (0 = Default Google Logo, 17 = No Logo)',
     inputThemerTooltip: '1 - 52 (0 = Default Google Background)',
     scalerInputTooltip: 'Min. 40% = 120px Ø\nReset 100% = 300px Ø\nnMax. 200% = 600px Ø',
     showAnalogClock: '🕑 Show',
@@ -227,7 +228,7 @@
     const existing = $id('logoGoogle');
     if (existing) existing.remove();
     num = parseInt(num, 10);
-    if (isNaN(num) || num < 0 || num > 17) { // 2 ← Change 17 to 18
+    if (isNaN(num) || num < 0 || num > 18) { // 1 ← Change 18 to 19
       num = 0;
     }
     const logoConfig = {
@@ -284,13 +285,13 @@
   };
   const logoClick = (id) => {
     let current = GM_getValue('logoImageNum', 1),
-        next = (id.includes('up') || id === 'buttonLogo') ? (current + 1) % 17 : (current - 1 + 17) % 17; // 3 ← Change 17 to 18
+        next = (id.includes('up') || id === 'buttonLogo') ? (current + 1) % 18 : (current - 1 + 18) % 18; // 2 ← Change 18 to 19
     applyLogo(next);
   }
   const handleLogoInput = (e) => {
     let val = parseInt(e.target.value);
     if (isNaN(val)) return;
-    val = Math.max(0, Math.min(17, val)); // 4 ← Change 17 to 18
+    val = Math.max(0, Math.min(18, val)); // 3 ← Change 18 to 19
     applyLogo(val);
   }
 
@@ -514,7 +515,7 @@
       className: 'scaler-text',
       type: 'number',
       value: '100',
-      min: '40',
+      min: '30',
       max: '200',
       step: '1',
       title: _Text.scalerInputTooltip,
@@ -527,7 +528,7 @@
       } }
     });
     const setClockPercentage = (percent) => {
-      currentPercent = Math.max(40, Math.min(200, percent));
+      currentPercent = Math.max(30, Math.min(200, percent));
       const pixelSize = Math.round((currentPercent / 100) * BASE_SIZE);
       console.log('Setting clock size:', currentPercent, pixelSize + 'px');
       Clock.style.setProperty('--clock-size', pixelSize + 'px');
@@ -1052,7 +1053,7 @@
       justify-content: center;
       align-items: center;
       gap: 12px;
-      margin: auto;
+      margin: 4px auto 0px auto;
       padding: 4px 12px;
 	     text-align: center;
       width: auto;
