@@ -158,6 +158,7 @@
         el.style.transform = 'none';
     }
   };
+
   // ==================== ORIGINAL CODE ====================
   const DAY_ABBR = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'];
   const DAY_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -192,15 +193,6 @@
   for (let i = 1; i <= 16; i++) {
     _Logo.push($el('img', {id: 'logoGoogle', class: 'logo', src: _Image[`logo${i}`]}));
   }
-  const _Text = {
-    changeWallpaperTooltip: 'Left-click to change wallpaper',
-    hideAnalogClock: '🕑 Hide',
-    inputLogoTooltip: '1 - 17 (0 = Default Google Logo, 17 = No Logo)',
-    inputThemerTooltip: '1 - 52 (0 = Default Google Background)',
-    showAnalogClock: '🕑 Show',
-    switchLogo: 'Left-click to change logos',
-    toggleText: '• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)'
-  };
 
   // ============ Global variables ============
   let _clockInterval = null;
@@ -435,7 +427,7 @@
 
   // ============ Analog Clock ============
   const getClock = () => {
-    if (document.getElementById('analogClockContainer')) return;
+    if ($id('analogClockContainer')) return;
     const ticks = [];
     const hourNumbers = [];
     for (let i = 0; i < 60; i++) {
@@ -624,8 +616,8 @@
     }
     $id('analogClock').textContent =
       GM_getValue('analogClock')
-        ? _Text.hideAnalogClock
-        : _Text.showAnalogClock;
+        ? '🕑 Hide'
+        : '🕑 Show';
   };
 
   // ============ Initialize ============
@@ -644,18 +636,18 @@
     });
     const dateTimeEl = $el('span', {
       id: 'dateTime',
-      title: _Text.toggleText,
+      title: '• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)',
       onclick: dateTimeToggleSecondsAmPm
     });
     dtContainer.append(imageCalendar, dateTimeEl);
     const changerContainer = $el('div', { id: 'changerContainer' });
-    const buttonThemer = $el('button', {id: 'buttonThemer', textContent: 'Wallpaper 🠉', title: _Text.changeWallpaperTooltip, onclick: wallpaperButtonChanger});
-    const inputThemer = $el('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: _Text.inputThemerTooltip, oninput: wallpaperInputChanger});
-    const downThemer = $el('button', {id: 'downThemer', textContent: '🠋 Wallpaper', title: _Text.changeWallpaperTooltip, onclick: wallpaperButtonChanger});
+    const buttonThemer = $el('button', {id: 'buttonThemer', textContent: 'Wallpaper 🠉', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
+    const inputThemer = $el('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: '1 - 52 (0 = Default Google Background)', oninput: wallpaperInputChanger});
+    const downThemer = $el('button', {id: 'downThemer', textContent: '🠋 Wallpaper', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
     const spacer = $el('span', {class: 'spacerX', textContent: '|'});
-    const buttonLogo = $el('button', {id: 'buttonLogo', textContent: 'Logo 🠉', title: _Text.switchLogo, onclick: e => logoClick(e.target.id)});
-    const inputLogo = $el('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: _Text.inputLogoTooltip, oninput: handleLogoInput});
-    const downLogo = $el('button', {id: 'downLogo', textContent: '🠋 Logo', title: _Text.switchLogo, onclick: e => logoClick(e.target.id)});
+    const buttonLogo = $el('button', {id: 'buttonLogo', textContent: 'Logo 🠉', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
+    const inputLogo = $el('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: '1 - 17 (0 = Default Google Logo, 17 = No Logo)', oninput: handleLogoInput});
+    const downLogo = $el('button', {id: 'downLogo', textContent: '🠋 Logo', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
     const spacer2 = $el('span', {class: 'spacerX', textContent: '|'});
     const analogClock = $el('button', {id: 'analogClock', onclick: toggleAnalogClock});
     changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo, spacer2, analogClock);
@@ -694,7 +686,7 @@
       if (showClock) {
         getClock();
       }
-      analogClock.textContent = showClock ? _Text.hideAnalogClock : _Text.showAnalogClock;
+      analogClock.textContent = showClock ? '🕑 Hide' : '🕑 Show';
     }
   };
 
@@ -957,6 +949,7 @@
     }
     .Analog {
       background: radial-gradient(circle at 50% 50%, #f8f9fa 0%, #e9ecef 100%);
+      border: 1px solid #fff !important;
       border-radius: 50% !important;
       box-shadow: inset 0 0 25px rgba(0,0,0,0.08), 0 15px 35px rgba(0,0,0,0.25);
       height: 100%;
@@ -1036,7 +1029,7 @@
     }
     .Analog-AMPMBorder {
       fill: none;
-      stroke: #666;
+      stroke: #0078d7;
       stroke-width: 0.25;
     }
     .ControlsRow {
