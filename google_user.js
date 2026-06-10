@@ -22,6 +22,7 @@
     "svg","g","path","circle","text","line","rect","polyline","polygon",
     "foreignObject","defs","marker","stop","use"
   ]);
+
   const $el = (tag, props = {}, ...children) => {
     const isSVG = SVG_TAGS.has(tag);
     const el = isSVG
@@ -64,9 +65,11 @@
     });
     return el;
   };
+
   const $id = (id) => document.getElementById(id);
   const $q = (sel, ctx = document) => ctx?.querySelector(sel) ?? null;
   const $qa = (sel, ctx = document) => Array.from(ctx?.querySelectorAll(sel) ?? []);
+
   const insertAfter = (newEl, refEl) => {
     if (!refEl || !refEl.parentNode) {
       console.warn('insertAfter: refEl is null or has no parentNode', refEl);
@@ -75,6 +78,7 @@
     refEl.parentNode.insertBefore(newEl, refEl.nextSibling);
     return newEl;
   };
+
   const makeDraggable = (elmnt, storageKey, dragSelector = null) => {
     let startX, startY, startLeft, startTop;
     let isDragging = false;
@@ -138,10 +142,12 @@
     elmnt.style.userSelect = 'none';
     elmnt.addEventListener('mousedown', dragMouseDown);
   };
+
   const prepend = (parent, child) => {
     parent.insertBefore(child, parent.firstChild);
     return child;
   };
+
   const removeDupes = (className) => {
     document.querySelectorAll('.' + className).forEach((el, i) => {
       if (i > 0) {
@@ -149,6 +155,7 @@
       }
     });
   };
+
   const restorePosition = (el, key) => {
     const savedTop = GM_getValue(key + '_top');
     const savedLeft = GM_getValue(key + '_left');
@@ -189,10 +196,11 @@
     logo17: '',
     calendar: _aURL + 'imageCalendar.png'
   };
+
   const _Logo = [null];
   for (let i = 1; i <= 16; i++) {
     _Logo.push($el('img', {id: 'logoGoogle', class: 'logo', src: _Image[`logo${i}`]}));
-  }
+  };
 
   // ============ Global variables ============
   let _clockInterval = null;
@@ -203,6 +211,7 @@
     const cal = $id('imageCalendar');
     if (cal) cal.title = getTooltipText();
   };
+
   const getTooltipText = () => {
     const target = GM_getValue('linkTarget', '_blank'),
           mode = target === '_blank' ? 'New Tab ( target = "_blank" )' : 'Active Tab ( target = "_self" )';
@@ -274,17 +283,19 @@
     }
     GM_setValue('logoImageNum', num);
   };
+
   const logoClick = (id) => {
     let current = GM_getValue('logoImageNum', 1),
         next = (id.includes('up') || id === 'buttonLogo') ? (current + 1) % 18 : (current - 1 + 18) % 18; // 2 ← Change 18 to 19
     applyLogo(next);
-  }
+  };
+
   const handleLogoInput = (e) => {
     let val = parseInt(e.target.value);
     if (isNaN(val)) return;
     val = Math.max(0, Math.min(18, val)); // 3 ← Change 18 to 19
     applyLogo(val);
-  }
+  };
 
   // ============ Wallpaper ============
   const applyWallpaper = (num) => {
@@ -301,6 +312,7 @@
     `;
     _currentWallpaperStyle = GM_addStyle(css);
   };
+
   const wallpaperButtonChanger = (e) => {
     const inp = $id('inputThemer');
     let val = parseInt(inp.value) || 0;
@@ -314,7 +326,8 @@
     inp.value = val;
     GM_setValue('wallpaperImage', val);
     applyWallpaper(val);
-  }
+  };
+
   const wallpaperInputChanger = () => {
     const inpThemer = $id('inputThemer');
     let val = parseInt(inpThemer.value) || 0;
@@ -322,7 +335,7 @@
     inpThemer.value = val;
     GM_setValue('wallpaperImage', val);
     applyWallpaper(val);
-  }
+  };
 
   // ============ Date Time ============
   const getDateTime = (format = 1) => {
@@ -347,7 +360,9 @@
       case 3: return `${dayAbbr} • ${mPadded}/${dt < 10 ? '0'+dt : dt}/${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
       case 4: return `${dayFull}, ${monthAbbr} ${dt}, ${yr} ⏰ ${hr24}${minStr}${secStr} ${ampm}`;
       default: return `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
-  } }
+    }
+  };
+
   const dateTimeToggle = (e) => {
     if (e.button !== 0) return;
     const dtEl = $id('dateTime');
@@ -376,7 +391,9 @@
     searchLinksWhere();
     if (typeof updateCalendarTooltip === 'function') {
       updateCalendarTooltip();
-  } }
+    }
+  };
+
   const dateTimeToggleSecondsAmPm = (e) => {
     if (e.button !== 0) return;
     e.preventDefault();
@@ -405,9 +422,9 @@
         el.textContent = getDateTime(GM_getValue('dateFormat', 1));
       }
     }, ms);
-  }
+  };
 
-  // ============ Tab Targets ============
+  // ============ Link Targets ============
   const searchLinksWhere = () => {
     const mode = GM_getValue('linkTarget', '_blank');
     document.querySelectorAll('a[href]').forEach(link => {
@@ -540,14 +557,14 @@
       $el('button', {
         className: 'scaler-btn',
         textContent: '-',
-        title: 'Scale Down By 5% Increments',
+        title: 'Scale Down In 5% Increments',
         onclick: () => setClockPercentage(currentPercent - 5)
       }),
       percentageDisplay,
       $el('button', {
         className: 'scaler-btn',
         textContent: '+',
-        title: 'Scale Up By 5% Increments',
+        title: 'Scale Up In 5% Increments',
         onclick: () => setClockPercentage(currentPercent + 5)
       })
     );
@@ -559,6 +576,19 @@
         themeBtn.textContent = dark ? '☀️ Light' : '🌙 Dark';
       }
     });
+    const calendarBtn = $el('button', {
+      className: 'calendarInfo',
+      title: 'Show/Hide Calendar Info',
+      onclick() {
+        clockInfo.classList.toggle('hidden');
+        GM_setValue('calendarInfo', !clockInfo.classList.contains('hidden'));
+      }},
+      $el('img', {
+        src: _Image.calendar,
+        alt: 'Calendar',
+        className: 'calendarIcon'
+      })
+    );
     const savedPercent = localStorage.getItem('clockSizePercent');
     if (savedPercent) {
       setClockPercentage(parseInt(savedPercent, 10));
@@ -569,7 +599,8 @@
       'div',
       { className: 'ControlsRow' },
       themeBtn,
-      scalerControls
+      scalerControls,
+      calendarBtn
     );
     const container = $el(
       'div',
@@ -580,6 +611,11 @@
     );
     makeDraggable(container, 'analogClockContainer', '.Analog-Bigclock');
     restorePosition(container, 'analogClockContainer');
+    const rect = container.getBoundingClientRect();
+    if (rect.right < 0 || rect.bottom < 0 || rect.left > window.innerWidth || rect.top > window.innerHeight) {
+      container.style.left = '20px';
+      container.style.top = '20px';
+    }
     document.body.appendChild(container);
     let displayedSecondDeg = 0;
     const updateClock = () => {
@@ -588,6 +624,8 @@
       const dayAbbr = DAY_ABBR[dy], dayFull = DAY_FULL[dy], monthAbbr = MONTH_ABBR[mth], monthFull = MONTH_FULL[mth];
       const suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th';
       const ordinal = dt + suffix;
+      const h12 = String(now.getHours() % 12 || 12);
+      const min = String(now.getMinutes()).padStart(2, '0');
       const seconds = now.getSeconds() + now.getMilliseconds() / 1000;
       const secondDeg = seconds * 6;
       let targetDeg = secondDeg;
@@ -599,8 +637,12 @@
       Clock.style.setProperty('--minuteDeg', `${minuteDeg}deg`);
       Clock.style.setProperty('--hourDeg', `${hourDeg}deg`);
       ampmText.textContent = GM_getValue('defaultAMPM', false) ? (now.getHours() < 12 ? 'AM' : 'PM') : '';
-      calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}`;
+      calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑${h12}:${min}`; // + h12 + ':'+ min;
     };
+    const showCalendarInfo = GM_getValue('calendarInfo', true);
+    if (!showCalendarInfo) {
+      clockInfo.classList.add('hidden')
+    }
     const tick = () => {
       updateClock();
       requestAnimationFrame(tick);
@@ -608,6 +650,7 @@
     tick();
     updateClock();
   };
+
   const toggleAnalogClock = () => {
     const clock = $id('analogClockContainer');
     if (clock) {
@@ -685,9 +728,9 @@
         dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
         startClock();
       }
-      const showClock = GM_getValue('analogClock', false);
+      const showClock = GM_getValue('analogClock');
       if (showClock) {
-        getClock();
+        requestAnimationFrame(() => getClock());
       }
       analogClock.textContent = showClock ? '🕑 Hide' : '🕑 Show';
     }
@@ -695,6 +738,7 @@
 
   // ============ Default Settings ============
   if (GM_getValue('analogClock') === undefined) GM_setValue('analogClock', false);
+  if (GM_getValue('calendarInfo') === undefined) GM_setValue('calendarInfo', false);
   if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
   if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', true);
   if (GM_getValue('defaultSecondsView') === undefined) GM_setValue('defaultSecondsView', false);
@@ -708,6 +752,19 @@
   } else {
     init();
   }
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && GM_getValue('analogClock')) {
+      if (!$id('analogClockContainer')) {
+        getClock();
+    } }
+  });
+
+  window.addEventListener('pageshow', () => {
+    if (GM_getValue('analogClock') && !$id('analogClockContainer')) {
+      getClock();
+    }
+  });
 
   // ============ CSS ============
   GM_addStyle(`
@@ -723,136 +780,6 @@
     body#gWP1 #gbqfbb,
     body#gWP1 #LS8OJ > div.k1zIA.kKvsb > div.IzOpfd,
     body#gWP1 > div.L3eUgb > div.o3j99.qarstb > div:nth-child(2){
-      display: none !important;
-    }
-    body#gWP1 #imageCalendar {
-      cursor: pointer !important;
-      margin: 0px !important;
-    }
-    body#gWP1 #dateTime {
-      background: rgba(0,0,0,.3) !important;
-      display: block !important;
-      border: 1px solid transparent !important;
-      border-radius: 8px !important;
-      box-shadow: none !important;
-      color: #FFF !important;
-      cursor: pointer !important;
-      height: 28px !important;
-      margin: 0px 0px 0px 3px !important;
-      min-width: 0px !important;
-      padding: 1px 6px !important;
-      user-select: none !important;;
-    }
-    body#gWP1 #imageCalendar:hover + #dateTime {
-      background: #900 !important;
-      border-color: #C00 !important;
-      color: #FFF !important;
-    }
-    body#gWP1 #dateTime[hidden] {
-      background: none !important;
-      border: none !important;
-      display: none !important;
-      padding: 0px !important;
-      width: 0px !important;
-    }
-    body#gWP1 #dateTime:hover {
-      border: 1px solid #000 !important;
-    }
-    body#gWP1 #logoGoogle {
-      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)) !important;
-      height: auto !important;
-      left: 50% !important;
-      max-width: 100% !important;
-      opacity: 1 !important;
-      position: absolute !important;
-      top: 0px !important;
-      z-index: 999 !important;
-    }
-    body#gWP1 #buttonThemer {
-      color: #FFF !important;
-      cursor: pointer !important;
-      opacity: .7 !important;
-      text-shadow: 1px 1px 2px #000 !important;
-    }
-    body#gWP1 #inputThemer {
-      background: rgba(0,0,0,.2) !important;
-      border: 1px solid #FFF !important;
-      border-radius: 6px !important;
-      box-shadow: 0 1px 3px rgba(2555, 255, 255, 0.15) !important;
-      color: #FFF !important;
-      cursor: pointer !important;
-      height: 22px !important;
-      margin: 0px 4px !important;
-      opacity: .7 !important;
-      padding-top: 4px !important;
-      position: relative !important;
-      text-align: center !important;
-      top: 0px !important;
-      width: 30px !important;
-    }
-    body#gWP1 #downThemer {
-      color: #FFF !important;
-      cursor: pointer !important;
-      opacity: .7 !important;
-      text-shadow: 1px 1px 2px #000 !important;
-    }
-    body#gWP1 .spacerX {
-      color: #FFF !important;
-      filter: brightness(2) !important;
-      margin: 9px 16px 0px 16px !important;
-      opacity: 1 !important;
-      pointer-events: none !important;
-      text-align: center !important;
-    }
-    body#gWP1 #buttonLogo {
-      color: #FFF !important;
-      cursor: pointer !important;
-      opacity: .7 !important;
-      text-shadow: 1px 1px 2px #000 !important;
-    }
-    body#gWP1 #inputLogo {
-      background: rgba(0,0,0,.2) !important;
-      border: 1px solid #FFF !important;
-      border-radius: 6px !important;
-      box-shadow: 0 1px 3px rgba(255,255,255,0.15) !important;
-      color: #FFF !important;
-      cursor: pointer !important;
-      height: 22px !important;
-      margin: 0px 4px !important;
-      opacity: .7 !important;
-      padding-top: 4px !important;
-      position: relative !important;
-      text-align: center !important;
-      top: 0px !important;
-      width: 30px !important;
-    }
-    body#gWP1 #downLogo {
-      color: #FFF !important;
-      cursor: pointer !important;
-      opacity: .7 !important;
-      text-shadow: 1px 1px 2px #000 !important;
-    }
-    body#gWP1 #changerContainer > button,
-    body#gWP1 #changerContainer > input {
-      font-family: monospace !important;
-      font-size: 120% !important;
-    }
-    body#gWP1 #changerContainer > button:hover {
-      filter: brightness(2) !important;
-      opacity: 1 !important;
-    }
-    body#gWP1 #inputThemer:hover,
-    body#gWP1 #inputThemer:focus-within,
-    body#gWP1 #inputLogo:hover,
-    body#gWP1 #inputLogo:focus-within {
-      border-color: #999 !important;
-      filter: brightness(2) !important;
-      opacity: 1 !important;
-    }
-    body#gWP1 ::-webkit-inner-spin-button,
-    body#gWP1 ::-webkit-outer-spin-button,
-    body#gWP1 ::-webkit-inner-spin-button,
-    body#gWP1 ::-webkit-outer-spin-button {
       display: none !important;
     }
     body#gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f {
@@ -897,22 +824,67 @@
     body#gWP1 #gb > div.gb_z > div:nth-child(2) {
       height: calc(-70px + 100vh) !important;
     }
-    body#gWP1 #dateTimeContainer,
-    body#gWP1 #changerContainer {
-      box-sizing: border-box !important;
-      pointer-events: auto !important;
-      position: fixed !important;
-      user-select: none !important;
-      z-index: 2 !important;
+    body#gWP1 #logoGoogle {
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)) !important;
+      height: auto !important;
+      left: 50% !important;
+      max-width: 100% !important;
+      opacity: 1 !important;
+      position: absolute !important;
+      top: 0px !important;
+      z-index: 999 !important;
     }
     body#gWP1 #dateTimeContainer {
       align-items: center !important;
       border-radius: 8px !important;
+      box-sizing: border-box !important;
       display: inline-flex !important;
       font: 20px monospace !important;
       height: 32px !important;
       min-width: 32px !important;
       padding: 4px 16px !important;
+      pointer-events: auto !important;
+      user-select: none !important;
+      z-index: 2 !important;
+    }
+    #dateTimeContainer.dragged {
+      transform: none !important;
+    }
+    #dateTimeContainer > * {
+      pointer-events: auto !important;
+    }
+    body#gWP1 #imageCalendar {
+      cursor: pointer !important;
+      margin: 0px !important;
+    }
+    body#gWP1 #imageCalendar:hover + #dateTime {
+      background: #900 !important;
+      border-color: #C00 !important;
+      color: #FFF !important;
+    }
+    body#gWP1 #dateTime {
+      background: rgba(0,0,0,.3) !important;
+      border: 1px solid transparent !important;
+      border-radius: 8px !important;
+      box-shadow: none !important;
+      color: #FFF !important;
+      cursor: pointer !important;
+      display: block !important;
+      height: 28px !important;
+      margin: 0px 0px 0px 3px !important;
+      min-width: 0px !important;
+      padding: 1px 6px !important;
+      user-select: none !important;;
+    }
+    body#gWP1 #dateTime[hidden] {
+      background: none !important;
+      border: none !important;
+      display: none !important;
+      padding: 0px !important;
+      width: 0px !important;
+    }
+    body#gWP1 #dateTime:hover {
+      border: 1px solid #000 !important;
     }
     body#gWP1 #changerContainer {
       align-items: center !important;
@@ -922,19 +894,108 @@
       height: 35px !important;
       min-width: 380px !important;
       padding: 0px 16px !important;
-    }
-    #dateTimeContainer > *,
-    #changerContainer > * {
+      box-sizing: border-box !important;
       pointer-events: auto !important;
+      user-select: none !important;
+      z-index: 2 !important;
     }
-    #dateTimeContainer.dragged,
-    #changerContainer.dragged {
+    body#gWP1 #changerContainer.dragged {
       transform: none !important;
     }
-    .ClockContainer {
+    body#gWP1 #changerContainer > * {
+      pointer-events: auto !important;
+    }
+    body#gWP1 #buttonThemer {
+      color: #FFF !important;
+      cursor: pointer !important;
+      opacity: .7 !important;
+      text-shadow: 1px 1px 2px #000 !important;
+    }
+    body#gWP1 #inputThemer {
+      background: transparent !important;
+      border: 1px solid transparent !important;
+      border-radius: 6px !important;
+      box-shadow: 0 1px 3px rgba(2555, 255, 255, 0.15) !important;
+      color: #FFF !important;
+      cursor: pointer !important;
+      height: 22px !important;
+      margin: 0px 4px !important;
+      opacity: .7 !important;
+      padding: 4px 0px !important;
+      position: relative !important;
+      text-align: center !important;
+      top: 0px !important;
+      width: 30px !important;
+    }
+    body#gWP1 #downThemer {
+      color: #FFF !important;
+      cursor: pointer !important;
+      opacity: .7 !important;
+      text-shadow: 1px 1px 2px #000 !important;
+    }
+    body#gWP1 .spacerX {
+      color: #FFF !important;
+      filter: brightness(2) !important;
+      margin: 9px 16px 0px 16px !important;
+      opacity: 1 !important;
+      pointer-events: none !important;
+      text-align: center !important;
+    }
+    body#gWP1 #buttonLogo {
+      color: #FFF !important;
+      cursor: pointer !important;
+      opacity: .7 !important;
+      text-shadow: 1px 1px 2px #000 !important;
+    }
+    body#gWP1 #inputLogo {
+      background: transparent !important;
+      border: 1px solid transparent !important;
+      border-radius: 6px !important;
+      box-shadow: 0 1px 3px rgba(255,255,255,0.15) !important;
+      color: #FFF !important;
+      cursor: pointer !important;
+      height: 22px !important;
+      margin: 0px 4px !important;
+      opacity: .7 !important;
+      padding: 4px 0px !important;
+      position: relative !important;
+      text-align: center !important;
+      top: 0px !important;
+      width: 30px !important;
+    }
+    body#gWP1 #downLogo {
+      color: #FFF !important;
+      cursor: pointer !important;
+      opacity: .7 !important;
+      text-shadow: 1px 1px 2px #000 !important;
+    }
+    body#gWP1 #changerContainer > button,
+    body#gWP1 #changerContainer > input {
+      font-family: monospace !important;
+      font-size: 120% !important;
+    }
+    body#gWP1 #changerContainer > button:hover {
+      filter: brightness(2) !important;
+      opacity: 1 !important;
+    }
+    body#gWP1 #inputThemer:hover,
+    body#gWP1 #inputThemer:focus-within,
+    body#gWP1 #inputLogo:hover,
+    body#gWP1 #inputLogo:focus-within {
+      border-color: #999 !important;
+      filter: brightness(2) !important;
+      opacity: 1 !important;
+    }
+    body#gWP1 ::-webkit-inner-spin-button,
+    body#gWP1 ::-webkit-outer-spin-button,
+    body#gWP1 ::-webkit-inner-spin-button,
+    body#gWP1 ::-webkit-outer-spin-button {
+      display: none !important;
+    }
+    body#gWP1 .ClockContainer {
+      align-items: center;
       display: flex;
       flex-direction: column;
-      align-items: center;
       font-family: system-ui, Arial, sans-serif;
       left: 50px;
       position: absolute;
@@ -942,15 +1003,15 @@
       user-select: none;
       z-index: 9999;
     }
-    .Analog-Bigclock {
-      cursor: move;
-      width: var(--clock-size);
-      height: var(--clock-size);
-      flex-shrink: 0;
-      margin: 0 auto;
+    body#gWP1 .Analog-Bigclock {
       align-self: center;
+      cursor: move;
+      flex-shrink: 0;
+      height: var(--clock-size);
+      margin: 0 auto;
+      width: var(--clock-size);
     }
-    .Analog {
+    body#gWP1 .Analog {
       background: radial-gradient(circle at 50% 50%, #f8f9fa 0%, #e9ecef 100%);
       border: 1px solid #fff !important;
       border-radius: 50% !important;
@@ -958,39 +1019,37 @@
       height: 100%;
       width: 100%;
     }
-    .Analog-Hour-Hand,
-    .Analog-Minute-Hand,
-    .Analog-Second-Hand {
+    body#gWP1 .Analog-Second-Hand,
+    body#gWP1 .Analog-Minute-Hand,
+    body#gWP1 .Analog-Hour-Hand {
+      stroke-linecap: round;
       transform-origin: 50% 50%;
     }
-    .Analog-Hour-Hand {
-      transform: rotate(var(--hourDeg, 0deg));
-    }
-    .Analog-Minute-Hand {
-      transform: rotate(var(--minuteDeg, 0deg));
-    }
-    .Analog-Second-Hand {
+    body#gWP1 .Analog-Second-Hand {
       transform: rotate(var(--secondDeg, 0deg));
     }
-    .Analog-Hour-Hand {
-      fill: #2c3e50 !important;
-      stroke: #2c3e50 !important;
-      stroke-linecap: round !important;
-      stroke-width: 3 !important;
+    body#gWP1 .Analog-Minute-Hand {
+      transform: rotate(var(--minuteDeg, 0deg));
     }
-    .Analog-Minute-Hand {
-      fill: #34495e;
-      stroke: #34495e;
-      stroke-linecap: round;
-      stroke-width: 2;
+    body#gWP1 .Analog-Hour-Hand {
+      transform: rotate(var(--hourDeg, 0deg));
     }
-    .Analog-Second-Hand {
+    body#gWP1 .Analog-Second-Hand {
       fill: #e74c3c;
       stroke: #e74c3c;
-      stroke-linecap: round;
       stroke-width: 1;
     }
-    .Analog-Number {
+    body#gWP1 .Analog-Minute-Hand {
+      fill: #34495e;
+      stroke: #34495e;
+      stroke-width: 2;
+    }
+    body#gWP1 .Analog-Hour-Hand {
+      fill: #2c3e50;
+      stroke: #2c3e50;
+      stroke-width: 3;
+    }
+    body#gWP1 .Analog-Number {
       fill: #2c3e50;
       font-family: system-ui, Arial, sans-serif;
       font-size: 6.8px;
@@ -998,50 +1057,55 @@
       paint-order: stroke fill;
       stroke: none;
     }
-    .Analog-CenterCutout {
+    body#gWP1 .Analog-CenterCutout {
       fill: #2c3e50;
       stroke: white;
       stroke-width: 3;
     }
-    .Analog-Bigclock.dark .Analog {
+    body#gWP1 .Analog-Bigclock.dark .Analog {
       background: radial-gradient(circle at 50% 50%, #2c3e50 0%, #1a252f 100%);
       border-color: #ecf0f1;
     }
-    .Analog-Bigclock.dark .Analog-Hour-Hand,
-    .Analog-Bigclock.dark .Analog-Minute-Hand {
-      fill: #ecf0f1;
-      stroke: #ecf0f1;
-    }
-    .Analog-Bigclock.dark .Analog-Second-Hand {
+    body#gWP1 .Analog-Bigclock.dark .Analog-Second-Hand {
       fill: #ff6b6b;
       stroke: #ff6b6b;
     }
-    .Analog-Bigclock.dark .Analog-Number {
+    body#gWP1 .Analog-Bigclock.dark .Analog-Minute-Hand,
+    body#gWP1 .Analog-Bigclock.dark .Analog-Hour-Hand {
+      fill: #ecf0f1;
+      stroke: #ecf0f1;
+    }
+    body#gWP1 .Analog-Bigclock.dark .Analog-Number {
       fill: #fff;
     }
-    .Analog-Bigclock.dark .Analog-CenterCutout {
+    body#gWP1 .Analog-Bigclock.dark .Analog-CenterCutout {
       fill: #ecf0f1;
       stroke: #2c3e50;
     }
-    .Analog-AMPMText {
-      font-size: 7px;
+    body#gWP1 .Analog-AMPMText {
       fill: #0078d7;
+      font-size: 7px;
     }
-    .Analog-Bigclock.dark .Analog-AMPMText {
+    body#gWP1 .Analog-Bigclock.dark .Analog-AMPMText {
       fill: #fff;
     }
-    .Analog-AMPMBorder {
+    body#gWP1 .Analog-AMPMBorder {
       fill: none;
       stroke: #0078d7;
       stroke-width: 0.25;
     }
-    .ControlsRow {
+    body#gWP1 .Analog-Bigclock.dark .Analog-AMPMBorder {
+      fill: none;
+      stroke: #0078d7;
+      stroke-width: 0.25;
+    }
+    body#gWP1 .ControlsRow {
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 12px;
+      justify-content: center;
     }
-    .Analog-Info {
+    body#gWP1 .Analog-Info {
       background: #34495e;
       border-radius: 30px;
       display: inline-flex;
@@ -1053,14 +1117,21 @@
 	     text-align: center;
       width: auto;
     }
-    .Analog-CalendarText {
+    body#gWP1 .Analog-CalendarText {
       display: inline-block;
       color: #fff;
       font-size: 16px;
       font-weight: 600;
       white-space: nowrap;
     }
-    .ClockThemeToggle {
+    body#gWP1 .calendarInfo img {
+      display: block;
+      height: 32px;
+      position: relative;
+      top: 3px;
+      width: 32px;
+    }
+    body#gWP1 .ClockThemeToggle {
       background: #34495e;
       border: none;
       border-radius: 30px;
@@ -1072,7 +1143,7 @@
       text-align: center;
       width: 80px;
     }
-    .scaler-controls {
+    body#gWP1 .scaler-controls {
       align-items: center;
       background: #34495e;
       border-radius: 30px;
@@ -1084,7 +1155,7 @@
       padding: 6px 12px 5px 12px;
       width: fit-content;
     }
-    .scaler-reset {
+    body#gWP1 .scaler-reset {
       background: none;
       border: none;
       color: #7a8287;
@@ -1094,10 +1165,10 @@
       margin: 4px;
       padding: 0;
     }
-    .scaler-reset:hover {
+    body#gWP1 .scaler-reset:hover {
       color: #ffffff;
     }
-    .scaler-btn {
+    body#gWP1 .scaler-btn {
       background: none;
       border: none;
       color: #ffffff;
@@ -1106,10 +1177,10 @@
       line-height: 1;
       padding: 0px 4px;
     }
-    .scaler-btn:hover {
+    body#gWP1 .scaler-btn:hover {
       opacity: 0.8;
     }
-    .scaler-text {
+    body#gWP1 .scaler-text {
       background: rgba(255,255,255,.1);
       border: 1px solid #666;
       border-radius: 14px;
@@ -1120,14 +1191,17 @@
       min-width: 32px;
       padding: 1px 2px 0px 0px;
     }
-    .scaler-text:hover,
-    .scaler-text:focus-within {
+    body#gWP1 .scaler-text:hover,
+    body#gWP1 .scaler-text:focus-within {
       border-color: #ffffff;
       color: #ffffff;
     }
-    .scaler-text::-webkit-inner-spin-button,
-    .scaler-text::-webkit-outer-spin-button {
+    body#gWP1 .scaler-text::-webkit-inner-spin-button,
+    body#gWP1 .scaler-text::-webkit-outer-spin-button {
       display: none;
+    }
+    body#gWP1 .hidden {
+      display: none !important;
     }
   `);
 })();
