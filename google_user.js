@@ -657,9 +657,7 @@
     btn.replaceChildren(
       $el('img', {
         src: _Image.clock26,
-        alt: 'Clock',
-        width: 26,
-        height: 26
+        alt: 'Clock'
       }),
       GM_getValue('analogClock') ? ' Hide' : ' Show'
     );
