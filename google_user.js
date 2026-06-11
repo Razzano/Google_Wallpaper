@@ -158,10 +158,10 @@
   const restorePosition = (el, key) => {
     const savedTop = GM_getValue(key + '_top');
     const savedLeft = GM_getValue(key + '_left');
-    if (savedTop && savedLeft) {
-        el.style.top = savedTop;
-        el.style.left = savedLeft;
-        el.style.transform = 'none';
+    if (savedTop != null && savedLeft != null) {
+      el.style.top = savedTop;
+      el.style.left = savedLeft;
+      el.style.transform = 'none';
     }
   };
 
@@ -540,7 +540,7 @@
       const pixelSize = Math.round((currentPercent / 100) * BASE_SIZE);
       Clock.style.setProperty('--clock-size', pixelSize + 'px');
       percentageDisplay.value = String(currentPercent);
-      localStorage.setItem('clockSizePercent', currentPercent);
+      GM_setValue('clockSizePercent', currentPercent);
     };
 	   const clockInfo = $el( 'div', {
 	     className: 'Analog-Info' },
@@ -548,12 +548,16 @@
     );
     const themeBtn = $el('button', {
       className: 'ClockThemeToggle',
-      textContent: 'Dark',
-      onclick() {
-        const dark = Clock.classList.toggle('dark');
-        themeBtn.textContent = dark ? 'Light' : 'Dark';
-      }
     });
+    const setTheme = (dark) => {
+      Clock.classList.toggle('dark', dark);
+      themeBtn.textContent = dark ? '🌞 Light' : '🌙 Dark';
+      GM_setValue('clockDarkTheme', dark);
+    };
+    setTheme(GM_getValue('clockDarkTheme', false));
+    themeBtn.onclick = () => {
+      setTheme(!Clock.classList.contains('dark'));
+    };
     const scalerControls = $el('div', { className: 'scaler-controls' },
       themeBtn,
       $el('button', {
@@ -577,19 +581,15 @@
       }),
       $el('button', {
       className: 'scaler-info',
-      textContent: 'Date',
+      textContent: '📅 Date',
       title: 'Show/Hide Date Info',
       onclick() {
         clockInfo.classList.toggle('hidden');
         GM_setValue('calendarInfo', !clockInfo.classList.contains('hidden'));
       }})
     );
-    const savedPercent = localStorage.getItem('clockSizePercent');
-    if (savedPercent) {
-      setClockPercentage(parseInt(savedPercent, 10));
-    } else {
-      setClockPercentage(100);
-    }
+    const savedPercent = GM_getValue('clockSizePercent', 100);
+    setClockPercentage(savedPercent);
 	   const controlsRow = $el(
       'div',
       { className: 'ControlsRow' },
@@ -751,6 +751,8 @@
   // ============ Default Settings ============
   if (GM_getValue('analogClock') === undefined) GM_setValue('analogClock', false);
   if (GM_getValue('calendarInfo') === undefined) GM_setValue('calendarInfo', false);
+  if (GM_getValue('clockDarkTheme') === undefined) GM_setValue('clockDarkTheme', false);
+  if (GM_getValue('clockSizePercent') === undefined) GM_setValue('clockSizePercent', 100);
   if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
   if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', true);
   if (GM_getValue('defaultSecondsView') === undefined) GM_setValue('defaultSecondsView', false);
@@ -1157,14 +1159,14 @@
       height: 35px;
       justify-content: center;
       margin: 8px 0px 0px 0px;
-      padding: 0px 8px;
+      padding: 0px 4px;
       width: fit-content;
     }
     body#gWP1 .ClockThemeToggle,
     body#gWP1 .scaler-info {
       background: rgba(0, 0, 0, .3);
       border: none;
-      border-radius: 14px;
+      border-radius: 18px;
       color: #7a8287;
       cursor: pointer;
       font-size: 14px;
@@ -1172,7 +1174,7 @@
       height: 29px;
       padding: 6px;
       text-align: center;
-      width: 48px;
+      width: 66px;
     }
     body#gWP1 .scaler-reset {
       background: none;
