@@ -136,7 +136,6 @@
       document.removeEventListener('mousemove', elementDrag);
       GM_setValue(storageKey + '_top', elmnt.style.top);
       GM_setValue(storageKey + '_left', elmnt.style.left);
-      console.log('✅ Position saved for', elmnt.id);
     };
     elmnt.style.cursor = 'move';
     elmnt.style.userSelect = 'none';
@@ -194,7 +193,8 @@
     logo15: _aURL + 'globe2.png',
     logo16: _aURL + 'eyes7.png',
     logo17: '',
-    calendar: _aURL + 'imageCalendar.png'
+    calendar: _aURL + 'imageCalendar.png',
+    clock26: _aURL + 'clock26.png',
   };
 
   const _Logo = [null];
@@ -486,7 +486,7 @@
       className: 'Analog-AMPMBorder',
       x: 44,
       y: 74,
-      width: 13,
+      width: 12,
       height: 7,
       rx: 2,
       ry: 2
@@ -538,7 +538,6 @@
     const setClockPercentage = (percent) => {
       currentPercent = Math.max(30, Math.min(200, percent));
       const pixelSize = Math.round((currentPercent / 100) * BASE_SIZE);
-      console.log('Setting clock size:', currentPercent, pixelSize + 'px');
       Clock.style.setProperty('--clock-size', pixelSize + 'px');
       percentageDisplay.value = String(currentPercent);
       localStorage.setItem('clockSizePercent', currentPercent);
@@ -547,7 +546,16 @@
 	     className: 'Analog-Info' },
       calendarText
     );
+    const themeBtn = $el('button', {
+      className: 'ClockThemeToggle',
+      textContent: 'Dark',
+      onclick() {
+        const dark = Clock.classList.toggle('dark');
+        themeBtn.textContent = dark ? 'Light' : 'Dark';
+      }
+    });
     const scalerControls = $el('div', { className: 'scaler-controls' },
+      themeBtn,
       $el('button', {
         className: 'scaler-reset',
         textContent: 'Reset',
@@ -566,28 +574,15 @@
         textContent: '+',
         title: 'Scale Up In 5% Increments',
         onclick: () => setClockPercentage(currentPercent + 5)
-      })
-    );
-    const themeBtn = $el('button', {
-      className: 'ClockThemeToggle',
-      textContent: '🌙 Dark',
-      onclick() {
-        const dark = Clock.classList.toggle('dark');
-        themeBtn.textContent = dark ? '☀️ Light' : '🌙 Dark';
-      }
-    });
-    const calendarBtn = $el('button', {
-      className: 'calendarInfo',
-      title: 'Show/Hide Calendar Info',
+      }),
+      $el('button', {
+      className: 'scaler-info',
+      textContent: 'Date',
+      title: 'Show/Hide Date Info',
       onclick() {
         clockInfo.classList.toggle('hidden');
         GM_setValue('calendarInfo', !clockInfo.classList.contains('hidden'));
-      }},
-      $el('img', {
-        src: _Image.calendar,
-        alt: 'Calendar',
-        className: 'calendarIcon'
-      })
+      }})
     );
     const savedPercent = localStorage.getItem('clockSizePercent');
     if (savedPercent) {
@@ -598,9 +593,7 @@
 	   const controlsRow = $el(
       'div',
       { className: 'ControlsRow' },
-      themeBtn,
-      scalerControls,
-      calendarBtn
+      scalerControls
     );
     const container = $el(
       'div',
@@ -637,7 +630,7 @@
       Clock.style.setProperty('--minuteDeg', `${minuteDeg}deg`);
       Clock.style.setProperty('--hourDeg', `${hourDeg}deg`);
       ampmText.textContent = GM_getValue('defaultAMPM', false) ? (now.getHours() < 12 ? 'AM' : 'PM') : '';
-      calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑${h12}:${min}`; // + h12 + ':'+ min;
+      calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}`; // + h12 + ':'+ min;
     };
     const showCalendarInfo = GM_getValue('calendarInfo', true);
     if (!showCalendarInfo) {
@@ -660,10 +653,16 @@
       getClock();
       GM_setValue('analogClock', true);
     }
-    $id('analogClock').textContent =
-      GM_getValue('analogClock')
-        ? '🕑 Hide'
-        : '🕑 Show';
+    const btn = $id('analogClockBtn');
+    btn.replaceChildren(
+      $el('img', {
+        src: _Image.clock26,
+        alt: 'Clock',
+        width: 26,
+        height: 26
+      }),
+      GM_getValue('analogClock') ? ' Hide' : ' Show'
+    );
   };
 
   // ============ Initialize ============
@@ -695,8 +694,11 @@
     const inputLogo = $el('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: 'Manually Enter:\n • 1 - 17 (0 = Default Google Logo, 17 = No Logo)', oninput: handleLogoInput});
     const downLogo = $el('button', {id: 'downLogo', textContent: '🠋 Logo', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
     const spacer2 = $el('span', {class: 'spacerX', textContent: '|'});
-    const analogClock = $el('button', {id: 'analogClock', onclick: toggleAnalogClock});
-    changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo, spacer2, analogClock);
+    const analogClockBtn = $el('button', {id: 'analogClockBtn', onclick: toggleAnalogClock},
+      $el('img', {src: _Image.clock26, alt: 'Clock'}),
+      ' Show'
+    );
+    changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
     body.appendChild(dtContainer);
     body.appendChild(changerContainer);
     dtContainer.style.position = 'fixed';
@@ -728,11 +730,23 @@
         dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
         startClock();
       }
-      const showClock = GM_getValue('analogClock');
+      const showClock = GM_getValue('analogClock', false);
+      const clock = $id('analogClockContainer');
       if (showClock) {
+        GM_setValue('analogClock', true);
         requestAnimationFrame(() => getClock());
+      } else {
+        GM_setValue('analogClock', false);
+        clock?.remove();
       }
-      analogClock.textContent = showClock ? '🕑 Hide' : '🕑 Show';
+      const btn = $id('analogClockBtn');
+      btn.replaceChildren(
+        $el('img', {
+          src: _Image.clock26,
+          alt: 'Clock'
+        }),
+        GM_getValue('analogClock') ? ' Hide' : ' Show'
+      );
     }
   };
 
@@ -845,7 +859,7 @@
       padding: 4px 16px !important;
       pointer-events: auto !important;
       user-select: none !important;
-      z-index: 2 !important;
+      z-index: 4 !important;
     }
     #dateTimeContainer.dragged {
       transform: none !important;
@@ -974,7 +988,17 @@
       font-family: monospace !important;
       font-size: 120% !important;
     }
-    body#gWP1 #changerContainer > button:hover {
+    body#gWP1 #analogClockBtn {
+      font-weight: bold;
+      color: orange;
+    }
+    body#gWP1 #analogClockBtn > img {
+      height: 20px;
+      position: relative;
+      top: 4px;
+      width: 20px;
+    }
+    body#gWP1 #changerContainer > button:not(#analogClockBtn):hover {
       filter: brightness(2) !important;
       opacity: 1 !important;
     }
@@ -1001,7 +1025,7 @@
       position: absolute;
       top: 100px;
       user-select: none;
-      z-index: 9999;
+      z-index: 3;
     }
     body#gWP1 .Analog-Bigclock {
       align-self: center;
@@ -1106,14 +1130,15 @@
       justify-content: center;
     }
     body#gWP1 .Analog-Info {
+    align-items: center;
       background: #34495e;
       border-radius: 30px;
       display: inline-flex;
-      justify-content: center;
-      align-items: center;
       gap: 12px;
+      height: 35px;
+      justify-content: center;
       margin: 4px auto 0px auto;
-      padding: 4px 12px;
+      padding: 0px 12px;
 	     text-align: center;
       width: auto;
     }
@@ -1124,25 +1149,6 @@
       font-weight: 600;
       white-space: nowrap;
     }
-    body#gWP1 .calendarInfo img {
-      display: block;
-      height: 32px;
-      position: relative;
-      top: 3px;
-      width: 32px;
-    }
-    body#gWP1 .ClockThemeToggle {
-      background: #34495e;
-      border: none;
-      border-radius: 30px;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
-      padding: 8px 10px 9px 10px;
-      margin: 9px 0 0 0;
-      text-align: center;
-      width: 80px;
-    }
     body#gWP1 .scaler-controls {
       align-items: center;
       background: #34495e;
@@ -1150,10 +1156,25 @@
       display: flex;
       float: right;
       gap: 12px;
+      height: 35px;
       justify-content: center;
       margin: 8px 0px 0px 0px;
-      padding: 6px 12px 5px 12px;
+      padding: 0px 8px;
       width: fit-content;
+    }
+    body#gWP1 .ClockThemeToggle,
+    body#gWP1 .scaler-info {
+      background: rgba(0, 0, 0, .3);
+      border: none;
+      border-radius: 14px;
+      color: #7a8287;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      height: 29px;
+      padding: 6px;
+      text-align: center;
+      width: 48px;
     }
     body#gWP1 .scaler-reset {
       background: none;
@@ -1164,9 +1185,6 @@
       font-weight: 500;
       margin: 4px;
       padding: 0;
-    }
-    body#gWP1 .scaler-reset:hover {
-      color: #ffffff;
     }
     body#gWP1 .scaler-btn {
       background: none;
@@ -1188,8 +1206,14 @@
       font-size: 14px;
       font-weight: 500;
       text-align: center;
+      margin-top: -2px;
       min-width: 32px;
       padding: 1px 2px 0px 0px;
+    }
+    body#gWP1 .ClockThemeToggle:hover,
+    body#gWP1 .scaler-reset:hover,
+    body#gWP1 .scaler-info:hover {
+      color: #ffffff;
     }
     body#gWP1 .scaler-text:hover,
     body#gWP1 .scaler-text:focus-within {
@@ -1197,11 +1221,9 @@
       color: #ffffff;
     }
     body#gWP1 .scaler-text::-webkit-inner-spin-button,
-    body#gWP1 .scaler-text::-webkit-outer-spin-button {
-      display: none;
-    }
+    body#gWP1 .scaler-text::-webkit-outer-spin-button,
     body#gWP1 .hidden {
-      display: none !important;
+      display: none;
     }
   `);
 })();
