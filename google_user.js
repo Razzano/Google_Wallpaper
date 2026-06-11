@@ -1183,7 +1183,7 @@
       cursor: pointer;
       font-size: 14px;
       font-weight: 500;
-      margin: 4px;
+      margin: 4px 4px 0px 4px;
       padding: 0;
     }
     body#gWP1 .scaler-btn {
