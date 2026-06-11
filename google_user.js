@@ -694,7 +694,7 @@
     const inputLogo = $el('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: 'Manually Enter:\n • 1 - 17 (0 = Default Google Logo, 17 = No Logo)', oninput: handleLogoInput});
     const downLogo = $el('button', {id: 'downLogo', textContent: '🠋 Logo', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
     const spacer2 = $el('span', {class: 'spacerX', textContent: '|'});
-    const analogClockBtn = $el('button', {id: 'analogClockBtn', onclick: toggleAnalogClock},
+    const analogClockBtn = $el('button', {id: 'analogClockBtn', title: 'Analog Clock', onclick: toggleAnalogClock},
       $el('img', {src: _Image.clock26, alt: 'Clock'}),
       ' Show'
     );
