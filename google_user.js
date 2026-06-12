@@ -8,6 +8,7 @@
 // @match        https://google.com/*
 // @exclude      https://www.google.com/search*
 // @exclude      https://google.com/search*
+// @exclude      https://www.google.com/maps*
 // @icon         https://raw.githubusercontent.com/srazzano/Images/master/googleicon64.png
 // @grant        GM_addStyle
 // @grant        GM_getValue
@@ -378,7 +379,7 @@
         }
       } else {
         dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
-        GM_setValue('analogClock', !GM_getValue('analogClock'));
+        GM_setValue('analogClock', !GM_getValue('analogClock', true));
         startClock();
       }
       return;
@@ -401,7 +402,7 @@
       GM_setValue('defaultSecondsView', !GM_getValue('defaultSecondsView', false));
       startClock();
     } else if (e.shiftKey && !e.ctrlKey && !e.altKey) {
-      GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', false));
+      GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', true));
     } else if (!e.shiftKey && e.ctrlKey && !e.altKey) {
       let fmt = GM_getValue('dateFormat', 1);
       fmt = (fmt >= _dateTimeFormatCount) ? 1 : fmt + 1;
@@ -554,7 +555,7 @@
       themeBtn.textContent = dark ? '🌞 Light' : '🌙 Dark';
       GM_setValue('clockDarkTheme', dark);
     };
-    setTheme(GM_getValue('clockDarkTheme', false));
+    setTheme(GM_getValue('clockDarkTheme', true));
     themeBtn.onclick = () => {
       setTheme(!Clock.classList.contains('dark'));
     };
@@ -629,10 +630,10 @@
       Clock.style.setProperty('--secondDeg', `${displayedSecondDeg}deg`);
       Clock.style.setProperty('--minuteDeg', `${minuteDeg}deg`);
       Clock.style.setProperty('--hourDeg', `${hourDeg}deg`);
-      ampmText.textContent = GM_getValue('defaultAMPM', false) ? (now.getHours() < 12 ? 'AM' : 'PM') : '';
-      calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}`; // + h12 + ':'+ min;
+      ampmText.textContent = GM_getValue('defaultAMPM', true) ? (now.getHours() < 12 ? 'AM' : 'PM') : '';
+      calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}`;
     };
-    const showCalendarInfo = GM_getValue('calendarInfo', true);
+    const showCalendarInfo = GM_getValue('calendarInfo', false);
     if (!showCalendarInfo) {
       clockInfo.classList.add('hidden')
     }
@@ -659,7 +660,7 @@
         src: _Image.clock26,
         alt: 'Clock'
       }),
-      GM_getValue('analogClock') ? ' Hide' : ' Show'
+      GM_getValue('analogClock', true) ? ' Hide' : ' Show'
     );
   };
 
@@ -670,6 +671,7 @@
     if (!body) return;
     body.id = 'gWP1';
     const textArea = $id('APjFqb');
+    // create dateTimeContainer
     const dtContainer = $el('div', { id: 'dateTimeContainer' });
     const imageCalendar = $el('img', {
       id: 'imageCalendar',
@@ -683,6 +685,7 @@
       onclick: dateTimeToggleSecondsAmPm
     });
     dtContainer.append(imageCalendar, dateTimeEl);
+    // create changerContainer
     const changerContainer = $el('div', { id: 'changerContainer' });
     const buttonThemer = $el('button', {id: 'buttonThemer', textContent: 'Wallpaper 🠉', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
     const inputThemer = $el('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: 'Manually Enter:\n • 1 - 52 (0 = Default Google Background)', oninput: wallpaperInputChanger});
@@ -697,6 +700,7 @@
       ' Show'
     );
     changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
+    // append containers to body
     body.appendChild(dtContainer);
     body.appendChild(changerContainer);
     dtContainer.style.position = 'fixed';
@@ -711,10 +715,13 @@
     makeDraggable(changerContainer, 'changerContainer');
     restorePosition(dtContainer, 'dtContainer');
     restorePosition(changerContainer, 'changerContainer');
+    // wallpaper
     applyWallpaper(GM_getValue('wallpaperImage', 0));
+    // Logos
     applyLogo(GM_getValue('logoImageNum', 1));
+    //
     if (textArea) textArea.placeholder = 'Search Look-up';
-    if (GM_getValue('defaultDateTimeView', true)) {
+    if (GM_getValue('defaultDateTimeView', false)) {
       dateTimeEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
       startClock();
     }
@@ -728,7 +735,7 @@
         dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
         startClock();
       }
-      const showClock = GM_getValue('analogClock', false);
+      const showClock = GM_getValue('analogClock', true);
       const clock = $id('analogClockContainer');
       if (showClock) {
         GM_setValue('analogClock', true);
@@ -743,18 +750,18 @@
           src: _Image.clock26,
           alt: 'Clock'
         }),
-        GM_getValue('analogClock') ? ' Hide' : ' Show'
+        GM_getValue('analogClock', true) ? ' Hide' : ' Show'
       );
     }
   };
 
   // ============ Default Settings ============
-  if (GM_getValue('analogClock') === undefined) GM_setValue('analogClock', false);
+  if (GM_getValue('analogClock') === undefined) GM_setValue('analogClock', true);
   if (GM_getValue('calendarInfo') === undefined) GM_setValue('calendarInfo', false);
-  if (GM_getValue('clockDarkTheme') === undefined) GM_setValue('clockDarkTheme', false);
+  if (GM_getValue('clockDarkTheme') === undefined) GM_setValue('clockDarkTheme', true);
   if (GM_getValue('clockSizePercent') === undefined) GM_setValue('clockSizePercent', 100);
   if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
-  if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', true);
+  if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', false);
   if (GM_getValue('defaultSecondsView') === undefined) GM_setValue('defaultSecondsView', false);
   if (GM_getValue('defaultAMPM') === undefined) GM_setValue('defaultAMPM', true);
   if (GM_getValue('linkTarget') === undefined) GM_setValue('linkTarget', '_blank');
@@ -768,14 +775,14 @@
   }
 
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && GM_getValue('analogClock')) {
+    if (!document.hidden && GM_getValue('analogClock', true)) {
       if (!$id('analogClockContainer')) {
         getClock();
     } }
   });
 
   window.addEventListener('pageshow', () => {
-    if (GM_getValue('analogClock') && !$id('analogClockContainer')) {
+    if (GM_getValue('analogClock', true) && !$id('analogClockContainer')) {
       getClock();
     }
   });
@@ -1172,9 +1179,9 @@
       font-size: 14px;
       font-weight: 500;
       height: 29px;
-      padding: 6px;
+      padding: 6px 6px 6px 4px;
       text-align: center;
-      width: 66px;
+      width: 68px;
     }
     body#gWP1 .scaler-reset {
       background: none;
