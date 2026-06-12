@@ -1158,13 +1158,13 @@
       gap: 12px;
       height: 35px;
       justify-content: center;
-      margin: 8px 0px 0px 0px;
+      margin: 1px 0px 0px 0px;
       padding: 0px 4px;
       width: fit-content;
     }
     body#gWP1 .ClockThemeToggle,
     body#gWP1 .scaler-info {
-      background: rgba(0, 0, 0, .3);
+      background: rgba(0, 0, 0, .4);
       border: none;
       border-radius: 18px;
       color: #7a8287;
