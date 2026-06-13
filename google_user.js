@@ -354,7 +354,7 @@
           hr24 = hr,
           minStr = min < 10 ? ':0' + min : ':' + min,
           secStr = GM_getValue('defaultSecondsView', false) ? (sec < 10 ? ':0' + sec : ':' + sec) : '',
-          ampm = GM_getValue('defaultAMPM', false) ? (hr < 12 ? 'AM' : 'PM') : '';
+          ampm = GM_getValue('defaultAMPM', true) ? (hr < 12 ? 'AM' : 'PM') : '';
     switch(format){
       case 1: return `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
       case 2: return `${dayAbbr} • ${monthAbbr} ${dt}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
@@ -366,21 +366,16 @@
 
   const dateTimeToggle = (e) => {
     if (e.button !== 0) return;
-    const dtEl = $id('dateTime');
-    if (!dtEl) return;
     if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
-      const newHiddenState = !dtEl.hidden;
-      dtEl.hidden = newHiddenState;
-      GM_setValue('defaultDateTimeView', newHiddenState);
-      if (newHiddenState) {
-        if (_clockInterval) {
-          clearInterval(_clockInterval);
-          _clockInterval = null;
-        }
-      } else {
+      const dtEl = $id('dateTime');
+      dtEl.hidden = !dtEl.hidden;
+      GM_setValue('dateTimeView', !dtEl.hidden);
+      if (!dtEl.hidden) {
         dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
-        GM_setValue('analogClock', !GM_getValue('analogClock', true));
         startClock();
+      } else {
+        clearInterval(_clockInterval);
+        _clockInterval = null;
       }
       return;
     }
@@ -445,7 +440,7 @@
 
   // ============ Analog Clock ============
   const getClock = () => {
-    if (!GM_getValue('analogClock')) return;
+    if (!GM_getValue('analogClock', true)) return;
     const ticks = [];
     const hourNumbers = [];
     for (let i = 0; i < 60; i++) {
@@ -570,7 +565,7 @@
       }),
       $el('button', {
         className: 'scaler-btn',
-        textContent: '-',
+        textContent: '─',
         title: 'Scale Down In 5% Increments',
         onclick: () => setClockPercentage(currentPercent - 5)
       }),
@@ -601,8 +596,8 @@
       'div',
       { id: 'analogClockContainer', className: 'ClockContainer' },
       Clock,
-      clockInfo,
-      controlsRow
+      controlsRow,
+      clockInfo
     );
     makeDraggable(container, 'analogClockContainer', '.Analog-Bigclock');
     restorePosition(container, 'analogClockContainer');
@@ -647,8 +642,8 @@
   };
 
   const toggleAnalogClock = () => {
-    const cont = $id('analogClockContainer');
     const clock = GM_getValue('analogClock', true);
+    const cont = $id('analogClockContainer');
     if (clock) {
       GM_setValue('analogClock', false);
       cont.remove();
@@ -673,7 +668,6 @@
     if (!body) return;
     body.id = 'gWP1';
     const textArea = $id('APjFqb');
-    // create dateTimeContainer
     const dtContainer = $el('div', { id: 'dateTimeContainer' });
     const imageCalendar = $el('img', {
       id: 'imageCalendar',
@@ -687,7 +681,6 @@
       onclick: dateTimeToggleSecondsAmPm
     });
     dtContainer.append(imageCalendar, dateTimeEl);
-    // create changerContainer
     const changerContainer = $el('div', { id: 'changerContainer' });
     const buttonThemer = $el('button', {id: 'buttonThemer', textContent: 'Wallpaper 🠉', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
     const inputThemer = $el('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: 'Manually Enter:\n • 1 - 52 (0 = Default Google Background)', oninput: wallpaperInputChanger});
@@ -697,12 +690,8 @@
     const inputLogo = $el('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: 'Manually Enter:\n • 1 - 17 (0 = Default Google Logo, 17 = No Logo)', oninput: handleLogoInput});
     const downLogo = $el('button', {id: 'downLogo', textContent: '🠋 Logo', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
     const spacer2 = $el('span', {class: 'spacerX', textContent: '|'});
-    const analogClockBtn = $el('button', {id: 'analogClockBtn', title: 'Analog Clock', onclick: toggleAnalogClock},
-      $el('img', {src: _Image.clock26, alt: 'Clock'}),
-      ' Show'
-    );
+    const analogClockBtn = $el('button', {id: 'analogClockBtn', title: 'Analog Clock', onclick: toggleAnalogClock}, $el('img', {src: _Image.clock26, alt: 'Clock'}), ' Show');
     changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
-    // append containers to body
     body.appendChild(dtContainer);
     body.appendChild(changerContainer);
     dtContainer.style.position = 'fixed';
@@ -717,44 +706,35 @@
     makeDraggable(changerContainer, 'changerContainer');
     restorePosition(dtContainer, 'dtContainer');
     restorePosition(changerContainer, 'changerContainer');
-    // wallpaper
     applyWallpaper(GM_getValue('wallpaperImage', 0));
-    // Logos
     applyLogo(GM_getValue('logoImageNum', 1));
-    //
     if (textArea) textArea.placeholder = 'Search Look-up';
-    if (GM_getValue('defaultDateTimeView', false)) {
-      dateTimeEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
+    if (imageCalendar) {
+      imageCalendar.addEventListener('click', dateTimeToggle, false);
+    }
+    const dtEl = $id('dateTime');
+    const dtPref = GM_getValue('dateTimeView', false);
+    if (dtPref) {
+      dtEl.hidden = false;
+      dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
       startClock();
+    } else {
+      dtEl.hidden = true;
+      clearInterval(_clockInterval);
+      _clockInterval = null;
     }
     searchLinksWhere();
-    if (imageCalendar) imageCalendar.addEventListener('click', dateTimeToggle, false);
-    const dtEl = $id('dateTime');
-    if (dtEl) {
-      const shouldHide = GM_getValue('defaultDateTimeView', false);
-      dtEl.hidden = shouldHide;
-      if (!shouldHide) {
-        dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
-        startClock();
-      }
-      const showClock = GM_getValue('analogClock', true);
-      const clock = $id('analogClockContainer');
-      if (showClock) {
-        GM_setValue('analogClock', true);
-        requestAnimationFrame(() => getClock());
-      } else {
-        GM_setValue('analogClock', false);
-        clock?.remove();
-      }
-      const btn = $id('analogClockBtn');
-      btn.replaceChildren(
-        $el('img', {
-          src: _Image.clock26,
-          alt: 'Clock'
-        }),
-        GM_getValue('analogClock', true) ? ' Hide' : ' Show'
-      );
+    const showClock = GM_getValue('analogClock', true);
+    const clock = $id('analogClockContainer');
+    if (showClock) {
+      requestAnimationFrame(() => getClock());
+    } else {
+      clock?.remove();
     }
+    const btn = $id('analogClockBtn');
+    btn.replaceChildren($el('img', {src: _Image.clock26, alt: 'Clock'}),
+      GM_getValue('analogClock', true) ? ' Hide' : ' Show'
+    );
   };
 
   if (document.readyState === "loading") {
@@ -985,14 +965,18 @@
       font-size: 120% !important;
     }
     body#gWP1 #analogClockBtn {
-      font-weight: bold;
-      color: orange;
+      color: #fff;
+      opacity: .7 !important;
     }
     body#gWP1 #analogClockBtn > img {
-      height: 20px;
+      height: 22px;
       position: relative;
-      top: 4px;
-      width: 20px;
+      top: 6px;
+      width: 22px;
+    }
+    body#gWP1 #analogClockBtn:not(img):hover {
+      color: orange;
+      opacity: 1 !important;
     }
     body#gWP1 #changerContainer > button:not(#analogClockBtn):hover {
       filter: brightness(2) !important;
@@ -1133,7 +1117,7 @@
       gap: 12px;
       height: 35px;
       justify-content: center;
-      margin: 4px auto 0px auto;
+      margin: 1px auto 0px auto;
       padding: 0px 12px;
 	     text-align: center;
       width: auto;
@@ -1154,7 +1138,7 @@
       gap: 12px;
       height: 35px;
       justify-content: center;
-      margin: 1px 0px 0px 0px;
+      margin: 4px 0px 0px 0px;
       padding: 0px 4px;
       width: fit-content;
     }
