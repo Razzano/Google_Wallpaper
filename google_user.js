@@ -626,7 +626,7 @@
       Clock.style.setProperty('--secondDeg', `${displayedSecondDeg}deg`);
       Clock.style.setProperty('--minuteDeg', `${minuteDeg}deg`);
       Clock.style.setProperty('--hourDeg', `${hourDeg}deg`);
-      ampmText.textContent = GM_getValue('defaultAMPM', true) ? (now.getHours() < 12 ? 'AM' : 'PM') : '';
+      ampmText.textContent = now.getHours() < 12 ? 'AM' : 'PM';
       calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}`;
     };
     const showCalendarInfo = GM_getValue('calendarInfo', false);
