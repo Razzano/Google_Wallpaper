@@ -565,7 +565,7 @@
       }),
       $el('button', {
         className: 'scaler-btn',
-        textContent: '─',
+        textContent: '–',
         title: 'Scale Down In 5% Increments',
         onclick: () => setClockPercentage(currentPercent - 5)
       }),
@@ -1110,19 +1110,6 @@
       justify-content: center;
       width: 334px;
     }
-    body#gWP1 .Analog-Info {
-      align-items: center;
-      background: #34495e;
-      border-radius: 0px;
-      display: inline-flex;
-      gap: 12px;
-      height: 35px;
-      justify-content: center;
-      margin: 0px;
-      padding: 0px;
-	     text-align: center;
-      width: 334px;
-    }
     body#gWP1 .Analog-CalendarText {
       display: inline-block;
       color: #fff;
@@ -1133,18 +1120,17 @@
     body#gWP1 .scaler-controls {
       align-items: center;
       background: #34495e;
-      border-radius: 0px;
+      border-radius: 8px;
       display: flex;
       gap: 12px;
       height: 35px;
       justify-content: center;
       margin-top: 4px;
-      padding: 0px;
+      padding-bottom: 3px;
       width: 334px;
     }
     body#gWP1 .ClockThemeToggle,
     body#gWP1 .scaler-info {
-      background: rgba(0, 0, 0, .4);
       border: none;
       border-radius: 18px;
       color: #7a8287;
@@ -1186,9 +1172,22 @@
       font-size: 14px;
       font-weight: 500;
       text-align: center;
-      margin-top: -2px;
+      margin-top: 0px;
       min-width: 32px;
       padding: 1px 2px 0px 0px;
+    }
+    body#gWP1 .Analog-Info {
+      align-items: center;
+      background: #34495e;
+      border-radius: 0px 0px 8px 8px;
+      display: inline-flex;
+      gap: 12px;
+      height: 35px;
+      justify-content: center;
+      margin-top: -6px;
+      padding-top: 0px;
+	     text-align: center;
+      width: 334px;
     }
     body#gWP1 .ClockThemeToggle:hover,
     body#gWP1 .scaler-reset:hover,
