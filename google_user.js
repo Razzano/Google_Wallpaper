@@ -757,19 +757,6 @@
     }
   };
 
-  // ============ Default Settings ============
-  if (GM_getValue('analogClock') === undefined) GM_setValue('analogClock', true);
-  if (GM_getValue('calendarInfo') === undefined) GM_setValue('calendarInfo', false);
-  if (GM_getValue('clockDarkTheme') === undefined) GM_setValue('clockDarkTheme', true);
-  if (GM_getValue('clockSizePercent') === undefined) GM_setValue('clockSizePercent', 100);
-  if (GM_getValue('dateFormat') === undefined) GM_setValue('dateFormat', 1);
-  if (GM_getValue('defaultDateTimeView') === undefined) GM_setValue('defaultDateTimeView', false);
-  if (GM_getValue('defaultSecondsView') === undefined) GM_setValue('defaultSecondsView', false);
-  if (GM_getValue('defaultAMPM') === undefined) GM_setValue('defaultAMPM', true);
-  if (GM_getValue('linkTarget') === undefined) GM_setValue('linkTarget', '_blank');
-  if (GM_getValue('logoImageNum') === undefined) GM_setValue('logoImageNum', 1);
-  if (GM_getValue('wallpaperImage') === undefined) GM_setValue('wallpaperImage', 0);
-
   if (document.readyState === "loading") {
     document.addEventListener('DOMContentLoaded', init);
   } else {
