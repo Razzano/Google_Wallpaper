@@ -1108,19 +1108,20 @@
       align-items: center;
       gap: 12px;
       justify-content: center;
+      width: 334px;
     }
     body#gWP1 .Analog-Info {
-    align-items: center;
+      align-items: center;
       background: #34495e;
-      border-radius: 30px;
+      border-radius: 0px;
       display: inline-flex;
       gap: 12px;
       height: 35px;
       justify-content: center;
-      margin: 1px auto 0px auto;
-      padding: 0px 12px;
+      margin: 0px;
+      padding: 0px;
 	     text-align: center;
-      width: auto;
+      width: 334px;
     }
     body#gWP1 .Analog-CalendarText {
       display: inline-block;
@@ -1132,15 +1133,14 @@
     body#gWP1 .scaler-controls {
       align-items: center;
       background: #34495e;
-      border-radius: 30px;
+      border-radius: 0px;
       display: flex;
-      float: right;
       gap: 12px;
       height: 35px;
       justify-content: center;
-      margin: 4px 0px 0px 0px;
-      padding: 0px 4px;
-      width: fit-content;
+      margin-top: 4px;
+      padding: 0px;
+      width: 334px;
     }
     body#gWP1 .ClockThemeToggle,
     body#gWP1 .scaler-info {
@@ -1152,7 +1152,7 @@
       font-size: 14px;
       font-weight: 500;
       height: 29px;
-      padding: 6px 6px 6px 4px;
+      padding: 6px 0px;
       text-align: center;
       width: 68px;
     }
