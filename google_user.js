@@ -445,7 +445,7 @@
 
   // ============ Analog Clock ============
   const getClock = () => {
-    if ($id('analogClockContainer')) return;
+    if (!GM_getValue('analogClock')) return;
     const ticks = [];
     const hourNumbers = [];
     for (let i = 0; i < 60; i++) {
@@ -549,6 +549,7 @@
     );
     const themeBtn = $el('button', {
       className: 'ClockThemeToggle',
+      title: 'Light/Dark Analog Clock Theme'
     });
     const setTheme = (dark) => {
       Clock.classList.toggle('dark', dark);
@@ -646,13 +647,14 @@
   };
 
   const toggleAnalogClock = () => {
-    const clock = $id('analogClockContainer');
+    const cont = $id('analogClockContainer');
+    const clock = GM_getValue('analogClock', true);
     if (clock) {
-      clock.remove();
       GM_setValue('analogClock', false);
+      cont.remove();
     } else {
-      getClock();
       GM_setValue('analogClock', true);
+      getClock();
     }
     const btn = $id('analogClockBtn');
     btn.replaceChildren(
