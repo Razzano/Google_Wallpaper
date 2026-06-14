@@ -548,7 +548,7 @@
     });
     const setTheme = (dark) => {
       Clock.classList.toggle('dark', dark);
-      themeBtn.textContent = dark ? '🌞 Light' : '🌙 Dark';
+      themeBtn.textContent = dark ? '☀️ Light' : '🌙 Dark';
       GM_setValue('clockDarkTheme', dark);
     };
     setTheme(GM_getValue('clockDarkTheme', true));
@@ -631,7 +631,7 @@
     };
     const showCalendarInfo = GM_getValue('calendarInfo', false);
     if (!showCalendarInfo) {
-      clockInfo.classList.add('hidden')
+      clockInfo.classList.add('hidden');
     }
     const tick = () => {
       updateClock();
