@@ -672,10 +672,10 @@
     const buttonLogo = $el('button', {id: 'buttonLogo', textContent: 'Logo 🠉', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
     const inputLogo = $el('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: 'Manually Enter:\n • 1 - 17 (0 = Default Google Logo, 17 = No Logo)', oninput: handleLogoInput});
     const downLogo = $el('button', {id: 'downLogo', textContent: '🠋 Logo', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
-    const spacer = $el('span', {id: 'spacer1', class: 'spacerX', textContent: '|'});
+    const spacer1 = $el('span', {id: 'spacer1', class: 'spacerX', textContent: '|'});
     const spacer2 = $el('span', {id: 'spacer2', class: 'spacerX', textContent: '|'});
     const analogClockBtn = $el('button', {id: 'analogClockBtn', title: 'Analog Clock', onclick: toggleAnalogClock}, $el('img', {src: _Image.clock26, alt: 'Clock'}), ' Show');
-    changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
+    changerContainer.append(buttonThemer, inputThemer, downThemer, spacer1, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
     body.appendChild(dtContainer);
     body.appendChild(changerContainer);
     dtContainer.style.position = 'fixed';
@@ -1104,7 +1104,7 @@
       height: 35px;
       justify-content: center;
       margin-top: 4px;
-      padding-bottom: 3px;
+      padding: 0px;
       width: 364px;
     }
     body#gWP1 .ClockThemeToggle,
@@ -1158,20 +1158,24 @@
     body#gWP1 #spacer3,
     body#gWP1 #spacer4 {
       color: #666;
-      margin: 0px;
       opacity: 1;
       pointer-events: none;
       text-align: center;
+    }
+    body#gWP1 #spacer3 {
+      margin: 0px 6px 0px 0px;
+    }
+    body#gWP1 #spacer4 {
+      margin: 0px 0px 0px 6px;
     }
     body#gWP1 .Analog-Info {
       align-items: center;
       background: #34495e;
       border-radius: 0px 0px 8px 8px;
       display: inline-flex;
-      height: 35px;
       justify-content: center;
       margin-top: -6px;
-      padding-top: 0px;
+      padding: 4px 0px;
 	     text-align: center;
       width: 364px;
     }
@@ -1181,7 +1185,6 @@
       font-family: monospace;
       font-size: 16px;
       font-weight: 600;
-      margin-top: -2px;
       white-space: nowrap;
     }
     body#gWP1 .ClockThemeToggle:hover,
