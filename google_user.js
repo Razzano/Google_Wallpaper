@@ -115,20 +115,8 @@
       const dy = e.clientY - startY;
       let newLeft = startLeft + dx;
       let newTop = startTop + dy;
-      newLeft = Math.max(
-        0,
-        Math.min(
-          newLeft,
-          window.innerWidth - elmnt.offsetWidth
-        )
-      );
-      newTop = Math.max(
-        0,
-        Math.min(
-          newTop,
-          window.innerHeight - elmnt.offsetHeight
-        )
-      );
+      newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - elmnt.offsetWidth));
+      newTop = Math.max(0, Math.min(newTop, window.innerHeight - elmnt.offsetHeight));
       elmnt.style.left = `${newLeft}px`;
       elmnt.style.top = `${newTop}px`;
     };
@@ -244,12 +232,7 @@
     };
     const config = logoConfig[num] || { marginTop: '40px', transform: 'translateX(-50%)' };
     GM_addStyle(`
-      img[alt="Google"],
-      #hplogo,
-      #logo,
-      .k1zIA img,
-      #gWP1 #LS8OJ img,
-      #gWP1 #LS8OJ .k1zIA {
+      img[alt="Google"], #hplogo, #logo, .k1zIA img, #gWP1 #LS8OJ img, #gWP1 #LS8OJ .k1zIA {
         display: ${num === 0 ? 'block' : 'none'} !important;
         visibility: ${num === 0 ? 'visible' : 'hidden'} !important;
       }
@@ -276,7 +259,7 @@
         });
       }
     } else if (num !== 0) {
-        console.warn(`Logo #${num} not found`);
+      console.warn(`Logo #${num} not found`);
     }
     const inp = $id('inputLogo');
     if (inp) {
@@ -342,10 +325,7 @@
   const getDateTime = (format = 1) => {
     const now = new Date();
     const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear();
-    const dayAbbr = DAY_ABBR[dy];
-    const dayFull = DAY_FULL[dy];
-    const monthAbbr = MONTH_ABBR[mth];
-    const monthFull = MONTH_FULL[mth];
+    const dayAbbr = DAY_ABBR[dy], dayFull = DAY_FULL[dy], monthAbbr = MONTH_ABBR[mth], monthFull = MONTH_FULL[mth];
     const mPadded = (mth + 1) < 10 ? '0' + (mth + 1) : (mth + 1),
           suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th',
           ordinal = dt + suffix;
@@ -443,6 +423,8 @@
     if (!GM_getValue('analogClock', true)) return;
     const ticks = [];
     const hourNumbers = [];
+    const spacer3 = $el('span', {id: 'spacer3', class: 'spacerX', textContent: '|'});
+    const spacer4 = $el('span', {id: 'spacer4', class: 'spacerX', textContent: '|'});
     for (let i = 0; i < 60; i++) {
       const angleDeg = i * 6 - 90;
       const rad = angleDeg * Math.PI / 180;
@@ -557,6 +539,7 @@
     };
     const scalerControls = $el('div', { className: 'scaler-controls' },
       themeBtn,
+      spacer3,
       $el('button', {
         className: 'scaler-reset',
         textContent: 'Reset',
@@ -576,6 +559,7 @@
         title: 'Scale Up In 5% Increments',
         onclick: () => setClockPercentage(currentPercent + 5)
       }),
+      spacer4,
       $el('button', {
       className: 'scaler-info',
       textContent: '📅 Date',
@@ -685,11 +669,11 @@
     const buttonThemer = $el('button', {id: 'buttonThemer', textContent: 'Wallpaper 🠉', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
     const inputThemer = $el('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: 'Manually Enter:\n • 1 - 52 (0 = Default Google Background)', oninput: wallpaperInputChanger});
     const downThemer = $el('button', {id: 'downThemer', textContent: '🠋 Wallpaper', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
-    const spacer = $el('span', {class: 'spacerX', textContent: '|'});
     const buttonLogo = $el('button', {id: 'buttonLogo', textContent: 'Logo 🠉', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
     const inputLogo = $el('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: 'Manually Enter:\n • 1 - 17 (0 = Default Google Logo, 17 = No Logo)', oninput: handleLogoInput});
     const downLogo = $el('button', {id: 'downLogo', textContent: '🠋 Logo', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
-    const spacer2 = $el('span', {class: 'spacerX', textContent: '|'});
+    const spacer = $el('span', {id: 'spacer1', class: 'spacerX', textContent: '|'});
+    const spacer2 = $el('span', {id: 'spacer2', class: 'spacerX', textContent: '|'});
     const analogClockBtn = $el('button', {id: 'analogClockBtn', title: 'Analog Clock', onclick: toggleAnalogClock}, $el('img', {src: _Image.clock26, alt: 'Clock'}), ' Show');
     changerContainer.append(buttonThemer, inputThemer, downThemer, spacer, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
     body.appendChild(dtContainer);
@@ -737,12 +721,6 @@
     );
   };
 
-  if (document.readyState === "loading") {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && GM_getValue('analogClock', true)) {
       if (!$id('analogClockContainer')) {
@@ -755,6 +733,12 @@
       getClock();
     }
   });
+
+  if (document.readyState === "loading") {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 
   // ============ CSS ============
   GM_addStyle(`
@@ -923,7 +907,8 @@
       opacity: .7 !important;
       text-shadow: 1px 1px 2px #000 !important;
     }
-    body#gWP1 .spacerX {
+    body#gWP1 #spacer1,
+    body#gWP1 #spacer2 {
       color: #FFF !important;
       filter: brightness(2) !important;
       margin: 9px 16px 0px 16px !important;
@@ -1108,14 +1093,7 @@
       align-items: center;
       gap: 12px;
       justify-content: center;
-      width: 334px;
-    }
-    body#gWP1 .Analog-CalendarText {
-      display: inline-block;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 600;
-      white-space: nowrap;
+      width: 364px;
     }
     body#gWP1 .scaler-controls {
       align-items: center;
@@ -1127,7 +1105,7 @@
       justify-content: center;
       margin-top: 4px;
       padding-bottom: 3px;
-      width: 334px;
+      width: 364px;
     }
     body#gWP1 .ClockThemeToggle,
     body#gWP1 .scaler-info {
@@ -1136,11 +1114,13 @@
       color: #7a8287;
       cursor: pointer;
       font-size: 14px;
-      font-weight: 500;
-      height: 29px;
-      padding: 6px 0px;
-      text-align: center;
+      margin: 0px;
+      padding: 0px;
       width: 68px;
+    }
+    body#gWP1 .ClockThemeToggle {
+    }
+    body#gWP1 .scaler-info {
     }
     body#gWP1 .scaler-reset {
       background: none;
@@ -1148,8 +1128,7 @@
       color: #7a8287;
       cursor: pointer;
       font-size: 14px;
-      font-weight: 500;
-      margin: 4px 4px 0px 4px;
+      margin: 0px;
       padding: 0;
     }
     body#gWP1 .scaler-btn {
@@ -1176,18 +1155,34 @@
       min-width: 32px;
       padding: 1px 2px 0px 0px;
     }
+    body#gWP1 #spacer3,
+    body#gWP1 #spacer4 {
+      color: #666;
+      margin: 0px;
+      opacity: 1;
+      pointer-events: none;
+      text-align: center;
+    }
     body#gWP1 .Analog-Info {
       align-items: center;
       background: #34495e;
       border-radius: 0px 0px 8px 8px;
       display: inline-flex;
-      gap: 12px;
       height: 35px;
       justify-content: center;
       margin-top: -6px;
       padding-top: 0px;
 	     text-align: center;
-      width: 334px;
+      width: 364px;
+    }
+    body#gWP1 .Analog-CalendarText {
+      display: inline-block;
+      color: #fff;
+      font-family: monospace;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: -2px;
+      white-space: nowrap;
     }
     body#gWP1 .ClockThemeToggle:hover,
     body#gWP1 .scaler-reset:hover,
