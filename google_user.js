@@ -665,7 +665,7 @@
       onclick: dateTimeToggleSecondsAmPm
     });
     dtContainer.append(imageCalendar, dateTimeEl);
-    const changerContainer = $el('div', { id: 'changerContainer' });
+    const switcherContainer = $el('div', { id: 'switcherContainer' });
     const buttonThemer = $el('button', {id: 'buttonThemer', textContent: 'Wallpaper 🠉', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
     const inputThemer = $el('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: 'Manually Enter:\n • 1 - 52 (0 = Default Google Background)', oninput: wallpaperInputChanger});
     const downThemer = $el('button', {id: 'downThemer', textContent: '🠋 Wallpaper', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
@@ -675,21 +675,21 @@
     const spacer1 = $el('span', {id: 'spacer1', class: 'spacerX', textContent: '|'});
     const spacer2 = $el('span', {id: 'spacer2', class: 'spacerX', textContent: '|'});
     const analogClockBtn = $el('button', {id: 'analogClockBtn', title: 'Analog Clock', onclick: toggleAnalogClock}, $el('img', {src: _Image.clock26, alt: 'Clock'}), ' Show');
-    changerContainer.append(buttonThemer, inputThemer, downThemer, spacer1, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
+    switcherContainer.append(buttonThemer, inputThemer, downThemer, spacer1, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
     body.appendChild(dtContainer);
-    body.appendChild(changerContainer);
+    body.appendChild(switcherContainer);
     dtContainer.style.position = 'fixed';
     dtContainer.style.top = '590px';
     dtContainer.style.left = '50%';
     dtContainer.style.transform = 'translateX(-50%)';
-    changerContainer.style.position = 'fixed';
-    changerContainer.style.top = '516px';
-    changerContainer.style.left = '50%';
-    changerContainer.style.transform = 'translateX(-50%)';
+    switcherContainer.style.position = 'fixed';
+    switcherContainer.style.top = '516px';
+    switcherContainer.style.left = '50%';
+    switcherContainer.style.transform = 'translateX(-50%)';
     makeDraggable(dtContainer, 'dtContainer');
-    makeDraggable(changerContainer, 'changerContainer');
+    makeDraggable(switcherContainer, 'switcherContainer');
     restorePosition(dtContainer, 'dtContainer');
-    restorePosition(changerContainer, 'changerContainer');
+    restorePosition(switcherContainer, 'switcherContainer');
     applyWallpaper(GM_getValue('wallpaperImage', 0));
     applyLogo(GM_getValue('logoImageNum', 1));
     if (textArea) textArea.placeholder = 'Search Look-up';
@@ -766,9 +766,6 @@
     body#gWP1 header a > svg {
       fill: #FFF !important;
     }
-    body#gWP1 {
-      background: url(${_githubSite}GM_getValue(wallpaperImage)}.jpg) no-repeat center center / cover fixed !important;
-    }
     body#gWP1 > div.L3eUgb > div:nth-child(13) > div {
       background: transparent !important;
     }
@@ -837,7 +834,7 @@
       color: #FFF !important;
     }
     body#gWP1 #dateTime {
-      background: rgba(0,0,0,.3) !important;
+      background: #34495e !important;
       border: 1px solid transparent !important;
       border-radius: 8px !important;
       box-shadow: none !important;
@@ -860,23 +857,23 @@
     body#gWP1 #dateTime:hover {
       border: 1px solid #000 !important;
     }
-    body#gWP1 #changerContainer {
+    body#gWP1 #switcherContainer {
       align-items: center !important;
-      background: rgba(0,0,0,0.35) !important;
-      border: 2px solid #FFF !important;
+      background: #34495e !important;
+      border: none !important;
       border-radius: 8px !important;
-      height: 35px !important;
+      height: 32px !important;
       min-width: 380px !important;
-      padding: 0px 16px !important;
+      padding: 0px 10px !important;
       box-sizing: border-box !important;
       pointer-events: auto !important;
       user-select: none !important;
       z-index: 2 !important;
     }
-    body#gWP1 #changerContainer.dragged {
+    body#gWP1 #switcherContainer.dragged {
       transform: none !important;
     }
-    body#gWP1 #changerContainer > * {
+    body#gWP1 #switcherContainer > * {
       pointer-events: auto !important;
     }
     body#gWP1 #buttonThemer {
@@ -916,6 +913,9 @@
       pointer-events: none !important;
       text-align: center !important;
     }
+    body#gWP1 .spacerX {
+      text-shadow: 1px 1px 2px #000 !important;
+    }
     body#gWP1 #buttonLogo {
       color: #FFF !important;
       cursor: pointer !important;
@@ -944,8 +944,8 @@
       opacity: .7 !important;
       text-shadow: 1px 1px 2px #000 !important;
     }
-    body#gWP1 #changerContainer > button,
-    body#gWP1 #changerContainer > input {
+    body#gWP1 #switcherContainer > button,
+    body#gWP1 #switcherContainer > input {
       font-family: monospace !important;
       font-size: 120% !important;
     }
@@ -963,7 +963,7 @@
       color: orange;
       opacity: 1 !important;
     }
-    body#gWP1 #changerContainer > button:not(#analogClockBtn):hover {
+    body#gWP1 #switcherContainer > button:not(#analogClockBtn):hover {
       filter: brightness(2) !important;
       opacity: 1 !important;
     }
@@ -1098,6 +1098,7 @@
     body#gWP1 .scaler-controls {
       align-items: center;
       background: #34495e;
+      border: none;
       border-radius: 8px;
       display: flex;
       gap: 12px;
@@ -1110,7 +1111,6 @@
     body#gWP1 .ClockThemeToggle,
     body#gWP1 .scaler-info {
       border: none;
-      border-radius: 18px;
       color: #7a8287;
       cursor: pointer;
       font-size: 14px;
