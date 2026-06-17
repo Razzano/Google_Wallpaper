@@ -183,7 +183,7 @@
     logo16: _aURL + 'eyes7.png',
     logo17: '',
     calendar: _aURL + 'imageCalendar.png',
-    clock26: _aURL + 'clock26.png',
+    clock26: _aURL + 'clock22.png',
   };
 
   const _Logo = [null];
@@ -463,7 +463,7 @@
     const ampmBorder = $el('rect', {
       className: 'Analog-AMPMBorder',
       x: 44,
-      y: 74,
+      y: 75,
       width: 12,
       height: 7,
       rx: 2,
@@ -472,7 +472,7 @@
     const ampmText = $el('text', {
       className: 'Analog-AMPMText',
       x: 45,
-      y: 80,
+      y: 81,
       textAnchor: 'middle',
       dominantBaseline: 'middle'
     });
@@ -665,7 +665,7 @@
       onclick: dateTimeToggleSecondsAmPm
     });
     dtContainer.append(imageCalendar, dateTimeEl);
-    const switcherContainer = $el('div', { id: 'switcherContainer' });
+    const controlContainer = $el('div', { id: 'controlContainer' });
     const buttonThemer = $el('button', {id: 'buttonThemer', textContent: 'Wallpaper 🠉', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
     const inputThemer = $el('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: 'Manually Enter:\n • 1 - 52 (0 = Default Google Background)', oninput: wallpaperInputChanger});
     const downThemer = $el('button', {id: 'downThemer', textContent: '🠋 Wallpaper', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
@@ -675,21 +675,21 @@
     const spacer1 = $el('span', {id: 'spacer1', class: 'spacerX', textContent: '|'});
     const spacer2 = $el('span', {id: 'spacer2', class: 'spacerX', textContent: '|'});
     const analogClockBtn = $el('button', {id: 'analogClockBtn', title: 'Analog Clock', onclick: toggleAnalogClock}, $el('img', {src: _Image.clock26, alt: 'Clock'}), ' Show');
-    switcherContainer.append(buttonThemer, inputThemer, downThemer, spacer1, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
+    controlContainer.append(buttonThemer, inputThemer, downThemer, spacer1, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
     body.appendChild(dtContainer);
-    body.appendChild(switcherContainer);
+    body.appendChild(controlContainer);
     dtContainer.style.position = 'fixed';
     dtContainer.style.top = '590px';
     dtContainer.style.left = '50%';
     dtContainer.style.transform = 'translateX(-50%)';
-    switcherContainer.style.position = 'fixed';
-    switcherContainer.style.top = '516px';
-    switcherContainer.style.left = '50%';
-    switcherContainer.style.transform = 'translateX(-50%)';
+    controlContainer.style.position = 'fixed';
+    controlContainer.style.top = '516px';
+    controlContainer.style.left = '50%';
+    controlContainer.style.transform = 'translateX(-50%)';
     makeDraggable(dtContainer, 'dtContainer');
-    makeDraggable(switcherContainer, 'switcherContainer');
+    makeDraggable(controlContainer, 'controlContainer');
     restorePosition(dtContainer, 'dtContainer');
-    restorePosition(switcherContainer, 'switcherContainer');
+    restorePosition(controlContainer, 'controlContainer');
     applyWallpaper(GM_getValue('wallpaperImage', 0));
     applyLogo(GM_getValue('logoImageNum', 1));
     if (textArea) textArea.placeholder = 'Search Look-up';
@@ -857,7 +857,7 @@
     body#gWP1 #dateTime:hover {
       border: 1px solid #000 !important;
     }
-    body#gWP1 #switcherContainer {
+    body#gWP1 #controlContainer {
       align-items: center !important;
       background: #34495e !important;
       border: none !important;
@@ -870,10 +870,10 @@
       user-select: none !important;
       z-index: 2 !important;
     }
-    body#gWP1 #switcherContainer.dragged {
+    body#gWP1 #controlContainer.dragged {
       transform: none !important;
     }
-    body#gWP1 #switcherContainer > * {
+    body#gWP1 #controlContainer > * {
       pointer-events: auto !important;
     }
     body#gWP1 #buttonThemer {
@@ -944,8 +944,8 @@
       opacity: .7 !important;
       text-shadow: 1px 1px 2px #000 !important;
     }
-    body#gWP1 #switcherContainer > button,
-    body#gWP1 #switcherContainer > input {
+    body#gWP1 #controlContainer > button,
+    body#gWP1 #controlContainer > input {
       font-family: monospace !important;
       font-size: 120% !important;
     }
@@ -956,14 +956,14 @@
     body#gWP1 #analogClockBtn > img {
       height: 22px;
       position: relative;
-      top: 6px;
+      top: 5px;
       width: 22px;
     }
     body#gWP1 #analogClockBtn:not(img):hover {
       color: orange;
       opacity: 1 !important;
     }
-    body#gWP1 #switcherContainer > button:not(#analogClockBtn):hover {
+    body#gWP1 #controlContainer > button:not(#analogClockBtn):hover {
       filter: brightness(2) !important;
       opacity: 1 !important;
     }
@@ -1074,6 +1074,7 @@
     body#gWP1 .Analog-AMPMText {
       fill: #0078d7;
       font-size: 7px;
+      font-weight: 300;
     }
     body#gWP1 .Analog-Bigclock.dark .Analog-AMPMText {
       fill: #fff;
@@ -1102,8 +1103,7 @@
       border-radius: 8px;
       display: flex;
       gap: 12px;
-      height: 35px;
-      justify-content: center;
+      height: 32px;
       margin-top: 4px;
       padding: 0px;
       width: 364px;
@@ -1130,6 +1130,8 @@
       font-size: 14px;
       margin: 0px;
       padding: 0;
+      position: relative;
+      top: 1px;
     }
     body#gWP1 .scaler-btn {
       background: none;
@@ -1184,7 +1186,6 @@
       color: #fff;
       font-family: monospace;
       font-size: 16px;
-      font-weight: 600;
       white-space: nowrap;
     }
     body#gWP1 .ClockThemeToggle:hover,
