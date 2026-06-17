@@ -182,7 +182,7 @@
     logo15: _aURL + 'globe2.png',
     logo16: _aURL + 'eyes7.png',
     logo17: '',
-    calendar: _aURL + 'imageCalendar.png',
+    calendar: _aURL + 'calendar2.png', //imageCalendar.png
     clock26: _aURL + 'clock22.png',
   };
 
@@ -774,7 +774,7 @@
       float: right !important;
     }
     body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span > span > g-popup > div.CcNe6e > div {
-      background: rgba(0, 0, 0, .2) !important;
+      background: #34495e !important;
       border-radius: 6px !important;
       padding: 8px 16px !important;
     }
@@ -1111,7 +1111,6 @@
     body#gWP1 .ClockThemeToggle,
     body#gWP1 .scaler-info {
       border: none;
-      color: #7a8287;
       cursor: pointer;
       font-size: 14px;
       margin: 0px;
@@ -1125,7 +1124,6 @@
     body#gWP1 .scaler-reset {
       background: none;
       border: none;
-      color: #7a8287;
       cursor: pointer;
       font-size: 14px;
       margin: 0px;
@@ -1140,10 +1138,11 @@
       cursor: pointer;
       font-size: 18px;
       line-height: 1;
+      opacity: .7;
       padding: 0px 4px;
     }
     body#gWP1 .scaler-btn:hover {
-      opacity: 0.8;
+      opacity: 1;
     }
     body#gWP1 .scaler-text {
       background: rgba(255,255,255,.1);
@@ -1156,6 +1155,17 @@
       margin-top: 0px;
       min-width: 32px;
       padding: 1px 2px 0px 0px;
+    }
+    body#gWP1 .ClockThemeToggle,
+    body#gWP1 .scaler-info,
+    body#gWP1 .scaler-reset {
+      color: #ffffff;
+      opacity: .7;
+    }
+    body#gWP1 .ClockThemeToggle:hover,
+    body#gWP1 .scaler-info:hover,
+    body#gWP1 .scaler-reset:hover {
+      opacity: 1;
     }
     body#gWP1 #spacer3,
     body#gWP1 #spacer4 {
