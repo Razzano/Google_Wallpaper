@@ -171,6 +171,19 @@
   const _dateTimeFormatCount = 4;
   const _timerLong = 10000;
   const _timerShort = 1000;
+  const _Icon = {
+    calendar16: _aURL + 'calendar16.png',
+    calendar22: _aURL + 'calendar22.png',
+    calendar32D: _aURL + 'calendar32D.png',
+    clock16: _aURL + 'clock16.png',
+    clock22: _aURL + 'clock22.png',
+    clock22L: _aURL + 'clock22L.png',
+    clock26: _aURL + 'clock26.png',
+    moon16: _aURL + 'moon16.png',
+    moon22: _aURL + 'moon22.png',
+    sun16: _aURL + 'sun16.png',
+    sun22: _aURL + 'sun22.png',
+  };
   const _Image = {
     logo1: _aURL + 'logoGoogle.png',
     logo2: _aURL + 'imageGoogle.png',
@@ -189,8 +202,6 @@
     logo15: _aURL + 'globe2.png',
     logo16: _aURL + 'eyes7.png',
     logo17: '',
-    calendar: _aURL + 'calendar2.png', //imageCalendar.png
-    clock26: _aURL + 'clock22.png',
   };
 
   const _Logo = [null];
@@ -393,7 +404,6 @@
     const ticks = [];
     const hourNumbers = [];
     const spacer3 = $el('span', {id: 'spacer3', class: 'spacerX', textContent: '|'});
-    const spacer4 = $el('span', {id: 'spacer4', class: 'spacerX', textContent: '|'});
     for (let i = 0; i < 60; i++) {
       const angleDeg = i * 6 - 90;
       const rad = angleDeg * Math.PI / 180;
@@ -419,8 +429,8 @@
       const radius = 37;
       hourNumbers.push($el('text', {
         className: 'Analog-Number',
-        x: (50 + radius * Math.cos(rad)).toFixed(3),
-        y: (48 + radius * Math.sin(rad) + 2.8).toFixed(3),
+        x: 50 + radius * Math.cos(rad),
+        y: 50.8 + radius * Math.sin(rad),
         textContent: hour,
         'text-anchor': 'middle',
         'dominant-baseline': 'middle'
@@ -489,25 +499,59 @@
       percentageDisplay.value = String(currentPercent);
       GM_setValue('clockSizePercent', currentPercent);
     };
-	   const clockInfo = $el( 'div', {
-	     className: 'Analog-Info' },
-      calendarText
-    );
+    const moonImg = $el('img', {
+      id: 'moonImg',
+      src: _Icon.moon22
+    });
     const themeBtn = $el('button', {
       className: 'ClockThemeToggle',
-      title: 'Light/Dark Analog Clock Theme'
-    });
+      title: 'Toggle Between Dark/Light Theme'
+    }, moonImg);
     const setTheme = (dark) => {
       Clock.classList.toggle('dark', dark);
-      themeBtn.textContent = dark ? '☀️ Light' : '🌙 Dark';
+      moonImg.src = dark ? _Icon.sun22 : _Icon.moon22;
       GM_setValue('clockDarkTheme', dark);
     };
     setTheme(GM_getValue('clockDarkTheme', true));
     themeBtn.onclick = () => {
       setTheme(!Clock.classList.contains('dark'));
     };
+    const clockImg = $el('img', {
+      id: 'clockImg',
+      src: _Icon.clock22L
+    });
+    const secondHandBtn = $el('button', {
+      className: 'ClockSecondToggle',
+      title: 'Toggle Between Smooth/Tick Second Hand Movement'
+    }, clockImg);
+    const setSecondMode = (smooth) => {
+      GM_setValue('smoothSecondHand', smooth);
+    };
+    setSecondMode(GM_getValue('smoothSecondHand', true));
+    secondHandBtn.onclick = () => {
+      setSecondMode(!GM_getValue('smoothSecondHand', true));
+      location.reload();
+    };
+    const calendarImg = $el('img', {
+      id: 'calendarImg',
+      src: _Icon.calendar22
+    });
+    const clockInfo = $el( 'div', {
+	     className: 'Analog-Info' },
+      calendarText
+    );
+    const calendarBtn = $el('button', {
+      className: 'scaler-info',
+      title: 'Show/Hide Calendar Info',
+      onclick() {
+        clockInfo.classList.toggle('hidden');
+        GM_setValue('calendarInfo', !clockInfo.classList.contains('hidden'));
+      }
+    }, calendarImg);
     const scalerControls = $el('div', { className: 'scaler-controls' },
       themeBtn,
+      secondHandBtn,
+      calendarBtn,
       spacer3,
       $el('button', {
         className: 'scaler-reset',
@@ -527,16 +571,7 @@
         textContent: '+',
         title: 'Scale Up In 5% Increments',
         onclick: () => setClockPercentage(currentPercent + 5)
-      }),
-      spacer4,
-      $el('button', {
-      className: 'scaler-info',
-      textContent: '📅 Date',
-      title: 'Show/Hide Date Info',
-      onclick() {
-        clockInfo.classList.toggle('hidden');
-        GM_setValue('calendarInfo', !clockInfo.classList.contains('hidden'));
-      }})
+      })
     );
     const savedPercent = GM_getValue('clockSizePercent', 100);
     setClockPercentage(savedPercent);
@@ -582,10 +617,6 @@
       ampmText.textContent = now.getHours() < 12 ? 'AM' : 'PM';
       calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}`;
     };
-    const showCalendarInfo = GM_getValue('calendarInfo', false);
-    if (!showCalendarInfo) {
-      clockInfo.classList.add('hidden');
-    }
     if (smoothSecondHand) {
       const tick = () => {
         updateClock();
@@ -595,6 +626,10 @@
     } else {
       updateClock();
       setInterval(updateClock, 1000);
+    }
+    const showCalendarInfo = GM_getValue('calendarInfo', false);
+    if (!showCalendarInfo) {
+      clockInfo.classList.add('hidden');
     }
   };
 
@@ -611,7 +646,7 @@
     const btn = $id('analogClockBtn');
     btn.replaceChildren(
       $el('img', {
-        src: _Image.clock26,
+        src: _Icon.clock26,
         alt: 'Clock'
       }),
       GM_getValue('analogClock', true) ? ' Hide' : ' Show'
@@ -629,7 +664,7 @@
     const dtContainer = $el('div', { id: 'dateTimeContainer' });
     const imageCalendar = $el('img', {
       id: 'imageCalendar',
-      src: _Image.calendar,
+      src: _Icon.calendar32D,
       title: 'Left-click → Toggle Date/Time Container',
       onclick: dateTimeToggle
     });
@@ -648,7 +683,7 @@
     const downLogo = $el('button', {id: 'downLogo', textContent: '🠋 Logo', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
     const spacer1 = $el('span', {id: 'spacer1', class: 'spacerX', textContent: '|'});
     const spacer2 = $el('span', {id: 'spacer2', class: 'spacerX', textContent: '|'});
-    const analogClockBtn = $el('button', {id: 'analogClockBtn', title: 'Analog Clock', onclick: toggleAnalogClock}, $el('img', {src: _Image.clock26, alt: 'Clock'}), ' Show');
+    const analogClockBtn = $el('button', {id: 'analogClockBtn', title: 'Analog Clock', onclick: toggleAnalogClock}, $el('img', {src: _Icon.clock26, alt: 'Clock'}), ' Show');
     controlContainer.append(buttonThemer, inputThemer, downThemer, spacer1, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
     body.appendChild(dtContainer);
     body.appendChild(controlContainer);
@@ -689,7 +724,7 @@
       clock?.remove();
     }
     const btn = $id('analogClockBtn');
-    btn.replaceChildren($el('img', {src: _Image.clock26, alt: 'Clock'}),
+    btn.replaceChildren($el('img', {src: _Icon.clock26, alt: 'Clock'}),
       GM_getValue('analogClock', true) ? ' Hide' : ' Show'
     );
   };
@@ -1059,11 +1094,6 @@
       stroke-width: 0.25;
     }
     body#gWP1 .ControlsRow {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      justify-content: center;
-      width: 364px;
     }
     body#gWP1 .scaler-controls {
       align-items: center;
@@ -1071,20 +1101,23 @@
       border: none;
       border-radius: 8px;
       display: flex;
-      gap: 12px;
+      gap: 16px;
       height: 32px;
+      justify-content: center;
       margin-top: 4px;
       padding: 0px;
       width: 364px;
     }
     body#gWP1 .ClockThemeToggle,
+    body#gWP1 .ClockSecondToggle,
     body#gWP1 .scaler-info {
       border: none;
       cursor: pointer;
-      font-size: 14px;
       margin: 0px;
       padding: 0px;
-      width: 68px;
+      position: relative;
+      top: 3px;
+      width: 32px;
     }
     body#gWP1 .ClockThemeToggle {
     }
@@ -1126,18 +1159,19 @@
       padding: 1px 2px 0px 0px;
     }
     body#gWP1 .ClockThemeToggle,
+    body#gWP1 .ClockSecondToggle,
     body#gWP1 .scaler-info,
     body#gWP1 .scaler-reset {
       color: #ffffff;
       opacity: .7;
     }
     body#gWP1 .ClockThemeToggle:hover,
+    body#gWP1 .ClockSecondToggle:hover,
     body#gWP1 .scaler-info:hover,
     body#gWP1 .scaler-reset:hover {
       opacity: 1;
     }
-    body#gWP1 #spacer3,
-    body#gWP1 #spacer4 {
+    body#gWP1 #spacer3 {
       color: #666;
       opacity: 1;
       pointer-events: none;
@@ -1156,7 +1190,7 @@
       display: inline-flex;
       justify-content: center;
       margin-top: -6px;
-      padding: 4px 0px;
+      padding: 8px 0px 2px 0px;
 	     text-align: center;
       width: 364px;
     }
