@@ -16,8 +16,14 @@
 // ==/UserScript==
 
 (() => {
+
   'use strict';
+
+  // NOTE: To open all Google App Links in new tabs, download Tampermonkey script:
+  // https://github.com/Razzano/Google_App_Links/blob/main/Open_in_New_Tab.js
+
   // ============ Helpers ============
+
   const SVG_NS = "http://www.w3.org/2000/svg";
   const SVG_TAGS = new Set([
     "svg","g","path","circle","text","line","rect","polyline","polygon",
@@ -155,6 +161,7 @@
   };
 
   // ==================== ORIGINAL CODE ====================
+
   const DAY_ABBR = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'];
   const DAY_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const MONTH_ABBR = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'];
@@ -192,27 +199,12 @@
   };
 
   // ============ Global variables ============
+
   let _clockInterval = null;
   let _currentWallpaperStyle = null;
 
-  // ============ Tooltip ============
-  const updateCalendarTooltip = () => {
-    const cal = $id('imageCalendar');
-    if (cal) cal.title = getTooltipText();
-  };
-
-  const getTooltipText = () => {
-    const target = GM_getValue('linkTarget', '_blank'),
-          mode = target === '_blank' ? 'New Tab ( target = "_blank" )' : 'Active Tab ( target = "_self" )';
-    return `Tooltip Controls:
-       • Left-click → Toggle Date/Time Container
-       • Shift + Left-click → Open in New Tab ( target = "_blank" )
-       • Ctrl + Left-click → Open in Active Tab ( target = "_self" )
-       Current Target:
-              • ${mode}`;
-  };
-
   // ============ Logos ============
+
   const applyLogo = (num) => {
     const existing = $id('logoGoogle');
     if (existing) existing.remove();
@@ -282,6 +274,7 @@
   };
 
   // ============ Wallpaper ============
+
   const applyWallpaper = (num) => {
     if (_currentWallpaperStyle) {
       _currentWallpaperStyle.remove();
@@ -322,6 +315,7 @@
   };
 
   // ============ Date Time ============
+
   const getDateTime = (format = 1) => {
     const now = new Date();
     const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear();
@@ -359,15 +353,6 @@
       }
       return;
     }
-    if (e.shiftKey && !e.ctrlKey && !e.altKey) {
-      GM_setValue('linkTarget', '_blank');
-    } else if (!e.shiftKey && e.ctrlKey && !e.altKey) {
-      GM_setValue('linkTarget', '_self');
-    }
-    searchLinksWhere();
-    if (typeof updateCalendarTooltip === 'function') {
-      updateCalendarTooltip();
-    }
   };
 
   const dateTimeToggleSecondsAmPm = (e) => {
@@ -400,27 +385,11 @@
     }, ms);
   };
 
-  // ============ Link Targets ============
-  const searchLinksWhere = () => {
-    const mode = GM_getValue('linkTarget', '_blank');
-    document.querySelectorAll('a[href]').forEach(link => {
-      if (!link.href?.startsWith('http')) return;
-      if (link.getAttribute('href').startsWith('#')) return;
-      const url = new URL(link.href, location.href);
-      const isExternal = !url.hostname.includes('google');
-      if (isExternal || mode === '_blank') {
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-      } else {
-        link.target = '_self';
-        link.rel = '';
-      }
-    });
-  };
-
   // ============ Analog Clock ============
+
   const getClock = () => {
     if (!GM_getValue('analogClock', true)) return;
+    const smoothSecondHand = GM_getValue('smoothSecondHand', true);
     const ticks = [];
     const hourNumbers = [];
     const spacer3 = $el('span', {id: 'spacer3', class: 'spacerX', textContent: '|'});
@@ -600,13 +569,13 @@
       const ordinal = dt + suffix;
       const h12 = String(now.getHours() % 12 || 12);
       const min = String(now.getMinutes()).padStart(2, '0');
-      const seconds = now.getSeconds() + now.getMilliseconds() / 1000;
+      const seconds = smoothSecondHand ? now.getSeconds() + now.getMilliseconds() / 1000 : now.getSeconds();
       const secondDeg = seconds * 6;
+      const minuteDeg = now.getMinutes() * 6 + seconds * 0.1;
+      const hourDeg = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5 + seconds * (0.5 / 60);
       let targetDeg = secondDeg;
       if (targetDeg < displayedSecondDeg - 180) targetDeg += 360;
       displayedSecondDeg = targetDeg;
-      const minuteDeg = now.getMinutes() * 6 + seconds * 0.1;
-      const hourDeg = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5 + seconds * (0.5 / 60);
       Clock.style.setProperty('--secondDeg', `${displayedSecondDeg}deg`);
       Clock.style.setProperty('--minuteDeg', `${minuteDeg}deg`);
       Clock.style.setProperty('--hourDeg', `${hourDeg}deg`);
@@ -617,12 +586,16 @@
     if (!showCalendarInfo) {
       clockInfo.classList.add('hidden');
     }
-    const tick = () => {
+    if (smoothSecondHand) {
+      const tick = () => {
+        updateClock();
+        requestAnimationFrame(tick);
+      };
+      tick();
+    } else {
       updateClock();
-      requestAnimationFrame(tick);
-    };
-    tick();
-    updateClock();
+      setInterval(updateClock, 1000);
+    }
   };
 
   const toggleAnalogClock = () => {
@@ -646,6 +619,7 @@
   };
 
   // ============ Initialize ============
+
   const init = () => {
     document.removeEventListener('DOMContentLoaded', init);
     const body = document.body;
@@ -656,7 +630,7 @@
     const imageCalendar = $el('img', {
       id: 'imageCalendar',
       src: _Image.calendar,
-      title: getTooltipText(),
+      title: 'Left-click → Toggle Date/Time Container',
       onclick: dateTimeToggle
     });
     const dateTimeEl = $el('span', {
@@ -707,7 +681,6 @@
       clearInterval(_clockInterval);
       _clockInterval = null;
     }
-    searchLinksWhere();
     const showClock = GM_getValue('analogClock', true);
     const clock = $id('analogClockContainer');
     if (showClock) {
@@ -741,6 +714,7 @@
   }
 
   // ============ CSS ============
+
   GM_addStyle(`
     body#gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
     body#gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f > div:nth-child(2) > a,
@@ -829,9 +803,6 @@
       margin: 0px !important;
     }
     body#gWP1 #imageCalendar:hover + #dateTime {
-      background: #900 !important;
-      border-color: #C00 !important;
-      color: #FFF !important;
     }
     body#gWP1 #dateTime {
       background: #34495e !important;
@@ -841,10 +812,9 @@
       color: #FFF !important;
       cursor: pointer !important;
       display: block !important;
-      height: 28px !important;
       margin: 0px 0px 0px 3px !important;
       min-width: 0px !important;
-      padding: 1px 6px !important;
+      padding: 2px 10px !important;
       user-select: none !important;;
     }
     body#gWP1 #dateTime[hidden] {
@@ -855,7 +825,6 @@
       width: 0px !important;
     }
     body#gWP1 #dateTime:hover {
-      border: 1px solid #000 !important;
     }
     body#gWP1 #controlContainer {
       align-items: center !important;
@@ -1214,4 +1183,5 @@
       display: none;
     }
   `);
+
 })();
