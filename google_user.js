@@ -213,6 +213,8 @@
 
   let _clockInterval = null;
   let _currentWallpaperStyle = null;
+  let analogAnimationId = null;
+  let analogIntervalId = null;
 
   // ============ Logos ============
 
@@ -383,6 +385,7 @@
     if (el) {
       el.textContent = getDateTime(GM_getValue('dateFormat', 1));
   } }
+
   const startClock = () => {
     if (_clockInterval) {
       clearInterval(_clockInterval);
@@ -400,6 +403,9 @@
 
   const getClock = () => {
     if (!GM_getValue('analogClock', true)) return;
+	   let displayedSecondDeg = 0;
+    let analogAnimationId = null;
+    let analogIntervalId = null;
     const smoothSecondHand = GM_getValue('smoothSecondHand', true);
     const ticks = [];
     const hourNumbers = [];
@@ -522,15 +528,15 @@
     });
     const secondHandBtn = $el('button', {
       className: 'ClockSecondToggle',
-      title: 'Toggle Between Smooth/Tick Second Hand Movement'
+      title: 'Toggle Between Smooth/Tick Second Hand Movement\n • Uses location.reload() to apply changes'
     }, clockImg);
     const setSecondMode = (smooth) => {
       GM_setValue('smoothSecondHand', smooth);
     };
     setSecondMode(GM_getValue('smoothSecondHand', true));
-    secondHandBtn.onclick = () => {
-      setSecondMode(!GM_getValue('smoothSecondHand', true));
-      location.reload();
+	   secondHandBtn.onclick = () => {
+      GM_setValue('smoothSecondHand', !GM_getValue('smoothSecondHand', true));
+      startAnalogClock();
     };
     const calendarImg = $el('img', {
       id: 'calendarImg',
@@ -595,42 +601,58 @@
       container.style.top = '20px';
     }
     document.body.appendChild(container);
-    let displayedSecondDeg = 0;
     const updateClock = () => {
+      const smoothSecondHand = GM_getValue('smoothSecondHand', true);
       const now = new Date();
+      const seconds = smoothSecondHand ? now.getSeconds() + now.getMilliseconds() / 1000 : now.getSeconds();
+      const secondDeg = seconds * 6;
+      const minuteDeg = now.getMinutes() * 6 + seconds * 0.1;
+      const hourDeg = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5 + seconds * (0.5 / 60);
+	     let targetDeg = secondDeg;
+      if (targetDeg < displayedSecondDeg - 180) targetDeg += 360;
+      displayedSecondDeg = targetDeg;
+      Clock.style.setProperty('--secondDeg', `${displayedSecondDeg}deg`);
+      Clock.style.setProperty('--minuteDeg', `${minuteDeg}deg`);
+      Clock.style.setProperty('--hourDeg', `${hourDeg}deg`);
       const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear();
       const dayAbbr = DAY_ABBR[dy], dayFull = DAY_FULL[dy], monthAbbr = MONTH_ABBR[mth], monthFull = MONTH_FULL[mth];
       const suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th';
       const ordinal = dt + suffix;
       const h12 = String(now.getHours() % 12 || 12);
       const min = String(now.getMinutes()).padStart(2, '0');
-      const seconds = smoothSecondHand ? now.getSeconds() + now.getMilliseconds() / 1000 : now.getSeconds();
-      const secondDeg = seconds * 6;
-      const minuteDeg = now.getMinutes() * 6 + seconds * 0.1;
-      const hourDeg = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5 + seconds * (0.5 / 60);
-      let targetDeg = secondDeg;
-      if (targetDeg < displayedSecondDeg - 180) targetDeg += 360;
-      displayedSecondDeg = targetDeg;
-      Clock.style.setProperty('--secondDeg', `${displayedSecondDeg}deg`);
-      Clock.style.setProperty('--minuteDeg', `${minuteDeg}deg`);
-      Clock.style.setProperty('--hourDeg', `${hourDeg}deg`);
       ampmText.textContent = now.getHours() < 12 ? 'AM' : 'PM';
       calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}`;
     };
-    if (smoothSecondHand) {
-      const tick = () => {
-        updateClock();
-        requestAnimationFrame(tick);
-      };
-      tick();
-    } else {
-      updateClock();
-      setInterval(updateClock, 1000);
-    }
-    const showCalendarInfo = GM_getValue('calendarInfo', false);
+	   const showCalendarInfo = GM_getValue('calendarInfo', false);
     if (!showCalendarInfo) {
       clockInfo.classList.add('hidden');
     }
+	   const stopAnalogClock = () => {
+      if (analogAnimationId) {
+        cancelAnimationFrame(analogAnimationId);
+        analogAnimationId = null;
+      }
+      if (analogIntervalId) {
+        clearInterval(analogIntervalId);
+        analogIntervalId = null;
+      }
+    };
+    const startAnalogClock = () => {
+      stopAnalogClock();
+	     displayedSecondDeg = 0;
+      const smooth = GM_getValue('smoothSecondHand', true);
+      if (smooth) {
+        const tick = () => {
+          updateClock();
+          analogAnimationId = requestAnimationFrame(tick);
+        };
+        tick();
+      } else {
+        updateClock();
+        analogIntervalId = setInterval(updateClock, 1000);
+      }
+    };
+	   startAnalogClock();
   };
 
   const toggleAnalogClock = () => {
