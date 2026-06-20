@@ -172,6 +172,7 @@
   const _timerLong = 10000;
   const _timerShort = 1000;
   const _Icon = {
+    ampm: _aURL + 'AMPM.png',
     calendar16: _aURL + 'calendar16.png',
     calendar22: _aURL + 'calendar22.png',
     calendar32D: _aURL + 'calendar32D.png',
@@ -480,6 +481,9 @@
       $el('circle', { className: 'Analog-CenterCutout', cx: 50, cy: 50, r: 3 })
     );
     const Clock = $el('div', { className: 'Analog-Bigclock' }, svg);
+    const ampmView = GM_getValue('ampmView', true);
+    ampmBorder.style.display = ampmView ? '' : 'none';
+    ampmText.style.display = ampmView ? '' : 'none';
     const BASE_SIZE = 314;
     let currentPercent = 100;
     const percentageDisplay = $el('input', {
@@ -554,10 +558,25 @@
         GM_setValue('calendarInfo', !clockInfo.classList.contains('hidden'));
       }
     }, calendarImg);
+    const ampmImg = $el('img', {
+      id: 'ampmImg',
+      src: _Icon.ampm
+    });
+    const ampmBtn = $el('button', {
+      className: 'am-pm',
+      title: 'Show/Hide Clock AMPM',
+      onclick() {
+        const visible = !GM_getValue('ampmView', true);
+        ampmBorder.style.display = visible ? '' : 'none';
+        ampmText.style.display = visible ? '' : 'none';
+        GM_setValue('ampmView', visible);
+      }
+    }, ampmImg);
     const scalerControls = $el('div', { className: 'scaler-controls' },
       themeBtn,
       secondHandBtn,
       calendarBtn,
+      ampmBtn,
       spacer3,
       $el('button', {
         className: 'scaler-reset',
@@ -1123,7 +1142,7 @@
       border: none;
       border-radius: 8px;
       display: flex;
-      gap: 16px;
+      gap: 12px;
       height: 32px;
       justify-content: center;
       margin-top: 4px;
@@ -1132,7 +1151,8 @@
     }
     body#gWP1 .ClockThemeToggle,
     body#gWP1 .ClockSecondToggle,
-    body#gWP1 .scaler-info {
+    body#gWP1 .scaler-info,
+    body#gWP1 .am-pm {
       border: none;
       cursor: pointer;
       margin: 0px;
