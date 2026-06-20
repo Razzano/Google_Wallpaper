@@ -528,7 +528,7 @@
     });
     const secondHandBtn = $el('button', {
       className: 'ClockSecondToggle',
-      title: 'Toggle Between Smooth/Tick Second Hand Movement\n • Uses location.reload() to apply changes'
+      title: 'Toggle Between Smooth/Tick Second Hand Movement'
     }, clockImg);
     const setSecondMode = (smooth) => {
       GM_setValue('smoothSecondHand', smooth);
