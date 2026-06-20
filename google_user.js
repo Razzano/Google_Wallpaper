@@ -172,7 +172,7 @@
   const _timerLong = 10000;
   const _timerShort = 1000;
   const _Icon = {
-    ampm: _aURL + 'AMPM.png',
+    ampm22: _aURL + 'AMPM2.png',
     calendar16: _aURL + 'calendar16.png',
     calendar22: _aURL + 'calendar22.png',
     calendar32D: _aURL + 'calendar32D.png',
@@ -214,8 +214,6 @@
 
   let _clockInterval = null;
   let _currentWallpaperStyle = null;
-  let analogAnimationId = null;
-  let analogIntervalId = null;
 
   // ============ Logos ============
 
@@ -560,7 +558,7 @@
     }, calendarImg);
     const ampmImg = $el('img', {
       id: 'ampmImg',
-      src: _Icon.ampm
+      src: _Icon.ampm22
     });
     const ampmBtn = $el('button', {
       className: 'am-pm',
@@ -883,12 +881,12 @@
     body#gWP1 #dateTime {
       background: #34495e !important;
       border: 1px solid transparent !important;
-      border-radius: 8px !important;
+      border-radius: 0px 8px 8px 0px !important;
       box-shadow: none !important;
       color: #FFF !important;
       cursor: pointer !important;
       display: block !important;
-      margin: 0px 0px 0px 3px !important;
+      margin: 0px 0px 0px -2px !important;
       min-width: 0px !important;
       padding: 2px 10px !important;
       user-select: none !important;;
@@ -904,7 +902,7 @@
     }
     body#gWP1 #controlContainer {
       align-items: center !important;
-      background: #34495e !important;
+      background: #2A3A4B !important;
       border: none !important;
       border-radius: 8px !important;
       height: 32px !important;
@@ -1117,7 +1115,7 @@
       stroke: #2c3e50;
     }
     body#gWP1 .Analog-AMPMText {
-      fill: #0078d7;
+      fill: #2A3A4B;
       font-size: 7px;
       font-weight: 300;
     }
@@ -1126,21 +1124,22 @@
     }
     body#gWP1 .Analog-AMPMBorder {
       fill: none;
-      stroke: #0078d7;
+      stroke: #2A3A4B;
       stroke-width: 0.25;
     }
     body#gWP1 .Analog-Bigclock.dark .Analog-AMPMBorder {
       fill: none;
-      stroke: #0078d7;
+      stroke: #2A3A4B;
       stroke-width: 0.25;
     }
     body#gWP1 .ControlsRow {
     }
     body#gWP1 .scaler-controls {
       align-items: center;
-      background: #34495e;
+      background: #2A3A4B;
       border: none;
       border-radius: 8px;
+      cursor: default;
       display: flex;
       gap: 12px;
       height: 32px;
@@ -1203,6 +1202,7 @@
     body#gWP1 .ClockThemeToggle,
     body#gWP1 .ClockSecondToggle,
     body#gWP1 .scaler-info,
+    body#gWP1 .am-pm,
     body#gWP1 .scaler-reset {
       color: #ffffff;
       opacity: .7;
@@ -1210,7 +1210,9 @@
     body#gWP1 .ClockThemeToggle:hover,
     body#gWP1 .ClockSecondToggle:hover,
     body#gWP1 .scaler-info:hover,
+    body#gWP1 .am-pm:hover,
     body#gWP1 .scaler-reset:hover {
+      cursor: pointer;
       opacity: 1;
     }
     body#gWP1 #spacer3 {
@@ -1227,8 +1229,9 @@
     }
     body#gWP1 .Analog-Info {
       align-items: center;
-      background: #34495e;
+      background: #2A3A4B;
       border-radius: 0px 0px 8px 8px;
+      cursor: default;
       display: inline-flex;
       justify-content: center;
       margin-top: -6px;
