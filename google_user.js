@@ -169,7 +169,7 @@
   const _aURL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/';
   const _githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image';
   const _dateTimeFormatCount = 4;
-  const _timerLong = 10000;
+  const _timerLong = 5000;
   const _timerShort = 1000;
   const _Icon = {
     ampm22: _aURL + 'AMPM2.png',
@@ -400,7 +400,7 @@
 
   // ============ Analog Clock ============
 
-  const getClock = () => {
+  const getAnalogClock = () => {
     if (!GM_getValue('analogClock', true)) return;
 	   let displayedSecondDeg = 0;
     let analogAnimationId = null;
@@ -680,7 +680,7 @@
       cont.remove();
     } else {
       GM_setValue('analogClock', true);
-      getClock();
+      getAnalogClock();
     }
     const btn = $id('analogClockBtn');
     btn.replaceChildren(
@@ -758,7 +758,7 @@
     const showClock = GM_getValue('analogClock', true);
     const clock = $id('analogClockContainer');
     if (showClock) {
-      requestAnimationFrame(() => getClock());
+      requestAnimationFrame(() => getAnalogClock());
     } else {
       clock?.remove();
     }
@@ -771,13 +771,13 @@
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && GM_getValue('analogClock', true)) {
       if (!$id('analogClockContainer')) {
-        getClock();
+        getAnalogClock();
     } }
   });
 
   window.addEventListener('pageshow', () => {
     if (GM_getValue('analogClock', true) && !$id('analogClockContainer')) {
-      getClock();
+      getAnalogClock();
     }
   });
 
@@ -822,7 +822,7 @@
       float: right !important;
     }
     body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span > span > g-popup > div.CcNe6e > div {
-      background: #34495e !important;
+      background: #2A3A4B !important;
       border-radius: 6px !important;
       padding: 8px 16px !important;
     }
@@ -844,157 +844,160 @@
       height: calc(-70px + 100vh) !important;
     }
     body#gWP1 #logoGoogle {
-      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)) !important;
-      height: auto !important;
-      left: 50% !important;
-      max-width: 100% !important;
-      opacity: 1 !important;
-      position: absolute !important;
-      top: 0px !important;
-      z-index: 999 !important;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+      height: auto;
+      left: 50%;
+      max-width: 100%;
+      opacity: 1;
+      position: absolute;
+      top: 0px;
+      z-index: 999;
     }
     body#gWP1 #dateTimeContainer {
-      align-items: center !important;
-      border-radius: 8px !important;
-      box-sizing: border-box !important;
-      display: inline-flex !important;
-      font: 20px monospace !important;
-      height: 32px !important;
-      min-width: 32px !important;
-      padding: 4px 16px !important;
-      pointer-events: auto !important;
-      user-select: none !important;
-      z-index: 4 !important;
+      align-items: center;
+      border-radius: 8px;
+      box-sizing: border-box;
+      display: inline-flex;
+      font: 20px monospace;
+      height: 32px;
+      min-width: 32px;
+      padding: 4px 16px 4px 8px;
+      pointer-events: auto;
+      user-select: none;
+      z-index: 4;
     }
     #dateTimeContainer.dragged {
-      transform: none !important;
+      transform: none;
     }
     #dateTimeContainer > * {
-      pointer-events: auto !important;
+      pointer-events: auto;
     }
     body#gWP1 #imageCalendar {
-      cursor: pointer !important;
-      margin: 0px !important;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 0px;
     }
     body#gWP1 #imageCalendar:hover + #dateTime {
     }
     body#gWP1 #dateTime {
-      background: #34495e !important;
-      border: 1px solid transparent !important;
-      border-radius: 0px 8px 8px 0px !important;
-      box-shadow: none !important;
-      color: #FFF !important;
-      cursor: pointer !important;
-      display: block !important;
-      margin: 0px 0px 0px -2px !important;
-      min-width: 0px !important;
-      padding: 2px 10px !important;
-      user-select: none !important;;
+      background: #34495e;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      box-shadow: none;
+      color: #FFF;
+      cursor: pointer;
+      display: block;
+      margin: 0px 0px 0px 2px;
+      min-width: 0px;
+      padding: 2px 10px;
+      text-shadow: 1px 1px 2px #000;
+      user-select: none;;
     }
     body#gWP1 #dateTime[hidden] {
-      background: none !important;
-      border: none !important;
-      display: none !important;
-      padding: 0px !important;
-      width: 0px !important;
+      background: none;
+      border: none;
+      display: none;
+      padding: 0px;
+      width: 0px;
     }
     body#gWP1 #dateTime:hover {
     }
     body#gWP1 #controlContainer {
-      align-items: center !important;
-      background: #2A3A4B !important;
-      border: none !important;
-      border-radius: 8px !important;
-      height: 32px !important;
-      min-width: 380px !important;
-      padding: 0px 10px !important;
-      box-sizing: border-box !important;
-      pointer-events: auto !important;
-      user-select: none !important;
-      z-index: 2 !important;
+      align-items: center;
+      background: #2A3A4B;
+      border: none;
+      border-radius: 8px;
+      height: 32px;
+      min-width: 380px;
+      padding: 0px 10px;
+      box-sizing: border-box;
+      pointer-events: auto;
+      text-shadow: 1px 1px 2px #000;
+      user-select: none;
+      z-index: 2;
     }
     body#gWP1 #controlContainer.dragged {
-      transform: none !important;
+      transform: none;
     }
     body#gWP1 #controlContainer > * {
-      pointer-events: auto !important;
+      pointer-events: auto;
     }
     body#gWP1 #buttonThemer {
-      color: #FFF !important;
-      cursor: pointer !important;
-      opacity: .7 !important;
-      text-shadow: 1px 1px 2px #000 !important;
+      color: #FFF;
+      cursor: pointer;
+      opacity: .7;
+      text-shadow: 1px 1px 2px #000;
     }
     body#gWP1 #inputThemer {
-      background: transparent !important;
-      border: 1px solid transparent !important;
-      border-radius: 6px !important;
-      box-shadow: 0 1px 3px rgba(2555, 255, 255, 0.15) !important;
-      color: #FFF !important;
-      cursor: pointer !important;
-      height: 22px !important;
-      margin: 0px 4px !important;
-      opacity: .7 !important;
-      padding: 4px 0px !important;
-      position: relative !important;
-      text-align: center !important;
-      top: 0px !important;
-      width: 30px !important;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(2555, 255, 255, 0.15);
+      color: #FFF;
+      cursor: pointer;
+      height: 22px;
+      margin: 0px 4px;
+      opacity: .7;
+      padding: 4px 0px;
+      position: relative;
+      text-align: center;
+      top: 0px;
+      width: 30px;
     }
     body#gWP1 #downThemer {
-      color: #FFF !important;
-      cursor: pointer !important;
-      opacity: .7 !important;
-      text-shadow: 1px 1px 2px #000 !important;
+      color: #FFF;
+      cursor: pointer;
+      opacity: .7;
+      text-shadow: 1px 1px 2px #000;
     }
     body#gWP1 #spacer1,
     body#gWP1 #spacer2 {
-      color: #FFF !important;
-      filter: brightness(2) !important;
-      margin: 9px 16px 0px 16px !important;
-      opacity: 1 !important;
-      pointer-events: none !important;
-      text-align: center !important;
+      color: #FFF;
+      filter: brightness(2);
+      margin: 9px 16px 0px 16px;
+      opacity: 1;
+      pointer-events: none;
+      text-align: center;
     }
     body#gWP1 .spacerX {
-      text-shadow: 1px 1px 2px #000 !important;
+      text-shadow: 1px 1px 2px #000;
     }
     body#gWP1 #buttonLogo {
-      color: #FFF !important;
-      cursor: pointer !important;
-      opacity: .7 !important;
-      text-shadow: 1px 1px 2px #000 !important;
+      color: #FFF;
+      cursor: pointer;
+      opacity: .7;
+      text-shadow: 1px 1px 2px #000;
     }
     body#gWP1 #inputLogo {
-      background: transparent !important;
-      border: 1px solid transparent !important;
-      border-radius: 6px !important;
-      box-shadow: 0 1px 3px rgba(255,255,255,0.15) !important;
-      color: #FFF !important;
-      cursor: pointer !important;
-      height: 22px !important;
-      margin: 0px 4px !important;
-      opacity: .7 !important;
-      padding: 4px 0px !important;
-      position: relative !important;
-      text-align: center !important;
-      top: 0px !important;
-      width: 30px !important;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(255,255,255,0.15);
+      color: #FFF;
+      cursor: pointer;
+      height: 22px;
+      margin: 0px 4px;
+      opacity: .7;
+      padding: 4px 0px;
+      position: relative;
+      text-align: center;
+      top: 0px;
+      width: 30px;
     }
     body#gWP1 #downLogo {
-      color: #FFF !important;
-      cursor: pointer !important;
-      opacity: .7 !important;
-      text-shadow: 1px 1px 2px #000 !important;
+      color: #FFF;
+      cursor: pointer;
+      opacity: .7;
+      text-shadow: 1px 1px 2px #000;
     }
     body#gWP1 #controlContainer > button,
     body#gWP1 #controlContainer > input {
-      font-family: monospace !important;
-      font-size: 120% !important;
+      font-family: monospace;
+      font-size: 120%;
     }
     body#gWP1 #analogClockBtn {
       color: #fff;
-      opacity: .7 !important;
+      opacity: .7;
     }
     body#gWP1 #analogClockBtn > img {
       height: 22px;
@@ -1004,25 +1007,25 @@
     }
     body#gWP1 #analogClockBtn:not(img):hover {
       color: orange;
-      opacity: 1 !important;
+      opacity: 1;
     }
     body#gWP1 #controlContainer > button:not(#analogClockBtn):hover {
-      filter: brightness(2) !important;
-      opacity: 1 !important;
+      filter: brightness(2);
+      opacity: 1;
     }
     body#gWP1 #inputThemer:hover,
     body#gWP1 #inputThemer:focus-within,
     body#gWP1 #inputLogo:hover,
     body#gWP1 #inputLogo:focus-within {
-      border-color: #999 !important;
-      filter: brightness(2) !important;
-      opacity: 1 !important;
+      border-color: #999;
+      filter: brightness(2);
+      opacity: 1;
     }
     body#gWP1 ::-webkit-inner-spin-button,
     body#gWP1 ::-webkit-outer-spin-button,
     body#gWP1 ::-webkit-inner-spin-button,
     body#gWP1 ::-webkit-outer-spin-button {
-      display: none !important;
+      display: none;
     }
     body#gWP1 .ClockContainer {
       align-items: center;
@@ -1045,8 +1048,8 @@
     }
     body#gWP1 .Analog {
       background: radial-gradient(circle at 50% 50%, #f8f9fa 0%, #e9ecef 100%);
-      border: 1px solid #fff !important;
-      border-radius: 50% !important;
+      border: 1px solid #fff;
+      border-radius: 50%;
       box-shadow: inset 0 0 25px rgba(0,0,0,0.08), 0 15px 35px rgba(0,0,0,0.25);
       height: 100%;
       width: 100%;
@@ -1132,7 +1135,8 @@
       stroke: #2A3A4B;
       stroke-width: 0.25;
     }
-    body#gWP1 .ControlsRow {
+    body#gWP1 .ControlsRow * {
+      text-shadow: 1px 1px 2px #000 !important;
     }
     body#gWP1 .scaler-controls {
       align-items: center;
@@ -1217,15 +1221,10 @@
     }
     body#gWP1 #spacer3 {
       color: #666;
+      margin: 0px 6px 0px 0px;
       opacity: 1;
       pointer-events: none;
       text-align: center;
-    }
-    body#gWP1 #spacer3 {
-      margin: 0px 6px 0px 0px;
-    }
-    body#gWP1 #spacer4 {
-      margin: 0px 0px 0px 6px;
     }
     body#gWP1 .Analog-Info {
       align-items: center;
@@ -1238,6 +1237,9 @@
       padding: 8px 0px 2px 0px;
 	     text-align: center;
       width: 364px;
+    }
+    body#gWP1 .Analog-Info * {
+      text-shadow: 1px 1px 2px #000;
     }
     body#gWP1 .Analog-CalendarText {
       display: inline-block;
