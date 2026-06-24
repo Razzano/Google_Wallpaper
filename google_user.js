@@ -578,14 +578,17 @@
       const ordinal = dt + suffix;
       const h12 = String(now.getHours() % 12 || 12);
       const min = String(now.getMinutes()).padStart(2, '0');
-      ampmText.textContent = now.getHours() < 12 ? 'AM' : 'PM';
-      calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}`;
-      const digitalClock = $id('dateTime');
       const sec = String(now.getSeconds()).padStart(2, '0');
       const ampm = now.getHours() < 12 ? 'AM' : 'PM';
       const secView = GM_getValue('secondsView', false);
-      if (secView) digitalClock.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}:${sec} ${ampm}`;
-      else digitalClock.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}  ${ampm}`;
+      ampmText.textContent = ampm;
+      calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}`;
+      const digitalClock = $id('dateTime');
+      if (digitalClock) {
+        digitalClock.textContent = secView
+          ? `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}:${sec} ${ampm}`
+          : `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}  ${ampm}`;
+      }
     };
 	   const showCalendarInfo = GM_getValue('calendarInfo', false);
     if (!showCalendarInfo) {
