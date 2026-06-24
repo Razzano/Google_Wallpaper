@@ -162,15 +162,13 @@
 
   // ==================== ORIGINAL CODE ====================
 
+  const body = document.body;
   const DAY_ABBR = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'];
   const DAY_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const MONTH_ABBR = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'];
   const MONTH_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const _aURL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/';
   const _githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image';
-  const _dateTimeFormatCount = 4;
-  const _timerLong = 5000;
-  const _timerShort = 1000;
   const _Icon = {
     ampm22: _aURL + 'AMPM2.png',
     calendar16: _aURL + 'calendar16.png',
@@ -212,7 +210,6 @@
 
   // ============ Global variables ============
 
-  let _clockInterval = null;
   let _currentWallpaperStyle = null;
 
   // ============ Logos ============
@@ -252,16 +249,13 @@
       logoCopy.id = 'logoGoogle';
       logoCopy.className = 'logo';
       logoCopy.style.cssText = `
+        left: 50%;
+        position: absolute;
         top: ${config.marginTop} !important;
         transform: ${config.transform} !important;
       `;
-      const dtContainer = $id('dateTimeContainer');
-      if (dtContainer) {
-        dtContainer.after(logoCopy);
-        requestAnimationFrame(() => {
-          logoCopy.style.opacity = '1';
-        });
-      }
+      //body.append(logoCopy);
+      body.prepend(logoCopy);
     } else if (num !== 0) {
       console.warn(`Logo #${num} not found`);
     }
@@ -328,74 +322,21 @@
 
   // ============ Date Time ============
 
-  const getDateTime = (format = 1) => {
-    const now = new Date();
-    const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear();
-    const dayAbbr = DAY_ABBR[dy], dayFull = DAY_FULL[dy], monthAbbr = MONTH_ABBR[mth], monthFull = MONTH_FULL[mth];
-    const mPadded = (mth + 1) < 10 ? '0' + (mth + 1) : (mth + 1),
-          suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th',
-          ordinal = dt + suffix;
-    const hr = now.getHours(), min = now.getMinutes(), sec = now.getSeconds(),
-          hr12 = hr % 12 || 12,
-          hr24 = hr,
-          minStr = min < 10 ? ':0' + min : ':' + min,
-          secStr = GM_getValue('defaultSecondsView', false) ? (sec < 10 ? ':0' + sec : ':' + sec) : '',
-          ampm = GM_getValue('defaultAMPM', true) ? (hr < 12 ? 'AM' : 'PM') : '';
-    switch(format){
-      case 1: return `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
-      case 2: return `${dayAbbr} • ${monthAbbr} ${dt}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
-      case 3: return `${dayAbbr} • ${mPadded}/${dt < 10 ? '0'+dt : dt}/${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
-      case 4: return `${dayFull}, ${monthAbbr} ${dt}, ${yr} ⏰ ${hr24}${minStr}${secStr} ${ampm}`;
-      default: return `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} ⏰ ${hr12}${minStr}${secStr} ${ampm}`;
-    }
-  };
-
   const dateTimeToggle = (e) => {
     if (e.button !== 0) return;
     if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
       const dtEl = $id('dateTime');
       dtEl.hidden = !dtEl.hidden;
       GM_setValue('dateTimeView', !dtEl.hidden);
-      if (!dtEl.hidden) {
-        dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
-        startClock();
-      } else {
-        clearInterval(_clockInterval);
-        _clockInterval = null;
-      }
-      return;
     }
   };
 
-  const dateTimeToggleSecondsAmPm = (e) => {
+  const dateTimeToggleSeconds = (e) => {
     if (e.button !== 0) return;
     e.preventDefault();
     if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
-      GM_setValue('defaultSecondsView', !GM_getValue('defaultSecondsView', false));
-      startClock();
-    } else if (e.shiftKey && !e.ctrlKey && !e.altKey) {
-      GM_setValue('defaultAMPM', !GM_getValue('defaultAMPM', true));
-    } else if (!e.shiftKey && e.ctrlKey && !e.altKey) {
-      let fmt = GM_getValue('dateFormat', 1);
-      fmt = (fmt >= _dateTimeFormatCount) ? 1 : fmt + 1;
-      GM_setValue('dateFormat', fmt);
+      GM_setValue('secondsView', !GM_getValue('secondsView', false));
     }
-    const el = $id('dateTime');
-    if (el) {
-      el.textContent = getDateTime(GM_getValue('dateFormat', 1));
-  } }
-
-  const startClock = () => {
-    if (_clockInterval) {
-      clearInterval(_clockInterval);
-    }
-    const ms = GM_getValue('defaultSecondsView', false) ? _timerShort : _timerLong;
-    _clockInterval = setInterval(() => {
-      const el = $id('dateTime');
-      if (el) {
-        el.textContent = getDateTime(GM_getValue('dateFormat', 1));
-      }
-    }, ms);
   };
 
   // ============ Analog Clock ============
@@ -617,7 +558,7 @@
       container.style.left = '20px';
       container.style.top = '20px';
     }
-    document.body.appendChild(container);
+    document.body.prepend(container);
     const updateClock = () => {
       const smoothSecondHand = GM_getValue('smoothSecondHand', true);
       const now = new Date();
@@ -639,6 +580,12 @@
       const min = String(now.getMinutes()).padStart(2, '0');
       ampmText.textContent = now.getHours() < 12 ? 'AM' : 'PM';
       calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}`;
+      const digitalClock = $id('dateTime');
+      const sec = String(now.getSeconds()).padStart(2, '0');
+      const ampm = now.getHours() < 12 ? 'AM' : 'PM';
+      const secView = GM_getValue('secondsView', false);
+      if (secView) digitalClock.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}:${sec} ${ampm}`;
+      else digitalClock.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}  ${ampm}`;
     };
 	   const showCalendarInfo = GM_getValue('calendarInfo', false);
     if (!showCalendarInfo) {
@@ -696,7 +643,6 @@
 
   const init = () => {
     document.removeEventListener('DOMContentLoaded', init);
-    const body = document.body;
     if (!body) return;
     body.id = 'gWP1';
     const textArea = $id('APjFqb');
@@ -704,13 +650,13 @@
     const imageCalendar = $el('img', {
       id: 'imageCalendar',
       src: _Icon.calendar32D,
-      title: 'Left-click → Toggle Date/Time Container',
+      title: 'Left-click → Show/Hide Digital Calendar',
       onclick: dateTimeToggle
     });
     const dateTimeEl = $el('span', {
       id: 'dateTime',
-      title: '• Left-click: toggle seconds\n• Shift+Left: toggle AM/PM\n• Ctrl+Left: cycle date format (1-4)',
-      onclick: dateTimeToggleSecondsAmPm
+      title: 'Left-click → Show/Hide Seconds',
+      onclick: dateTimeToggleSeconds
     });
     dtContainer.append(imageCalendar, dateTimeEl);
     const controlContainer = $el('div', { id: 'controlContainer' });
@@ -724,8 +670,8 @@
     const spacer2 = $el('span', {id: 'spacer2', class: 'spacerX', textContent: '|'});
     const analogClockBtn = $el('button', {id: 'analogClockBtn', title: 'Analog Clock', onclick: toggleAnalogClock}, $el('img', {src: _Icon.clock26, alt: 'Clock'}), ' Show');
     controlContainer.append(buttonThemer, inputThemer, downThemer, spacer1, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
-    body.appendChild(dtContainer);
-    body.appendChild(controlContainer);
+    body.prepend(dtContainer);
+    body.prepend(controlContainer);
     dtContainer.style.position = 'fixed';
     dtContainer.style.top = '590px';
     dtContainer.style.left = '50%';
@@ -741,20 +687,9 @@
     applyWallpaper(GM_getValue('wallpaperImage', 0));
     applyLogo(GM_getValue('logoImageNum', 1));
     if (textArea) textArea.placeholder = 'Search Look-up';
-    if (imageCalendar) {
-      imageCalendar.addEventListener('click', dateTimeToggle, false);
-    }
     const dtEl = $id('dateTime');
     const dtPref = GM_getValue('dateTimeView', false);
-    if (dtPref) {
-      dtEl.hidden = false;
-      dtEl.textContent = getDateTime(GM_getValue('dateFormat', 1));
-      startClock();
-    } else {
-      dtEl.hidden = true;
-      clearInterval(_clockInterval);
-      _clockInterval = null;
-    }
+    dtEl.hidden = !dtPref;
     const showClock = GM_getValue('analogClock', true);
     const clock = $id('analogClockContainer');
     if (showClock) {
@@ -1136,7 +1071,7 @@
       stroke-width: 0.25;
     }
     body#gWP1 .ControlsRow * {
-      text-shadow: 1px 1px 2px #000 !important;
+      text-shadow: 1px 1px 2px #000;
     }
     body#gWP1 .scaler-controls {
       align-items: center;
@@ -1149,7 +1084,7 @@
       height: 32px;
       justify-content: center;
       margin-top: 4px;
-      padding: 0px;
+      padding: 0px 0px 1px 0px;
       width: 364px;
     }
     body#gWP1 .ClockThemeToggle,
@@ -1201,7 +1136,7 @@
       text-align: center;
       margin-top: 0px;
       min-width: 32px;
-      padding: 1px 2px 0px 0px;
+      padding: 2px 2px 0px 0px;
     }
     body#gWP1 .ClockThemeToggle,
     body#gWP1 .ClockSecondToggle,
@@ -1234,7 +1169,7 @@
       display: inline-flex;
       justify-content: center;
       margin-top: -6px;
-      padding: 8px 0px 2px 0px;
+      padding: 6px 0px 2px 0px;
 	     text-align: center;
       width: 364px;
     }
@@ -1264,5 +1199,4 @@
       display: none;
     }
   `);
-
 })();
