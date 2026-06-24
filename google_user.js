@@ -64,7 +64,8 @@
     } }
     children.flat(Infinity).forEach(child => {
       if (child == null) return;
-      el.appendChild(
+      //el.appendChild(
+      el.append(
         child instanceof Node
           ? child
           : document.createTextNode(child)
@@ -254,7 +255,6 @@
         top: ${config.marginTop} !important;
         transform: ${config.transform} !important;
       `;
-      //body.append(logoCopy);
       body.prepend(logoCopy);
     } else if (num !== 0) {
       console.warn(`Logo #${num} not found`);
@@ -267,8 +267,8 @@
   };
 
   const logoClick = (id) => {
-    let current = GM_getValue('logoImageNum', 1),
-        next = (id.includes('up') || id === 'buttonLogo') ? (current + 1) % 18 : (current - 1 + 18) % 18; // 2 ← Change 18 to 19
+    let current = GM_getValue('logoImageNum', 1);
+    let next = (id.includes('up') || id === 'buttonLogo') ? (current + 1) % 18 : (current - 1 + 18) % 18; // 2 ← Change 18 to 19
     applyLogo(next);
   };
 
@@ -485,7 +485,7 @@
       id: 'calendarImg',
       src: _Icon.calendar22
     });
-    const clockInfo = $el( 'div', {
+    const clockInfo = $el('div', {
 	     className: 'Analog-Info' },
       calendarText
     );
@@ -511,7 +511,8 @@
         GM_setValue('ampmView', visible);
       }
     }, ampmImg);
-    const scalerControls = $el('div', { className: 'scaler-controls' },
+    const scalerControls = $el('div', {
+      className: 'scaler-controls' },
       themeBtn,
       secondHandBtn,
       calendarBtn,
@@ -539,14 +540,12 @@
     );
     const savedPercent = GM_getValue('clockSizePercent', 100);
     setClockPercentage(savedPercent);
-	   const controlsRow = $el(
-      'div',
-      { className: 'ControlsRow' },
+	   const controlsRow = $el('div', {
+      className: 'ControlsRow' },
       scalerControls
     );
-    const container = $el(
-      'div',
-      { id: 'analogClockContainer', className: 'ClockContainer' },
+    const container = $el('div', {
+      id: 'analogClockContainer', className: 'ClockContainer' },
       Clock,
       controlsRow,
       clockInfo
@@ -649,7 +648,9 @@
     if (!body) return;
     body.id = 'gWP1';
     const textArea = $id('APjFqb');
-    const dtContainer = $el('div', { id: 'dateTimeContainer' });
+    const dtContainer = $el('div', {
+      id: 'dateTimeContainer'
+    });
     const imageCalendar = $el('img', {
       id: 'imageCalendar',
       src: _Icon.calendar32D,
@@ -662,16 +663,66 @@
       onclick: dateTimeToggleSeconds
     });
     dtContainer.append(imageCalendar, dateTimeEl);
-    const controlContainer = $el('div', { id: 'controlContainer' });
-    const buttonThemer = $el('button', {id: 'buttonThemer', textContent: 'Wallpaper 🠉', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
-    const inputThemer = $el('input', {id: 'inputThemer', type: 'number', value: GM_getValue('wallpaperImage', 0), title: 'Manually Enter:\n • 1 - 52 (0 = Default Google Background)', oninput: wallpaperInputChanger});
-    const downThemer = $el('button', {id: 'downThemer', textContent: '🠋 Wallpaper', title: 'Left-click to change wallpaper', onclick: wallpaperButtonChanger});
-    const buttonLogo = $el('button', {id: 'buttonLogo', textContent: 'Logo 🠉', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
-    const inputLogo = $el('input', {id: 'inputLogo', type: 'number', value: GM_getValue('logoImageNum', 1), title: 'Manually Enter:\n • 1 - 17 (0 = Default Google Logo, 17 = No Logo)', oninput: handleLogoInput});
-    const downLogo = $el('button', {id: 'downLogo', textContent: '🠋 Logo', title: 'Left-click to change logos', onclick: e => logoClick(e.target.id)});
-    const spacer1 = $el('span', {id: 'spacer1', class: 'spacerX', textContent: '|'});
-    const spacer2 = $el('span', {id: 'spacer2', class: 'spacerX', textContent: '|'});
-    const analogClockBtn = $el('button', {id: 'analogClockBtn', title: 'Analog Clock', onclick: toggleAnalogClock}, $el('img', {src: _Icon.clock26, alt: 'Clock'}), ' Show');
+    const controlContainer = $el('div', {
+      id: 'controlContainer'
+    });
+    const buttonThemer = $el('button', {
+      id: 'buttonThemer',
+      textContent: 'Wallpaper 🠉',
+      title: 'Left-click to change wallpaper',
+      onclick: wallpaperButtonChanger
+    });
+    const inputThemer = $el('input', {
+      id: 'inputThemer',
+      type: 'number',
+      value: GM_getValue('wallpaperImage', 0),
+      title: 'Manually Enter:\n • 1 - 52 (0 = Default Google Background)',
+      oninput: wallpaperInputChanger
+    });
+    const downThemer = $el('button', {
+      id: 'downThemer',
+      textContent: '🠋 Wallpaper',
+      title: 'Left-click to change wallpaper',
+      onclick: wallpaperButtonChanger
+    });
+    const buttonLogo = $el('button', {
+      id: 'buttonLogo',
+      textContent: 'Logo 🠉',
+      title: 'Left-click to change logos',
+      onclick: e => logoClick(e.target.id)
+    });
+    const inputLogo = $el('input', {
+      id: 'inputLogo',
+      type: 'number',
+      value: GM_getValue('logoImageNum', 1),
+      title: 'Manually Enter:\n • 1 - 17 (0 = Default Google Logo, 17 = No Logo)',
+      oninput: handleLogoInput
+    });
+    const downLogo = $el('button', {
+      id: 'downLogo',
+      textContent: '🠋 Logo',
+      title: 'Left-click to change logos',
+      onclick: e => logoClick(e.target.id)
+    });
+    const spacer1 = $el('span', {
+      id: 'spacer1',
+      class: 'spacerX',
+      textContent: '|'
+    });
+    const spacer2 = $el('span', {
+      id: 'spacer2',
+      class: 'spacerX',
+      textContent: '|'
+    });
+    const analogClockBtn = $el('button', {
+      id: 'analogClockBtn',
+      title: 'Analog Clock',
+      onclick: toggleAnalogClock},
+      $el('img', {
+        src: _Icon.clock26,
+        alt: 'Clock'
+      }), ' Show'
+    );
     controlContainer.append(buttonThemer, inputThemer, downThemer, spacer1, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
     body.prepend(dtContainer);
     body.prepend(controlContainer);
