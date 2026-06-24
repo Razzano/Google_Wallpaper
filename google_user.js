@@ -320,7 +320,7 @@
     applyWallpaper(val);
   };
 
-  // ============ Date Time ============
+  // ============ Date Time Togglers ============
 
   const dateTimeToggle = (e) => {
     if (e.button !== 0) return;
@@ -653,16 +653,21 @@
     });
     const imageCalendar = $el('img', {
       id: 'imageCalendar',
+      src: _Icon.calendar32D
+    });
+    const calendarButton = $el('button', {
+      id: 'calendarButton',
       src: _Icon.calendar32D,
       title: 'Left-click → Show/Hide Digital Calendar',
-      onclick: dateTimeToggle
-    });
+      onclick: dateTimeToggle},
+      imageCalendar
+    );
     const dateTimeEl = $el('span', {
       id: 'dateTime',
       title: 'Left-click → Show/Hide Seconds',
       onclick: dateTimeToggleSeconds
     });
-    dtContainer.append(imageCalendar, dateTimeEl);
+    dtContainer.append(calendarButton, dateTimeEl);
     const controlContainer = $el('div', {
       id: 'controlContainer'
     });
@@ -850,7 +855,7 @@
       font: 20px monospace;
       height: 32px;
       min-width: 32px;
-      padding: 4px 16px 4px 8px;
+      padding: 0px 8px;
       pointer-events: auto;
       user-select: none;
       z-index: 4;
@@ -861,10 +866,14 @@
     #dateTimeContainer > * {
       pointer-events: auto;
     }
-    body#gWP1 #imageCalendar {
+    body#gWP1 #calendarButton {
       border-radius: 8px;
       cursor: pointer;
+      height: 32px;
       margin: 0px;
+      width: 32px;
+    }
+    body#gWP1 #imageCalendar {
     }
     body#gWP1 #imageCalendar:hover + #dateTime {
     }
