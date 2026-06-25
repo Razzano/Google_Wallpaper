@@ -15,15 +15,15 @@
 // @grant        GM_setValue
 // ==/UserScript==
 
+// NOTE: To open all Google App Links in new tabs, download Tampermonkey script:
+// https://github.com/Razzano/Google_App_Links/blob/main/Open_in_New_Tab.js
+
 (() => {
 
   'use strict';
 
-  // NOTE: To open all Google App Links in new tabs, download Tampermonkey script:
-  // https://github.com/Razzano/Google_App_Links/blob/main/Open_in_New_Tab.js
-
   // =================================
-  // HELPERS
+  // DOM HELPERS
   // =================================
 
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -207,18 +207,21 @@
     logo17: '',
   };
 
-  const _Logo = [null];
-  for (let i = 1; i <= 16; i++) {
-    _Logo.push($el('img', {id: 'logoGoogle', class: 'logo', src: _Image[`logo${i}`]}));
-  };
-
-  // ============ Global variables ============
+  // =================================
+  // GLOBAL VARIABLES
+  // =================================
 
   let _currentWallpaperStyle = null;
 
   // =================================
   // LOGOS
   // =================================
+
+  const _Logo = [null];
+
+  for (let i = 1; i <= 16; i++) {
+    _Logo.push($el('img', {id: 'logoGoogle', class: 'logo', src: _Image[`logo${i}`]}));
+  };
 
   const applyLogo = (num) => {
     const existing = $id('logoGoogle');
@@ -817,7 +820,7 @@
       GM_getValue('analogClock', true) ? ' Hide' : ' Show'
     );
     updateDigitalClock();
-    setInterval(updateDigitalClock, 200);
+    setInterval(updateDigitalClock, 1000);
   };
 
   document.addEventListener('visibilitychange', () => {
