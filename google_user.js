@@ -523,7 +523,7 @@
       container.style.top = '20px';
     }
     document.body.prepend(container);
-    const updateClock = () => {
+    const updateAnalogClock = () => {
       if (!$id('analogClockContainer')) return;
       const smoothSecondHand = GM_getValue('smoothSecondHand', true);
       const now = new Date();
@@ -567,13 +567,13 @@
       if (smooth) {
         const tick = () => {
           if (!analogClockRunning) return;
-          updateClock();
+          updateAnalogClock();
           analogAnimationId = requestAnimationFrame(tick);
         };
         tick();
       } else {
-        updateClock();
-        analogIntervalId = setInterval(updateClock, 1000);
+        updateAnalogClock();
+        analogIntervalId = setInterval(updateAnalogClock, 1000);
       }
     };
 	   startAnalogClock();
@@ -748,7 +748,7 @@
     _interval = null;
     const digitalClock = $id('dateTime');
     if (!digitalClock || digitalClock.hidden) return;
-    const delay = GM_getValue('secondsView', false) ? 1000 : 5000;
+    const delay = GM_getValue('secondsView', false) ? 1000 : 10000;
     updateDigitalClock();
     _interval = setInterval(updateDigitalClock, delay);
   };
