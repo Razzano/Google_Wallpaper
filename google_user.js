@@ -211,8 +211,11 @@
   // GLOBAL VARIABLES
   // =================================
 
+  let analogAnimationId = null;
+  let analogIntervalId = null;
   let _currentWallpaperStyle = null;
   let _interval = null;
+  let analogClockRunning = false;
 
   // =================================
   // LOGOS
@@ -292,11 +295,21 @@
   // ANALOG CLOCK
   // =================================
 
+  const stopAnalogClock = () => {
+    analogClockRunning = false;
+    if (analogAnimationId) {
+      cancelAnimationFrame(analogAnimationId);
+      analogAnimationId = null;
+    }
+    if (analogIntervalId) {
+      clearInterval(analogIntervalId);
+      analogIntervalId = null;
+    }
+  };
+
   const applyAnalogClock = () => {
     if (!GM_getValue('analogClock', true)) return;
 	   let displayedSecondDeg = 0;
-    let analogAnimationId = null;
-    let analogIntervalId = null;
     const smoothSecondHand = GM_getValue('smoothSecondHand', true);
     const ticks = [];
     const hourNumbers = [];
@@ -511,6 +524,7 @@
     }
     document.body.prepend(container);
     const updateClock = () => {
+      if (!$id('analogClockContainer')) return;
       const smoothSecondHand = GM_getValue('smoothSecondHand', true);
       const now = new Date();
       const seconds = smoothSecondHand ? now.getSeconds() + now.getMilliseconds() / 1000 : now.getSeconds();
@@ -545,22 +559,14 @@
     if (!showCalendarInfo) {
       clockInfo.classList.add('hidden');
     }
-	   const stopAnalogClock = () => {
-      if (analogAnimationId) {
-        cancelAnimationFrame(analogAnimationId);
-        analogAnimationId = null;
-      }
-      if (analogIntervalId) {
-        clearInterval(analogIntervalId);
-        analogIntervalId = null;
-      }
-    };
     const startAnalogClock = () => {
       stopAnalogClock();
-	     displayedSecondDeg = 0;
+      analogClockRunning = true;
+      displayedSecondDeg = 0;
       const smooth = GM_getValue('smoothSecondHand', true);
       if (smooth) {
         const tick = () => {
+          if (!analogClockRunning) return;
           updateClock();
           analogAnimationId = requestAnimationFrame(tick);
         };
@@ -577,6 +583,7 @@
     const clock = GM_getValue('analogClock', true);
     const cont = $id('analogClockContainer');
     if (clock) {
+      stopAnalogClock();
       GM_setValue('analogClock', false);
       cont.remove();
     } else {
@@ -738,6 +745,9 @@
 
   const startDigitalClock = () => {
     clearInterval(_interval);
+    _interval = null;
+    const digitalClock = $id('dateTime');
+    if (!digitalClock || digitalClock.hidden) return;
     const delay = GM_getValue('secondsView', false) ? 1000 : 5000;
     updateDigitalClock();
     _interval = setInterval(updateDigitalClock, delay);
@@ -749,7 +759,12 @@
       const dtEl = $id('dateTime');
       dtEl.hidden = !dtEl.hidden;
       GM_setValue('dateTimeView', !dtEl.hidden);
-    }
+      if (dtEl.hidden) {
+        clearInterval(_interval);
+        _interval = null;
+      } else {
+        startDigitalClock();
+    } }
   };
 
   const dateTimeToggleSeconds = (e) => {
@@ -813,11 +828,10 @@
     body.id = 'gWP1';
     const textArea = $id('APjFqb');
     if (textArea) textArea.placeholder = 'Search Look-up';
+    applyWallpaper(GM_getValue('wallpaperImage', 0));
     applyLogo(GM_getValue('logoImageNum', 1));
     applyControlContainer();
     applyDateTime();
-    startDigitalClock();
-    applyWallpaper(GM_getValue('wallpaperImage', 0));
     const dtEl = $id('dateTime');
     const dtPref = GM_getValue('dateTimeView', false);
     dtEl.hidden = !dtPref;
