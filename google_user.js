@@ -212,6 +212,7 @@
   // =================================
 
   let _currentWallpaperStyle = null;
+  let _interval = null;
 
   // =================================
   // LOGOS
@@ -713,7 +714,11 @@
 
   const updateDigitalClock = () => {
     const digitalClock = $id('dateTime');
-    if (!digitalClock) return;
+    if (!digitalClock) {
+      clearInterval(_interval);
+      _interval = null;
+      return;
+    }
     const now = new Date();
     const dayFull = DAY_FULL[now.getDay()];
     const monthFull = MONTH_FULL[now.getMonth()];
@@ -731,6 +736,13 @@
       : `${dayFull} ⇒ ${monthFull} ${dt}${suffix}, ${yr} 🕑 ${h12}:${min} ${ampm}`;
   };
 
+  const startDigitalClock = () => {
+    clearInterval(_interval);
+    const delay = GM_getValue('secondsView', false) ? 1000 : 5000;
+    updateDigitalClock();
+    _interval = setInterval(updateDigitalClock, delay);
+  };
+
   const dateTimeToggle = (e) => {
     if (e.button !== 0) return;
     if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
@@ -743,9 +755,9 @@
   const dateTimeToggleSeconds = (e) => {
     if (e.button !== 0) return;
     e.preventDefault();
-    if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
-      GM_setValue('secondsView', !GM_getValue('secondsView', false));
-    }
+    const enabled = !GM_getValue('secondsView', false);
+    GM_setValue('secondsView', enabled);
+    startDigitalClock();
   };
 
   // =================================
@@ -804,6 +816,7 @@
     applyLogo(GM_getValue('logoImageNum', 1));
     applyControlContainer();
     applyDateTime();
+    startDigitalClock();
     applyWallpaper(GM_getValue('wallpaperImage', 0));
     const dtEl = $id('dateTime');
     const dtPref = GM_getValue('dateTimeView', false);
@@ -819,8 +832,6 @@
     btn.replaceChildren($el('img', {src: _Icon.clock26, alt: 'Clock'}),
       GM_getValue('analogClock', true) ? ' Hide' : ' Show'
     );
-    updateDigitalClock();
-    setInterval(updateDigitalClock, 1000);
   };
 
   document.addEventListener('visibilitychange', () => {
