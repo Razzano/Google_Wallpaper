@@ -22,7 +22,9 @@
   // NOTE: To open all Google App Links in new tabs, download Tampermonkey script:
   // https://github.com/Razzano/Google_App_Links/blob/main/Open_in_New_Tab.js
 
-  // ============ Helpers ============
+  // =================================
+  // HELPERS
+  // =================================
 
   const SVG_NS = "http://www.w3.org/2000/svg";
   const SVG_TAGS = new Set([
@@ -63,13 +65,7 @@
         el.setAttribute(key, value);
     } }
     children.flat(Infinity).forEach(child => {
-      if (child == null) return;
-      //el.appendChild(
-      el.append(
-        child instanceof Node
-          ? child
-          : document.createTextNode(child)
-      );
+      if (child != null) el.append(child);
     });
     return el;
   };
@@ -83,7 +79,7 @@
       console.warn('insertAfter: refEl is null or has no parentNode', refEl);
       return null;
     }
-    refEl.parentNode.insertBefore(newEl, refEl.nextSibling);
+    refEl.after(newEl);
     return newEl;
   };
 
@@ -138,17 +134,22 @@
     elmnt.addEventListener('mousedown', dragMouseDown);
   };
 
-  const prepend = (parent, child) => {
-    parent.insertBefore(child, parent.firstChild);
-    return child;
-  };
+  // =================================
+  // FOR USE WITH INTERNET EXPLORER
+  // =================================
+
+  //const prepend = (parent, child) => {
+    //if (!parent) {
+      //console.warn('prepend: parent is null', parent);
+      //return null;
+    //}
+    //parent.prepend(child);
+    //return child;
+  //};
 
   const removeDupes = (className) => {
-    document.querySelectorAll('.' + className).forEach((el, i) => {
-      if (i > 0) {
-        el.remove();
-      }
-    });
+    const [first, ...dupes] = document.querySelectorAll('.' + className);
+    dupes.forEach(el => el.remove());
   };
 
   const restorePosition = (el, key) => {
@@ -161,7 +162,9 @@
     }
   };
 
-  // ==================== ORIGINAL CODE ====================
+  // =================================
+  // ORIGINAL CODE
+  // =================================
 
   const body = document.body;
   const DAY_ABBR = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'];
@@ -213,7 +216,9 @@
 
   let _currentWallpaperStyle = null;
 
-  // ============ Logos ============
+  // =================================
+  // LOGOS
+  // =================================
 
   const applyLogo = (num) => {
     const existing = $id('logoGoogle');
@@ -279,69 +284,11 @@
     applyLogo(val);
   };
 
-  // ============ Wallpaper ============
+  // =================================
+  // ANALOG CLOCK
+  // =================================
 
-  const applyWallpaper = (num) => {
-    if (_currentWallpaperStyle) {
-      _currentWallpaperStyle.remove();
-      _currentWallpaperStyle = null;
-    }
-    num = parseInt(num) || 0;
-    if (num === 0) return;
-    const css = `
-      body#gWP1 {
-        background: url(${_githubSite}${num}.jpg) no-repeat center center / cover fixed !important;
-      }
-    `;
-    _currentWallpaperStyle = GM_addStyle(css);
-  };
-
-  const wallpaperButtonChanger = (e) => {
-    const inp = $id('inputThemer');
-    let val = parseInt(inp.value) || 0;
-    val = e.target.id.includes('down') ? val - 1 : val + 1;
-    if (val > 52) {
-      val = 0;
-    }
-    if (val < 0) {
-      val = 52;
-    }
-    inp.value = val;
-    GM_setValue('wallpaperImage', val);
-    applyWallpaper(val);
-  };
-
-  const wallpaperInputChanger = () => {
-    const inpThemer = $id('inputThemer');
-    let val = parseInt(inpThemer.value) || 0;
-    val = Math.max(0, Math.min(52, val));
-    inpThemer.value = val;
-    GM_setValue('wallpaperImage', val);
-    applyWallpaper(val);
-  };
-
-  // ============ Date Time Togglers ============
-
-  const dateTimeToggle = (e) => {
-    if (e.button !== 0) return;
-    if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
-      const dtEl = $id('dateTime');
-      dtEl.hidden = !dtEl.hidden;
-      GM_setValue('dateTimeView', !dtEl.hidden);
-    }
-  };
-
-  const dateTimeToggleSeconds = (e) => {
-    if (e.button !== 0) return;
-    e.preventDefault();
-    if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
-      GM_setValue('secondsView', !GM_getValue('secondsView', false));
-    }
-  };
-
-  // ============ Analog Clock ============
-
-  const getAnalogClock = () => {
+  const applyAnalogClock = () => {
     if (!GM_getValue('analogClock', true)) return;
 	   let displayedSecondDeg = 0;
     let analogAnimationId = null;
@@ -489,7 +436,8 @@
 	     className: 'Analog-Info' },
       calendarText
     );
-    const calendarBtn = $el('button', {
+    const anaCalBtn = $el('button', {
+      id: 'anaCalBtn',
       className: 'scaler-info',
       title: 'Show/Hide Calendar Info',
       onclick() {
@@ -515,7 +463,7 @@
       className: 'scaler-controls' },
       themeBtn,
       secondHandBtn,
-      calendarBtn,
+      anaCalBtn,
       ampmBtn,
       spacer3,
       $el('button', {
@@ -581,12 +529,12 @@
       const ampm = now.getHours() < 12 ? 'AM' : 'PM';
       const secView = GM_getValue('secondsView', false);
       ampmText.textContent = ampm;
-      calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}`;
+      calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑 ${h12}:${min}`;
       const digitalClock = $id('dateTime');
       if (digitalClock) {
         digitalClock.textContent = secView
-          ? `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}:${sec} ${ampm}`
-          : `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr}\u3000${h12}:${min}  ${ampm}`;
+          ? `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑 ${h12}:${min}:${sec} ${ampm}`
+          : `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑 ${h12}:${min} ${ampm}`;
       }
     };
 	   const showCalendarInfo = GM_getValue('calendarInfo', false);
@@ -629,7 +577,7 @@
       cont.remove();
     } else {
       GM_setValue('analogClock', true);
-      getAnalogClock();
+      applyAnalogClock();
     }
     const btn = $id('analogClockBtn');
     btn.replaceChildren(
@@ -641,33 +589,11 @@
     );
   };
 
-  // ============ Initialize ============
+  // =================================
+  // CONTROL CONTAINER
+  // =================================
 
-  const init = () => {
-    document.removeEventListener('DOMContentLoaded', init);
-    if (!body) return;
-    body.id = 'gWP1';
-    const textArea = $id('APjFqb');
-    const dtContainer = $el('div', {
-      id: 'dateTimeContainer'
-    });
-    const imageCalendar = $el('img', {
-      id: 'imageCalendar',
-      src: _Icon.calendar32D
-    });
-    const calendarButton = $el('button', {
-      id: 'calendarButton',
-      src: _Icon.calendar32D,
-      title: 'Left-click → Show/Hide Digital Calendar',
-      onclick: dateTimeToggle},
-      imageCalendar
-    );
-    const dateTimeEl = $el('span', {
-      id: 'dateTime',
-      title: 'Left-click → Show/Hide Seconds',
-      onclick: dateTimeToggleSeconds
-    });
-    dtContainer.append(calendarButton, dateTimeEl);
+  const applyControlContainer = () => {
     const controlContainer = $el('div', {
       id: 'controlContainer'
     });
@@ -728,31 +654,161 @@
         alt: 'Clock'
       }), ' Show'
     );
-    controlContainer.append(buttonThemer, inputThemer, downThemer, spacer1, buttonLogo, inputLogo, downLogo, spacer2, analogClockBtn);
-    body.prepend(dtContainer);
+    controlContainer.append(
+      buttonThemer,
+      inputThemer,
+      downThemer,
+      spacer1,
+      buttonLogo,
+      inputLogo,
+      downLogo,
+      spacer2,
+      analogClockBtn
+    );
     body.prepend(controlContainer);
-    dtContainer.style.position = 'fixed';
-    dtContainer.style.top = '590px';
-    dtContainer.style.left = '50%';
-    dtContainer.style.transform = 'translateX(-50%)';
     controlContainer.style.position = 'fixed';
     controlContainer.style.top = '516px';
     controlContainer.style.left = '50%';
     controlContainer.style.transform = 'translateX(-50%)';
-    makeDraggable(dtContainer, 'dtContainer');
     makeDraggable(controlContainer, 'controlContainer');
-    restorePosition(dtContainer, 'dtContainer');
     restorePosition(controlContainer, 'controlContainer');
-    applyWallpaper(GM_getValue('wallpaperImage', 0));
-    applyLogo(GM_getValue('logoImageNum', 1));
+  }
+
+  // =================================
+  // DATE / Digital TIME
+  // =================================
+
+  const applyDateTime = () => {
+    const dtContainer = $el('div', {
+      id: 'dateTimeContainer'
+    });
+    const imageCalendar = $el('img', {
+      id: 'imageCalendar',
+      src: _Icon.calendar32D
+    });
+    const digCalBtn = $el('button', {
+      id: 'digCalBtn',
+      src: _Icon.calendar32D,
+      title: 'Left-click → Show/Hide Digital Calendar',
+      onclick: dateTimeToggle},
+      imageCalendar
+    );
+    const dateTimeEl = $el('span', {
+      id: 'dateTime',
+      title: 'Left-click → Show/Hide Seconds',
+      onclick: dateTimeToggleSeconds
+    });
+    dtContainer.append(digCalBtn, dateTimeEl);
+    body.prepend(dtContainer);
+    dtContainer.style.position = 'fixed';
+    dtContainer.style.top = '590px';
+    dtContainer.style.left = '50%';
+    dtContainer.style.transform = 'translateX(-50%)';
+    makeDraggable(dtContainer, 'dtContainer');
+    restorePosition(dtContainer, 'dtContainer');
+  }
+
+  const updateDigitalClock = () => {
+    const digitalClock = $id('dateTime');
+    if (!digitalClock) return;
+    const now = new Date();
+    const dayFull = DAY_FULL[now.getDay()];
+    const monthFull = MONTH_FULL[now.getMonth()];
+    const dt = now.getDate();
+    const yr = now.getFullYear();
+    const suffix = ['th','st','nd','rd']
+      [(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th';
+    const h12 = String(now.getHours() % 12 || 12);
+    const min = String(now.getMinutes()).padStart(2, '0');
+    const sec = String(now.getSeconds()).padStart(2, '0');
+    const ampm = now.getHours() < 12 ? 'AM' : 'PM';
+    const secView = GM_getValue('secondsView', false);
+    digitalClock.textContent = secView
+      ? `${dayFull} ⇒ ${monthFull} ${dt}${suffix}, ${yr} 🕑 ${h12}:${min}:${sec} ${ampm}`
+      : `${dayFull} ⇒ ${monthFull} ${dt}${suffix}, ${yr} 🕑 ${h12}:${min} ${ampm}`;
+  };
+
+  const dateTimeToggle = (e) => {
+    if (e.button !== 0) return;
+    if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
+      const dtEl = $id('dateTime');
+      dtEl.hidden = !dtEl.hidden;
+      GM_setValue('dateTimeView', !dtEl.hidden);
+    }
+  };
+
+  const dateTimeToggleSeconds = (e) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
+      GM_setValue('secondsView', !GM_getValue('secondsView', false));
+    }
+  };
+
+  // =================================
+  // WALLPAPER
+  // =================================
+
+  const applyWallpaper = (num) => {
+    if (_currentWallpaperStyle) {
+      _currentWallpaperStyle.remove();
+      _currentWallpaperStyle = null;
+    }
+    num = parseInt(num) || 0;
+    if (num === 0) return;
+    const css = `
+      body#gWP1 {
+        background: url(${_githubSite}${num}.jpg) no-repeat center center / cover fixed !important;
+      }
+    `;
+    _currentWallpaperStyle = GM_addStyle(css);
+  };
+
+  const wallpaperButtonChanger = (e) => {
+    const inp = $id('inputThemer');
+    let val = parseInt(inp.value) || 0;
+    val = e.target.id.includes('down') ? val - 1 : val + 1;
+    if (val > 52) {
+      val = 0;
+    }
+    if (val < 0) {
+      val = 52;
+    }
+    inp.value = val;
+    GM_setValue('wallpaperImage', val);
+    applyWallpaper(val);
+  };
+
+  const wallpaperInputChanger = () => {
+    const inpThemer = $id('inputThemer');
+    let val = parseInt(inpThemer.value) || 0;
+    val = Math.max(0, Math.min(52, val));
+    inpThemer.value = val;
+    GM_setValue('wallpaperImage', val);
+    applyWallpaper(val);
+  };
+
+  // =================================
+  // INITIALIZE
+  // =================================
+
+  const init = () => {
+    document.removeEventListener('DOMContentLoaded', init);
+    if (!body) return;
+    body.id = 'gWP1';
+    const textArea = $id('APjFqb');
     if (textArea) textArea.placeholder = 'Search Look-up';
+    applyLogo(GM_getValue('logoImageNum', 1));
+    applyControlContainer();
+    applyDateTime();
+    applyWallpaper(GM_getValue('wallpaperImage', 0));
     const dtEl = $id('dateTime');
     const dtPref = GM_getValue('dateTimeView', false);
     dtEl.hidden = !dtPref;
     const showClock = GM_getValue('analogClock', true);
     const clock = $id('analogClockContainer');
     if (showClock) {
-      requestAnimationFrame(() => getAnalogClock());
+      requestAnimationFrame(() => applyAnalogClock());
     } else {
       clock?.remove();
     }
@@ -760,18 +816,20 @@
     btn.replaceChildren($el('img', {src: _Icon.clock26, alt: 'Clock'}),
       GM_getValue('analogClock', true) ? ' Hide' : ' Show'
     );
+    updateDigitalClock();
+    setInterval(updateDigitalClock, 200);
   };
 
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && GM_getValue('analogClock', true)) {
       if (!$id('analogClockContainer')) {
-        getAnalogClock();
+        applyAnalogClock();
     } }
   });
 
   window.addEventListener('pageshow', () => {
     if (GM_getValue('analogClock', true) && !$id('analogClockContainer')) {
-      getAnalogClock();
+      applyAnalogClock();
     }
   });
 
@@ -781,7 +839,9 @@
     init();
   }
 
-  // ============ CSS ============
+  // =================================
+  // CSS
+  // =================================
 
   GM_addStyle(`
     body#gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
@@ -852,8 +912,8 @@
       border-radius: 8px;
       box-sizing: border-box;
       display: inline-flex;
-      font: 20px monospace;
-      height: 32px;
+      font: 18px monospace;
+      max-height: 32px;
       min-width: 32px;
       padding: 0px 8px;
       pointer-events: auto;
@@ -866,14 +926,15 @@
     #dateTimeContainer > * {
       pointer-events: auto;
     }
-    body#gWP1 #calendarButton {
+    body#gWP1 #digCalBtn {
       border-radius: 8px;
       cursor: pointer;
-      height: 32px;
+      height: 33px;
       margin: 0px;
       width: 32px;
     }
     body#gWP1 #imageCalendar {
+      border-radius: 8px;
     }
     body#gWP1 #imageCalendar:hover + #dateTime {
     }
@@ -886,8 +947,9 @@
       cursor: pointer;
       display: block;
       margin: 0px 0px 0px 2px;
+      max-height: 32px;
       min-width: 0px;
-      padding: 2px 10px;
+      padding: 3px 10px;
       text-shadow: 1px 1px 2px #000;
       user-select: none;;
     }
@@ -991,7 +1053,7 @@
     body#gWP1 #controlContainer > button,
     body#gWP1 #controlContainer > input {
       font-family: monospace;
-      font-size: 120%;
+      font-size: 18px;
     }
     body#gWP1 #analogClockBtn {
       color: #fff;
@@ -1143,12 +1205,12 @@
       border-radius: 8px;
       cursor: default;
       display: flex;
-      gap: 12px;
+      gap: 15px;
       height: 32px;
       justify-content: center;
       margin-top: 4px;
       padding: 0px 0px 1px 0px;
-      width: 364px;
+      width: 384px;
     }
     body#gWP1 .ClockThemeToggle,
     body#gWP1 .ClockSecondToggle,
@@ -1234,7 +1296,7 @@
       margin-top: -6px;
       padding: 6px 0px 2px 0px;
 	     text-align: center;
-      width: 364px;
+      width: 384px;
     }
     body#gWP1 .Analog-Info * {
       text-shadow: 1px 1px 2px #000;
