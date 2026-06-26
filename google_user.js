@@ -22,9 +22,9 @@
 
   'use strict';
 
-  // =================================
+  // =========================================================================
   // DOM HELPERS
-  // =================================
+  // =========================================================================
 
   const SVG_NS = "http://www.w3.org/2000/svg";
   const SVG_TAGS = new Set([
@@ -134,19 +134,6 @@
     elmnt.addEventListener('mousedown', dragMouseDown);
   };
 
-  // =================================
-  // FOR USE WITH INTERNET EXPLORER
-  // =================================
-
-  //const prepend = (parent, child) => {
-    //if (!parent) {
-      //console.warn('prepend: parent is null', parent);
-      //return null;
-    //}
-    //parent.prepend(child);
-    //return child;
-  //};
-
   const removeDupes = (className) => {
     const [first, ...dupes] = document.querySelectorAll('.' + className);
     dupes.forEach(el => el.remove());
@@ -162,9 +149,9 @@
     }
   };
 
-  // =================================
+  // =========================================================================
   // ORIGINAL CODE
-  // =================================
+  // =========================================================================
 
   const body = document.body;
   const DAY_ABBR = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'];
@@ -173,6 +160,7 @@
   const MONTH_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const _aURL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/';
   const _githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image';
+
   const _Icon = {
     ampm22: _aURL + 'AMPM2.png',
     calendar16: _aURL + 'calendar16.png',
@@ -187,6 +175,7 @@
     sun16: _aURL + 'sun16.png',
     sun22: _aURL + 'sun22.png',
   };
+
   const _Image = {
     logo1: _aURL + 'logoGoogle.png',
     logo2: _aURL + 'imageGoogle.png',
@@ -207,9 +196,9 @@
     logo17: '',
   };
 
-  // =================================
+  // =========================================================================
   // GLOBAL VARIABLES
-  // =================================
+  // =========================================================================
 
   let analogAnimationId = null;
   let analogIntervalId = null;
@@ -217,9 +206,9 @@
   let _interval = null;
   let analogClockRunning = false;
 
-  // =================================
+  // =========================================================================
   // LOGOS
-  // =================================
+  // =========================================================================
 
   const _Logo = [null];
 
@@ -291,9 +280,9 @@
     applyLogo(val);
   };
 
-  // =================================
+  // =========================================================================
   // ANALOG CLOCK
-  // =================================
+  // =========================================================================
 
   const stopAnalogClock = () => {
     analogClockRunning = false;
@@ -600,9 +589,9 @@
     );
   };
 
-  // =================================
+  // =========================================================================
   // CONTROL CONTAINER
-  // =================================
+  // =========================================================================
 
   const applyControlContainer = () => {
     const controlContainer = $el('div', {
@@ -685,9 +674,9 @@
     restorePosition(controlContainer, 'controlContainer');
   }
 
-  // =================================
+  // =========================================================================
   // DATE / Digital TIME
-  // =================================
+  // =========================================================================
 
   const applyDateTime = () => {
     const dtContainer = $el('div', {
@@ -775,9 +764,9 @@
     startDigitalClock();
   };
 
-  // =================================
+  // =========================================================================
   // WALLPAPER
-  // =================================
+  // =========================================================================
 
   const applyWallpaper = (num) => {
     if (_currentWallpaperStyle) {
@@ -818,12 +807,11 @@
     applyWallpaper(val);
   };
 
-  // =================================
+  // =========================================================================
   // INITIALIZE
-  // =================================
+  // =========================================================================
 
   const init = () => {
-    document.removeEventListener('DOMContentLoaded', init);
     if (!body) return;
     body.id = 'gWP1';
     const textArea = $id('APjFqb');
@@ -832,9 +820,6 @@
     applyLogo(GM_getValue('logoImageNum', 1));
     applyControlContainer();
     applyDateTime();
-    const dtEl = $id('dateTime');
-    const dtPref = GM_getValue('dateTimeView', false);
-    dtEl.hidden = !dtPref;
     const showClock = GM_getValue('analogClock', true);
     const clock = $id('analogClockContainer');
     if (showClock) {
@@ -846,6 +831,9 @@
     btn.replaceChildren($el('img', {src: _Icon.clock26, alt: 'Clock'}),
       GM_getValue('analogClock', true) ? ' Hide' : ' Show'
     );
+    const dtEl = $id('dateTime');
+    const dtPref = GM_getValue('dateTimeView', false);
+    dtEl.hidden = !dtPref;
   };
 
   document.addEventListener('visibilitychange', () => {
@@ -867,9 +855,9 @@
     init();
   }
 
-  // =================================
+  // =========================================================================
   // CSS
-  // =================================
+  // =========================================================================
 
   GM_addStyle(`
     body#gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
