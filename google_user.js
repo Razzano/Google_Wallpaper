@@ -205,10 +205,10 @@
   // ===========================================================================
 
   let analogAnimationId = null;
+  let analogClockRunning = false;
   let analogIntervalId = null;
   let _currentWallpaperStyle = null;
   let _interval = null;
-  let analogClockRunning = false;
 
   // ===========================================================================
   // LOGOS
@@ -218,7 +218,7 @@
 
   for (let i = 1; i <= 16; i++) {
     _Logo.push($el('img', {id: 'logoGoogle', class: 'logo', src: _Image[`logo${i}`]}));
-  };
+  }
 
   const applyLogo = (num) => {
     const existing = $id('logoGoogle');
@@ -676,7 +676,7 @@
     controlContainer.style.transform = 'translateX(-50%)';
     makeDraggable(controlContainer, 'controlContainer');
     restorePosition(controlContainer, 'controlContainer');
-  }
+  };
 
   // ===========================================================================
   // DATE / Digital TIME
@@ -710,7 +710,7 @@
     dtContainer.style.transform = 'translateX(-50%)';
     makeDraggable(dtContainer, 'dtContainer');
     restorePosition(dtContainer, 'dtContainer');
- }
+ };
 
   const updateDigitalClock = () => {
     const digitalClock = $id('dateTime');
