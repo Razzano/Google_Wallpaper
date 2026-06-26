@@ -15,8 +15,10 @@
 // @grant        GM_setValue
 // ==/UserScript==
 
+// ===========================================================================
 // NOTE: To open all Google App Links in new tabs, download Tampermonkey script:
 // https://github.com/Razzano/Google_App_Links/blob/main/Open_in_New_Tab.js
+// ===========================================================================
 
 (() => {
 
@@ -835,6 +837,10 @@
     const dtPref = GM_getValue('dateTimeView', false);
     dtEl.hidden = !dtPref;
   };
+
+  // =========================================================================
+  // EVENT LISTENERS
+  // =========================================================================
 
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && GM_getValue('analogClock', true)) {
