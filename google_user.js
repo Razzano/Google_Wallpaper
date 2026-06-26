@@ -15,18 +15,18 @@
 // @grant        GM_setValue
 // ==/UserScript==
 
-// ===========================================================================
+// =============================================================================
 // NOTE: To open all Google App Links in new tabs, download Tampermonkey script:
 // https://github.com/Razzano/Google_App_Links/blob/main/Open_in_New_Tab.js
-// ===========================================================================
+// =============================================================================
 
 (() => {
 
   'use strict';
 
-  // =========================================================================
+  // ===========================================================================
   // DOM HELPERS
-  // =========================================================================
+  // ===========================================================================
 
   const SVG_NS = "http://www.w3.org/2000/svg";
   const SVG_TAGS = new Set([
@@ -151,15 +151,17 @@
     }
   };
 
-  // =========================================================================
+  // ===========================================================================
   // ORIGINAL CODE
-  // =========================================================================
+  // ===========================================================================
 
   const body = document.body;
   const DAY_ABBR = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'];
   const DAY_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const MONTH_ABBR = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'];
   const MONTH_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const _SECOND = 1000;
+  const _SECONDS = 5000;
   const _aURL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/';
   const _githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image';
 
@@ -198,9 +200,9 @@
     logo17: '',
   };
 
-  // =========================================================================
+  // ===========================================================================
   // GLOBAL VARIABLES
-  // =========================================================================
+  // ===========================================================================
 
   let analogAnimationId = null;
   let analogIntervalId = null;
@@ -208,9 +210,9 @@
   let _interval = null;
   let analogClockRunning = false;
 
-  // =========================================================================
+  // ===========================================================================
   // LOGOS
-  // =========================================================================
+  // ===========================================================================
 
   const _Logo = [null];
 
@@ -282,9 +284,9 @@
     applyLogo(val);
   };
 
-  // =========================================================================
+  // ===========================================================================
   // ANALOG CLOCK
-  // =========================================================================
+  // ===========================================================================
 
   const stopAnalogClock = () => {
     analogClockRunning = false;
@@ -564,7 +566,7 @@
         tick();
       } else {
         updateAnalogClock();
-        analogIntervalId = setInterval(updateAnalogClock, 1000);
+        analogIntervalId = setInterval(updateAnalogClock, _SECOND);
       }
     };
 	   startAnalogClock();
@@ -591,9 +593,9 @@
     );
   };
 
-  // =========================================================================
+  // ===========================================================================
   // CONTROL CONTAINER
-  // =========================================================================
+  // ===========================================================================
 
   const applyControlContainer = () => {
     const controlContainer = $el('div', {
@@ -676,9 +678,9 @@
     restorePosition(controlContainer, 'controlContainer');
   }
 
-  // =========================================================================
+  // ===========================================================================
   // DATE / Digital TIME
-  // =========================================================================
+  // ===========================================================================
 
   const applyDateTime = () => {
     const dtContainer = $el('div', {
@@ -708,7 +710,7 @@
     dtContainer.style.transform = 'translateX(-50%)';
     makeDraggable(dtContainer, 'dtContainer');
     restorePosition(dtContainer, 'dtContainer');
-  }
+ }
 
   const updateDigitalClock = () => {
     const digitalClock = $id('dateTime');
@@ -738,8 +740,12 @@
     clearInterval(_interval);
     _interval = null;
     const digitalClock = $id('dateTime');
-    if (!digitalClock || digitalClock.hidden) return;
-    const delay = GM_getValue('secondsView', false) ? 1000 : 10000;
+    const dtPref = GM_getValue('dateTimeView', false);
+    if (!dtPref || digitalClock.hidden) {
+      digitalClock.hidden = !dtPref;
+      return;
+    }
+    const delay = GM_getValue('secondsView', false) ? _SECOND : _SECONDS;
     updateDigitalClock();
     _interval = setInterval(updateDigitalClock, delay);
   };
@@ -766,9 +772,9 @@
     startDigitalClock();
   };
 
-  // =========================================================================
+  // ===========================================================================
   // WALLPAPER
-  // =========================================================================
+  // ===========================================================================
 
   const applyWallpaper = (num) => {
     if (_currentWallpaperStyle) {
@@ -809,9 +815,9 @@
     applyWallpaper(val);
   };
 
-  // =========================================================================
+  // ===========================================================================
   // INITIALIZE
-  // =========================================================================
+  // ===========================================================================
 
   const init = () => {
     if (!body) return;
@@ -822,6 +828,7 @@
     applyLogo(GM_getValue('logoImageNum', 1));
     applyControlContainer();
     applyDateTime();
+    startDigitalClock();
     const showClock = GM_getValue('analogClock', true);
     const clock = $id('analogClockContainer');
     if (showClock) {
@@ -833,14 +840,11 @@
     btn.replaceChildren($el('img', {src: _Icon.clock26, alt: 'Clock'}),
       GM_getValue('analogClock', true) ? ' Hide' : ' Show'
     );
-    const dtEl = $id('dateTime');
-    const dtPref = GM_getValue('dateTimeView', false);
-    dtEl.hidden = !dtPref;
   };
 
-  // =========================================================================
+  // ===========================================================================
   // EVENT LISTENERS
-  // =========================================================================
+  // ===========================================================================
 
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && GM_getValue('analogClock', true)) {
@@ -861,9 +865,9 @@
     init();
   }
 
-  // =========================================================================
+  // ===========================================================================
   // CSS
-  // =========================================================================
+  // ===========================================================================
 
   GM_addStyle(`
     body#gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
