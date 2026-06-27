@@ -156,6 +156,7 @@
   // ===========================================================================
 
   const body = document.body;
+  const BASE_SIZE = 314;
   const DAY_ABBR = ['Sun.','Mon.','Tue.','Wed.','Thu.','Fri.','Sat.'];
   const DAY_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const MONTH_ABBR = ['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'];
@@ -200,6 +201,43 @@
     logo17: '',
   };
 
+  const _Text = {
+    amText: 'AM',
+    bodyIdText: 'gWP1',
+    buttonLogoText: 'Logo 🠉',
+    buttonThemerText: 'Wallpaper 🠉',
+    downLogoText: '🠋 Logo',
+    downThemerText: '🠋 Wallpaper',
+    hideText: ' Hide',
+    placeholderText: 'Search Look-up',
+    pmText: 'PM',
+    scalerBtnMinusText: '–',
+    scalerBtnPlusText: '+',
+    scalerBtnResetText: 'Reset',
+    showText: ' Show',
+    spacerXText: '|',
+  };
+
+  const _Title = {
+    anaCalBtnTitle: 'Show/Hide Calendar Info',
+    ampmBtnTitle: 'Show/Hide Clock AMPM',
+    analogClockBtnTitle: 'Analog Clock',
+    buttonLogoTitle: 'Left-click to change logos',
+    buttonThemerTitle: 'Left-click to change wallpaper',
+    dateTimeElTitle: 'Left-click → Show/Hide Seconds',
+    digCalBtnTitle: 'Left-click → Show/Hide Calendar & Digital Time',
+    downLogoTitle: 'Left-click to change logos',
+    downThemerTitle: 'Left-click to change wallpaper',
+    inputLogoTitle: 'Manually Enter:\n • 1 - 17 (0 = Default Google Logo, 17 = No Logo)',
+    inputThemerTitle: 'Manually Enter:\n • 1 - 52 (0 = Default Google Background)',
+    percentageDisplayTitle: 'Manually Enter Percentage:\n • Min. 30% = 90px Ø\n • Reset 100% = 300px Ø\n • Max. 200% = 600px Ø',
+    scalerBtnDownTitle: 'Scale Down In 5% Increments',
+    scalerBtnUpTitle: 'Scale Up In 5% Increments',
+    scalerResetTitle: 'Reset To 100%',
+    secondHandBtnTitle: 'Toggle Between Smooth/Tick Second Hand Movement',
+    themeBtnTitle: 'Toggle Between Dark/Light Theme',
+  };
+
   // ===========================================================================
   // GLOBAL VARIABLES
   // ===========================================================================
@@ -235,7 +273,7 @@
       8: { marginTop: '60px', transform: 'translateX(-180%)' },
       12: { marginTop: '5px', transform: 'translateX(-50%)' },
       13: { marginTop: '15px', transform: 'translateX(-50%)' },
-      15: { marginTop: '25px', transform: 'translateX(-50%)' }
+      15: { marginTop: '25px', transform: 'translateX(-50%)' },
     };
     const config = logoConfig[num] || { marginTop: '40px', transform: 'translateX(-50%)' };
     GM_addStyle(`
@@ -285,6 +323,49 @@
   };
 
   // ===========================================================================
+  // WALLPAPER
+  // ===========================================================================
+
+  const applyWallpaper = (num) => {
+    if (_currentWallpaperStyle) {
+      _currentWallpaperStyle.remove();
+      _currentWallpaperStyle = null;
+    }
+    num = parseInt(num) || 0;
+    if (num === 0) return;
+    const css = `
+      #gWP1 {
+        background: url(${_githubSite}${num}.jpg) no-repeat center center / cover fixed !important;
+      }
+    `;
+    _currentWallpaperStyle = GM_addStyle(css);
+  };
+
+  const wallpaperButtonChanger = (e) => {
+    const inp = $id('inputThemer');
+    let val = parseInt(inp.value) || 0;
+    val = e.target.id.includes('down') ? val - 1 : val + 1;
+    if (val > 52) {
+      val = 0;
+    }
+    if (val < 0) {
+      val = 52;
+    }
+    inp.value = val;
+    GM_setValue('wallpaperImage', val);
+    applyWallpaper(val);
+  };
+
+  const wallpaperInputChanger = () => {
+    const inpThemer = $id('inputThemer');
+    let val = parseInt(inpThemer.value) || 0;
+    val = Math.max(0, Math.min(52, val));
+    inpThemer.value = val;
+    GM_setValue('wallpaperImage', val);
+    applyWallpaper(val);
+  };
+
+  // ===========================================================================
   // ANALOG CLOCK
   // ===========================================================================
 
@@ -306,7 +387,7 @@
     const smoothSecondHand = GM_getValue('smoothSecondHand', true);
     const ticks = [];
     const hourNumbers = [];
-    const spacer3 = $el('span', {id: 'spacer3', class: 'spacerX', textContent: '|'});
+    const spacer3 = $el('span', {id: 'spacer3', class: 'spacerX', textContent: _Text.spacerXText});
     for (let i = 0; i < 60; i++) {
       const angleDeg = i * 6 - 90;
       const rad = angleDeg * Math.PI / 180;
@@ -380,7 +461,6 @@
     const ampmView = GM_getValue('ampmView', true);
     ampmBorder.style.display = ampmView ? '' : 'none';
     ampmText.style.display = ampmView ? '' : 'none';
-    const BASE_SIZE = 314;
     let currentPercent = 100;
     const percentageDisplay = $el('input', {
       className: 'scaler-text',
@@ -389,7 +469,7 @@
       min: '30',
       max: '200',
       step: '1',
-      title: 'Manually Enter Percentage:\n • Min. 30% = 90px Ø\n • Reset 100% = 300px Ø\n • Max. 200% = 600px Ø',
+      title: _Title.percentageDisplayTitle,
       oninput(e) {
         const val = e.target.value;
         if (val === '') return;
@@ -411,7 +491,7 @@
     });
     const themeBtn = $el('button', {
       className: 'ClockThemeToggle',
-      title: 'Toggle Between Dark/Light Theme'
+      title: _Title.themeBtnTitle
     }, moonImg);
     const setTheme = (dark) => {
       Clock.classList.toggle('dark', dark);
@@ -428,7 +508,7 @@
     });
     const secondHandBtn = $el('button', {
       className: 'ClockSecondToggle',
-      title: 'Toggle Between Smooth/Tick Second Hand Movement'
+      title: _Title.secondHandBtnTitle
     }, clockImg);
     const setSecondMode = (smooth) => {
       GM_setValue('smoothSecondHand', smooth);
@@ -449,7 +529,7 @@
     const anaCalBtn = $el('button', {
       id: 'anaCalBtn',
       className: 'scaler-info',
-      title: 'Show/Hide Calendar Info',
+      title: _Title.anaCalBtnTitle,
       onclick() {
         clockInfo.classList.toggle('hidden');
         GM_setValue('calendarInfo', !clockInfo.classList.contains('hidden'));
@@ -461,7 +541,7 @@
     });
     const ampmBtn = $el('button', {
       className: 'am-pm',
-      title: 'Show/Hide Clock AMPM',
+      title: _Title.ampmBtnTitle,
       onclick() {
         const visible = !GM_getValue('ampmView', true);
         ampmBorder.style.display = visible ? '' : 'none';
@@ -478,21 +558,21 @@
       spacer3,
       $el('button', {
         className: 'scaler-reset',
-        textContent: 'Reset',
-        title: 'Reset To 100%',
+        textContent: _Text.scalerBtnResetText,
+        title: _Title.scalerResetTitle,
         onclick: () => setClockPercentage(100)
       }),
       $el('button', {
         className: 'scaler-btn',
-        textContent: '–',
-        title: 'Scale Down In 5% Increments',
+        textContent: _Text.scalerBtnMinusText,
+        title: _Title.scalerBtnDownTitle,
         onclick: () => setClockPercentage(currentPercent - 5)
       }),
       percentageDisplay,
       $el('button', {
         className: 'scaler-btn',
-        textContent: '+',
-        title: 'Scale Up In 5% Increments',
+        textContent: _Text.scalerBtnPlusText,
+        title: _Title.scalerBtnUpTitle,
         onclick: () => setClockPercentage(currentPercent + 5)
       })
     );
@@ -515,7 +595,7 @@
       container.style.left = '20px';
       container.style.top = '20px';
     }
-    document.body.prepend(container);
+    body.prepend(container);
     const updateAnalogClock = () => {
       if (!$id('analogClockContainer')) return;
       const smoothSecondHand = GM_getValue('smoothSecondHand', true);
@@ -537,7 +617,7 @@
       const h12 = String(now.getHours() % 12 || 12);
       const min = String(now.getMinutes()).padStart(2, '0');
       const sec = String(now.getSeconds()).padStart(2, '0');
-      const ampm = now.getHours() < 12 ? 'AM' : 'PM';
+      const ampm = now.getHours() < 12 ? _Text.amText : _Text.pmText;
       const secView = GM_getValue('secondsView', false);
       ampmText.textContent = ampm;
       calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑 ${h12}:${min}`;
@@ -589,93 +669,8 @@
         src: _Icon.clock26,
         alt: 'Clock'
       }),
-      GM_getValue('analogClock', true) ? ' Hide' : ' Show'
+      GM_getValue('analogClock', true) ? _Text.hideText : _Text.showText
     );
-  };
-
-  // ===========================================================================
-  // CONTROL CONTAINER
-  // ===========================================================================
-
-  const applyControlContainer = () => {
-    const controlContainer = $el('div', {
-      id: 'controlContainer'
-    });
-    const buttonThemer = $el('button', {
-      id: 'buttonThemer',
-      textContent: 'Wallpaper 🠉',
-      title: 'Left-click to change wallpaper',
-      onclick: wallpaperButtonChanger
-    });
-    const inputThemer = $el('input', {
-      id: 'inputThemer',
-      type: 'number',
-      value: GM_getValue('wallpaperImage', 0),
-      title: 'Manually Enter:\n • 1 - 52 (0 = Default Google Background)',
-      oninput: wallpaperInputChanger
-    });
-    const downThemer = $el('button', {
-      id: 'downThemer',
-      textContent: '🠋 Wallpaper',
-      title: 'Left-click to change wallpaper',
-      onclick: wallpaperButtonChanger
-    });
-    const buttonLogo = $el('button', {
-      id: 'buttonLogo',
-      textContent: 'Logo 🠉',
-      title: 'Left-click to change logos',
-      onclick: e => logoClick(e.target.id)
-    });
-    const inputLogo = $el('input', {
-      id: 'inputLogo',
-      type: 'number',
-      value: GM_getValue('logoImageNum', 1),
-      title: 'Manually Enter:\n • 1 - 17 (0 = Default Google Logo, 17 = No Logo)',
-      oninput: handleLogoInput
-    });
-    const downLogo = $el('button', {
-      id: 'downLogo',
-      textContent: '🠋 Logo',
-      title: 'Left-click to change logos',
-      onclick: e => logoClick(e.target.id)
-    });
-    const spacer1 = $el('span', {
-      id: 'spacer1',
-      class: 'spacerX',
-      textContent: '|'
-    });
-    const spacer2 = $el('span', {
-      id: 'spacer2',
-      class: 'spacerX',
-      textContent: '|'
-    });
-    const analogClockBtn = $el('button', {
-      id: 'analogClockBtn',
-      title: 'Analog Clock',
-      onclick: toggleAnalogClock},
-      $el('img', {
-        src: _Icon.clock26,
-        alt: 'Clock'
-      }), ' Show'
-    );
-    controlContainer.append(
-      buttonThemer,
-      inputThemer,
-      downThemer,
-      spacer1,
-      buttonLogo,
-      inputLogo,
-      downLogo,
-      spacer2,
-      analogClockBtn
-    );
-    body.prepend(controlContainer);
-    controlContainer.style.position = 'fixed';
-    controlContainer.style.top = '516px';
-    controlContainer.style.left = '50%';
-    controlContainer.style.transform = 'translateX(-50%)';
-    makeDraggable(controlContainer, 'controlContainer');
-    restorePosition(controlContainer, 'controlContainer');
   };
 
   // ===========================================================================
@@ -693,13 +688,13 @@
     const digCalBtn = $el('button', {
       id: 'digCalBtn',
       src: _Icon.calendar32D,
-      title: 'Left-click → Show/Hide Digital Calendar',
+      title: _Title.digCalBtnTitle,
       onclick: dateTimeToggle},
       imageCalendar
     );
     const dateTimeEl = $el('span', {
       id: 'dateTime',
-      title: 'Left-click → Show/Hide Seconds',
+      title: _Title.dateTimeElTitle,
       onclick: dateTimeToggleSeconds
     });
     dtContainer.append(digCalBtn, dateTimeEl);
@@ -746,8 +741,8 @@
       return;
     }
     const delay = GM_getValue('secondsView', false) ? _SECOND : _SECONDS;
-    updateDigitalClock();
     _interval = setInterval(updateDigitalClock, delay);
+    updateDigitalClock();
   };
 
   const dateTimeToggle = (e) => {
@@ -773,46 +768,88 @@
   };
 
   // ===========================================================================
-  // WALLPAPER
+  // CONTROL CONTAINER
   // ===========================================================================
 
-  const applyWallpaper = (num) => {
-    if (_currentWallpaperStyle) {
-      _currentWallpaperStyle.remove();
-      _currentWallpaperStyle = null;
-    }
-    num = parseInt(num) || 0;
-    if (num === 0) return;
-    const css = `
-      body#gWP1 {
-        background: url(${_githubSite}${num}.jpg) no-repeat center center / cover fixed !important;
-      }
-    `;
-    _currentWallpaperStyle = GM_addStyle(css);
-  };
-
-  const wallpaperButtonChanger = (e) => {
-    const inp = $id('inputThemer');
-    let val = parseInt(inp.value) || 0;
-    val = e.target.id.includes('down') ? val - 1 : val + 1;
-    if (val > 52) {
-      val = 0;
-    }
-    if (val < 0) {
-      val = 52;
-    }
-    inp.value = val;
-    GM_setValue('wallpaperImage', val);
-    applyWallpaper(val);
-  };
-
-  const wallpaperInputChanger = () => {
-    const inpThemer = $id('inputThemer');
-    let val = parseInt(inpThemer.value) || 0;
-    val = Math.max(0, Math.min(52, val));
-    inpThemer.value = val;
-    GM_setValue('wallpaperImage', val);
-    applyWallpaper(val);
+  const applyControlContainer = () => {
+    const controlContainer = $el('div', {
+      id: 'controlContainer'
+    });
+    const buttonThemer = $el('button', {
+      id: 'buttonThemer',
+      textContent: _Text.buttonThemerText,
+      title: _Title.buttonThemerTitle,
+      onclick: wallpaperButtonChanger
+    });
+    const inputThemer = $el('input', {
+      id: 'inputThemer',
+      type: 'number',
+      value: GM_getValue('wallpaperImage', 0),
+      title: _Title.inputThemerTitle,
+      oninput: wallpaperInputChanger
+    });
+    const downThemer = $el('button', {
+      id: 'downThemer',
+      textContent: _Text.downThemerText,
+      title: _Title.downThemerTitle,
+      onclick: wallpaperButtonChanger
+    });
+    const buttonLogo = $el('button', {
+      id: 'buttonLogo',
+      textContent: _Text.buttonLogoText,
+      title: _Title.buttonLogoTitle,
+      onclick: e => logoClick(e.target.id)
+    });
+    const inputLogo = $el('input', {
+      id: 'inputLogo',
+      type: 'number',
+      value: GM_getValue('logoImageNum', 1),
+      title: _Title.inputLogoTitle,
+      oninput: handleLogoInput
+    });
+    const downLogo = $el('button', {
+      id: 'downLogo',
+      textContent: _Text.downLogoText,
+      title: _Title.downLogoTitle,
+      onclick: e => logoClick(e.target.id)
+    });
+    const spacer1 = $el('span', {
+      id: 'spacer1',
+      class: 'spacerX',
+      textContent: _Text.spacerXText
+    });
+    const spacer2 = $el('span', {
+      id: 'spacer2',
+      class: 'spacerX',
+      textContent: _Text.spacerXText
+    });
+    const analogClockBtn = $el('button', {
+      id: 'analogClockBtn',
+      title: _Title.analogClockBtnTitle,
+      onclick: toggleAnalogClock},
+      $el('img', {
+        src: _Icon.clock26,
+        alt: 'Clock'
+      }), ' Show'
+    );
+    controlContainer.append(
+      buttonThemer,
+      inputThemer,
+      downThemer,
+      spacer1,
+      buttonLogo,
+      inputLogo,
+      downLogo,
+      spacer2,
+      analogClockBtn
+    );
+    body.prepend(controlContainer);
+    controlContainer.style.position = 'fixed';
+    controlContainer.style.top = '516px';
+    controlContainer.style.left = '50%';
+    controlContainer.style.transform = 'translateX(-50%)';
+    makeDraggable(controlContainer, 'controlContainer');
+    restorePosition(controlContainer, 'controlContainer');
   };
 
   // ===========================================================================
@@ -821,9 +858,9 @@
 
   const init = () => {
     if (!body) return;
-    body.id = 'gWP1';
+    body.id = _Text.bodyIdText;
     const textArea = $id('APjFqb');
-    if (textArea) textArea.placeholder = 'Search Look-up';
+    if (textArea) textArea.placeholder = _Text.placeholderText;
     applyWallpaper(GM_getValue('wallpaperImage', 0));
     applyLogo(GM_getValue('logoImageNum', 1));
     applyControlContainer();
@@ -838,7 +875,7 @@
     }
     const btn = $id('analogClockBtn');
     btn.replaceChildren($el('img', {src: _Icon.clock26, alt: 'Clock'}),
-      GM_getValue('analogClock', true) ? ' Hide' : ' Show'
+      GM_getValue('analogClock', true) ? _Text.hideText : _Text.showText
     );
   };
 
@@ -870,60 +907,62 @@
   // ===========================================================================
 
   GM_addStyle(`
-    body#gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
-    body#gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f > div:nth-child(2) > a,
-    body#gWP1 #gb > div.gb_Ad.gb_6.gb_L,
-    body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.AghGtd,
-    body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.ssOUyb,
-    body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > a,
-    body#gWP1 > div.L3eUgb div.RNNXgb div.fzj3ad,
-    body#gWP1 > div.L3eUgb > div.o3j99.qarstb > div:nth-child(3),
-    body#gWP1 #EUjKDc,
-    body#gWP1 #gbqfbb,
-    body#gWP1 #LS8OJ > div.k1zIA.kKvsb > div.IzOpfd,
-    body#gWP1 > div.L3eUgb > div.o3j99.qarstb > div:nth-child(2){
+    #gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
+    #gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f > div:nth-child(2) > a,
+    #gWP1 #gb > div.gb_Ad.gb_6.gb_L,
+    #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.AghGtd,
+    #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.ssOUyb,
+    #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > a,
+    #gWP1 > div.L3eUgb div.RNNXgb div.fzj3ad,
+    #gWP1 > div.L3eUgb > div.o3j99.qarstb > div:nth-child(3),
+    #gWP1 #EUjKDc,
+    #gWP1 #gbqfbb,
+    #gWP1 #LS8OJ > div.k1zIA.kKvsb > div.IzOpfd,
+    #gWP1 > div.L3eUgb > div.o3j99.qarstb > div:nth-child(2){
       display: none !important;
     }
-    body#gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f {
+    #gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f {
       padding-right: 0px !important;
     }
-    body#gWP1 header a {
+    #gWP1 header a {
       color: #FFF !important;
       text-decoration: none !important;
     }
-    body#gWP1 header a > svg {
+    #gWP1 header a > svg {
       fill: #FFF !important;
     }
-    body#gWP1 > div.L3eUgb > div:nth-child(13) > div {
+    #gWP1 > div.L3eUgb > div:nth-child(13) > div {
       background: transparent !important;
     }
-    body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe {
+    #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe {
       background: transparent !important;
       float: right !important;
     }
-    body#gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span > span > g-popup > div.CcNe6e > div {
+    #gWP1 > div.L3eUgb > div:nth-child(13) > div > div.KxwPGc.SSwjIe > div.KxwPGc.iTjxkf > span > span > g-popup > div.CcNe6e > div {
       background: #2A3A4B !important;
       border-radius: 6px !important;
       padding: 8px 16px !important;
     }
-    body#gWP1 #LS8OJ > div.k1zIA.rSk4se > svg {
+    #gWP1 #LS8OJ > div.k1zIA.rSk4se > svg {
       fill: #FFF !important;
     }
-    body#gWP1 > div.L3eUgb div.RNNXgb,
-    body#gWP1 > div.L3eUgb input.gNO89b {
+    #gWP1 > div.L3eUgb div.RNNXgb,
+    #gWP1 > div.L3eUgb input.gNO89b {
       background: rgba(0,0,0,.2) !important;
     }
-    body#gWP1 #APjFqb {
+    #gWP1 #APjFqb {
       filter: brightness(2) !important;
       text-shadow: 1px 1px 2px #000 !important;
     }
     #gWP1 > div.L3eUgb div.RNNXgb > div.SDkEP > div.fM33ce.dRYYxd > div.ywK6Rd {
       background: none !important;
     }
-    body#gWP1 #gb > div.gb_z > div:nth-child(2) {
+    #gWP1 #gb > div.gb_z > div:nth-child(2) {
       height: calc(-70px + 100vh) !important;
     }
-    body#gWP1 #logoGoogle {
+  `);
+  GM_addStyle(`
+    #logoGoogle {
       filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
       height: auto;
       left: 50%;
@@ -933,7 +972,7 @@
       top: 0px;
       z-index: 999;
     }
-    body#gWP1 #dateTimeContainer {
+    #dateTimeContainer {
       align-items: center;
       border-radius: 8px;
       box-sizing: border-box;
@@ -952,19 +991,19 @@
     #dateTimeContainer > * {
       pointer-events: auto;
     }
-    body#gWP1 #digCalBtn {
+    #digCalBtn {
       border-radius: 8px;
       cursor: pointer;
       height: 33px;
       margin: 0px;
       width: 32px;
     }
-    body#gWP1 #imageCalendar {
+    #imageCalendar {
       border-radius: 8px;
     }
-    body#gWP1 #imageCalendar:hover + #dateTime {
+    #imageCalendar:hover + #dateTime {
     }
-    body#gWP1 #dateTime {
+    #dateTime {
       background: #34495e;
       border: 1px solid transparent;
       border-radius: 8px;
@@ -979,16 +1018,16 @@
       text-shadow: 1px 1px 2px #000;
       user-select: none;;
     }
-    body#gWP1 #dateTime[hidden] {
+    #dateTime[hidden] {
       background: none;
       border: none;
       display: none;
       padding: 0px;
       width: 0px;
     }
-    body#gWP1 #dateTime:hover {
+    #dateTime:hover {
     }
-    body#gWP1 #controlContainer {
+    #controlContainer {
       align-items: center;
       background: #2A3A4B;
       border: none;
@@ -1002,19 +1041,19 @@
       user-select: none;
       z-index: 2;
     }
-    body#gWP1 #controlContainer.dragged {
+    #controlContainer.dragged {
       transform: none;
     }
-    body#gWP1 #controlContainer > * {
+    #controlContainer > * {
       pointer-events: auto;
     }
-    body#gWP1 #buttonThemer {
+    #buttonThemer {
       color: #FFF;
       cursor: pointer;
       opacity: .7;
       text-shadow: 1px 1px 2px #000;
     }
-    body#gWP1 #inputThemer {
+    #inputThemer {
       background: transparent;
       border: 1px solid transparent;
       border-radius: 6px;
@@ -1030,14 +1069,14 @@
       top: 0px;
       width: 30px;
     }
-    body#gWP1 #downThemer {
+    #downThemer {
       color: #FFF;
       cursor: pointer;
       opacity: .7;
       text-shadow: 1px 1px 2px #000;
     }
-    body#gWP1 #spacer1,
-    body#gWP1 #spacer2 {
+    #spacer1,
+    #spacer2 {
       color: #FFF;
       filter: brightness(2);
       margin: 9px 16px 0px 16px;
@@ -1045,16 +1084,16 @@
       pointer-events: none;
       text-align: center;
     }
-    body#gWP1 .spacerX {
+    .spacerX {
       text-shadow: 1px 1px 2px #000;
     }
-    body#gWP1 #buttonLogo {
+    #buttonLogo {
       color: #FFF;
       cursor: pointer;
       opacity: .7;
       text-shadow: 1px 1px 2px #000;
     }
-    body#gWP1 #inputLogo {
+    #inputLogo {
       background: transparent;
       border: 1px solid transparent;
       border-radius: 6px;
@@ -1070,50 +1109,50 @@
       top: 0px;
       width: 30px;
     }
-    body#gWP1 #downLogo {
+    #downLogo {
       color: #FFF;
       cursor: pointer;
       opacity: .7;
       text-shadow: 1px 1px 2px #000;
     }
-    body#gWP1 #controlContainer > button,
-    body#gWP1 #controlContainer > input {
+    #controlContainer > button,
+    #controlContainer > input {
       font-family: monospace;
       font-size: 18px;
     }
-    body#gWP1 #analogClockBtn {
+    #analogClockBtn {
       color: #fff;
       opacity: .7;
     }
-    body#gWP1 #analogClockBtn > img {
+    #analogClockBtn > img {
       height: 22px;
       position: relative;
       top: 5px;
       width: 22px;
     }
-    body#gWP1 #analogClockBtn:not(img):hover {
+    #analogClockBtn:not(img):hover {
       color: orange;
       opacity: 1;
     }
-    body#gWP1 #controlContainer > button:not(#analogClockBtn):hover {
+    #controlContainer > button:not(#analogClockBtn):hover {
       filter: brightness(2);
       opacity: 1;
     }
-    body#gWP1 #inputThemer:hover,
-    body#gWP1 #inputThemer:focus-within,
-    body#gWP1 #inputLogo:hover,
-    body#gWP1 #inputLogo:focus-within {
+    #inputThemer:hover,
+    #inputThemer:focus-within,
+    #inputLogo:hover,
+    #inputLogo:focus-within {
       border-color: #999;
       filter: brightness(2);
       opacity: 1;
     }
-    body#gWP1 ::-webkit-inner-spin-button,
-    body#gWP1 ::-webkit-outer-spin-button,
-    body#gWP1 ::-webkit-inner-spin-button,
-    body#gWP1 ::-webkit-outer-spin-button {
+    ::-webkit-inner-spin-button,
+    ::-webkit-outer-spin-button,
+    ::-webkit-inner-spin-button,
+    ::-webkit-outer-spin-button {
       display: none;
     }
-    body#gWP1 .ClockContainer {
+    .ClockContainer {
       align-items: center;
       display: flex;
       flex-direction: column;
@@ -1124,7 +1163,7 @@
       user-select: none;
       z-index: 3;
     }
-    body#gWP1 .Analog-Bigclock {
+    .Analog-Bigclock {
       align-self: center;
       cursor: move;
       flex-shrink: 0;
@@ -1132,7 +1171,7 @@
       margin: 0 auto;
       width: var(--clock-size);
     }
-    body#gWP1 .Analog {
+    .Analog {
       background: radial-gradient(circle at 50% 50%, #f8f9fa 0%, #e9ecef 100%);
       border: 1px solid #fff;
       border-radius: 50%;
@@ -1140,37 +1179,37 @@
       height: 100%;
       width: 100%;
     }
-    body#gWP1 .Analog-Second-Hand,
-    body#gWP1 .Analog-Minute-Hand,
-    body#gWP1 .Analog-Hour-Hand {
+    .Analog-Second-Hand,
+    .Analog-Minute-Hand,
+    .Analog-Hour-Hand {
       stroke-linecap: round;
       transform-origin: 50% 50%;
     }
-    body#gWP1 .Analog-Second-Hand {
+    .Analog-Second-Hand {
       transform: rotate(var(--secondDeg, 0deg));
     }
-    body#gWP1 .Analog-Minute-Hand {
+    .Analog-Minute-Hand {
       transform: rotate(var(--minuteDeg, 0deg));
     }
-    body#gWP1 .Analog-Hour-Hand {
+    .Analog-Hour-Hand {
       transform: rotate(var(--hourDeg, 0deg));
     }
-    body#gWP1 .Analog-Second-Hand {
+    .Analog-Second-Hand {
       fill: #e74c3c;
       stroke: #e74c3c;
       stroke-width: 1;
     }
-    body#gWP1 .Analog-Minute-Hand {
+    .Analog-Minute-Hand {
       fill: #34495e;
       stroke: #34495e;
       stroke-width: 2;
     }
-    body#gWP1 .Analog-Hour-Hand {
+    .Analog-Hour-Hand {
       fill: #2c3e50;
       stroke: #2c3e50;
       stroke-width: 3;
     }
-    body#gWP1 .Analog-Number {
+    .Analog-Number {
       fill: #2c3e50;
       font-family: system-ui, Arial, sans-serif;
       font-size: 6.8px;
@@ -1178,53 +1217,53 @@
       paint-order: stroke fill;
       stroke: none;
     }
-    body#gWP1 .Analog-CenterCutout {
+    .Analog-CenterCutout {
       fill: #2c3e50;
       stroke: white;
       stroke-width: 3;
     }
-    body#gWP1 .Analog-Bigclock.dark .Analog {
+    .Analog-Bigclock.dark .Analog {
       background: radial-gradient(circle at 50% 50%, #2c3e50 0%, #1a252f 100%);
       border-color: #ecf0f1;
     }
-    body#gWP1 .Analog-Bigclock.dark .Analog-Second-Hand {
+    .Analog-Bigclock.dark .Analog-Second-Hand {
       fill: #ff6b6b;
       stroke: #ff6b6b;
     }
-    body#gWP1 .Analog-Bigclock.dark .Analog-Minute-Hand,
-    body#gWP1 .Analog-Bigclock.dark .Analog-Hour-Hand {
+    .Analog-Bigclock.dark .Analog-Minute-Hand,
+    .Analog-Bigclock.dark .Analog-Hour-Hand {
       fill: #ecf0f1;
       stroke: #ecf0f1;
     }
-    body#gWP1 .Analog-Bigclock.dark .Analog-Number {
+    .Analog-Bigclock.dark .Analog-Number {
       fill: #fff;
     }
-    body#gWP1 .Analog-Bigclock.dark .Analog-CenterCutout {
+    .Analog-Bigclock.dark .Analog-CenterCutout {
       fill: #ecf0f1;
       stroke: #2c3e50;
     }
-    body#gWP1 .Analog-AMPMText {
+    .Analog-AMPMText {
       fill: #2A3A4B;
       font-size: 7px;
       font-weight: 300;
     }
-    body#gWP1 .Analog-Bigclock.dark .Analog-AMPMText {
+    .Analog-Bigclock.dark .Analog-AMPMText {
       fill: #fff;
     }
-    body#gWP1 .Analog-AMPMBorder {
+    .Analog-AMPMBorder {
       fill: none;
       stroke: #2A3A4B;
       stroke-width: 0.25;
     }
-    body#gWP1 .Analog-Bigclock.dark .Analog-AMPMBorder {
+    .Analog-Bigclock.dark .Analog-AMPMBorder {
       fill: none;
       stroke: #2A3A4B;
       stroke-width: 0.25;
     }
-    body#gWP1 .ControlsRow * {
+    .ControlsRow * {
       text-shadow: 1px 1px 2px #000;
     }
-    body#gWP1 .scaler-controls {
+    .scaler-controls {
       align-items: center;
       background: #2A3A4B;
       border: none;
@@ -1238,10 +1277,10 @@
       padding: 0px 0px 1px 0px;
       width: 384px;
     }
-    body#gWP1 .ClockThemeToggle,
-    body#gWP1 .ClockSecondToggle,
-    body#gWP1 .scaler-info,
-    body#gWP1 .am-pm {
+    .ClockThemeToggle,
+    .ClockSecondToggle,
+    .scaler-info,
+    .am-pm {
       border: none;
       cursor: pointer;
       margin: 0px;
@@ -1250,11 +1289,11 @@
       top: 3px;
       width: 32px;
     }
-    body#gWP1 .ClockThemeToggle {
+    .ClockThemeToggle {
     }
-    body#gWP1 .scaler-info {
+    .scaler-info {
     }
-    body#gWP1 .scaler-reset {
+    .scaler-reset {
       background: none;
       border: none;
       cursor: pointer;
@@ -1264,7 +1303,7 @@
       position: relative;
       top: 1px;
     }
-    body#gWP1 .scaler-btn {
+    .scaler-btn {
       background: none;
       border: none;
       color: #ffffff;
@@ -1274,10 +1313,10 @@
       opacity: .7;
       padding: 0px 4px;
     }
-    body#gWP1 .scaler-btn:hover {
+    .scaler-btn:hover {
       opacity: 1;
     }
-    body#gWP1 .scaler-text {
+    .scaler-text {
       background: rgba(255,255,255,.1);
       border: 1px solid #666;
       border-radius: 14px;
@@ -1289,30 +1328,30 @@
       min-width: 32px;
       padding: 2px 2px 0px 0px;
     }
-    body#gWP1 .ClockThemeToggle,
-    body#gWP1 .ClockSecondToggle,
-    body#gWP1 .scaler-info,
-    body#gWP1 .am-pm,
-    body#gWP1 .scaler-reset {
+    .ClockThemeToggle,
+    .ClockSecondToggle,
+    .scaler-info,
+    .am-pm,
+    .scaler-reset {
       color: #ffffff;
       opacity: .7;
     }
-    body#gWP1 .ClockThemeToggle:hover,
-    body#gWP1 .ClockSecondToggle:hover,
-    body#gWP1 .scaler-info:hover,
-    body#gWP1 .am-pm:hover,
-    body#gWP1 .scaler-reset:hover {
+    .ClockThemeToggle:hover,
+    .ClockSecondToggle:hover,
+    .scaler-info:hover,
+    .am-pm:hover,
+    .scaler-reset:hover {
       cursor: pointer;
       opacity: 1;
     }
-    body#gWP1 #spacer3 {
+    #spacer3 {
       color: #666;
       margin: 0px 6px 0px 0px;
       opacity: 1;
       pointer-events: none;
       text-align: center;
     }
-    body#gWP1 .Analog-Info {
+    .Analog-Info {
       align-items: center;
       background: #2A3A4B;
       border-radius: 0px 0px 8px 8px;
@@ -1324,29 +1363,29 @@
 	     text-align: center;
       width: 384px;
     }
-    body#gWP1 .Analog-Info * {
+    .Analog-Info * {
       text-shadow: 1px 1px 2px #000;
     }
-    body#gWP1 .Analog-CalendarText {
+    .Analog-CalendarText {
       display: inline-block;
       color: #fff;
       font-family: monospace;
       font-size: 16px;
       white-space: nowrap;
     }
-    body#gWP1 .ClockThemeToggle:hover,
-    body#gWP1 .scaler-reset:hover,
-    body#gWP1 .scaler-info:hover {
+    .ClockThemeToggle:hover,
+    .scaler-reset:hover,
+    .scaler-info:hover {
       color: #ffffff;
     }
-    body#gWP1 .scaler-text:hover,
-    body#gWP1 .scaler-text:focus-within {
+    .scaler-text:hover,
+    .scaler-text:focus-within {
       border-color: #ffffff;
       color: #ffffff;
     }
-    body#gWP1 .scaler-text::-webkit-inner-spin-button,
-    body#gWP1 .scaler-text::-webkit-outer-spin-button,
-    body#gWP1 .hidden {
+    .scaler-text::-webkit-inner-spin-button,
+    .scaler-text::-webkit-outer-spin-button,
+    .hidden {
       display: none;
     }
   `);
