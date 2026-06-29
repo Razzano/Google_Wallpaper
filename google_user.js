@@ -453,32 +453,41 @@
     const dateText = $el('text', {
       id: 'dateText',
       className: 'Analog-MonthDateText',
+      // Horizontal Positioning
+      x: 37,
+      y: 28,
       // Vertical Positioning
       //x: 44,
       //y: 27,
-      x: 37,
-      y: 28,
       textAnchor: 'middle',
       dominantBaseline: 'middle'
     });
     const timeText = $el('text', {
       id: 'timeText',
       className: 'Analog-timeText',
+      // Horizontal Positioning
+      x: 53,
+      y: 28,
       // Vertical Positioning
       //x: 45,
       //y: 32,
-      x: 53,
-      y: 28,
       textAnchor: 'middle',
       dominantBaseline: 'middle'
     });
+    const dateTimeGroup = $el('g', {
+      id: 'dateTimeGroup'
+      }, [
+      dateText,
+      timeText
+    ]);
     const ampmBorder = $el('rect', {
       className: 'Analog-AMPMBorder',
-      // Bottom Positioning
+      // Top Positioning
       //x: 46,
-      //y: 78,
+      //y: 30,
+      // Bottom Positioning
       x: 46,
-      y: 30,
+      y: 78,
       width: 8,
       height: 5,
       rx: 1,
@@ -486,11 +495,12 @@
     });
     const ampmText = $el('text', {
       className: 'Analog-AMPMText',
-      // Bottom Positioning
+      // Top Positioning
       //x: 47,
-      //y: 82,
+      //y: 34,
+      // Bottom Positioning
       x: 47,
-      y: 34,
+      y: 82,
       textAnchor: 'middle',
       dominantBaseline: 'middle'
     });
@@ -507,8 +517,7 @@
       ...hourNumbers,
       ampmBorder,
       dayImg,
-      dateText,
-      timeText,
+      dateTimeGroup,
       ampmText,
       $el('line', { className: 'Analog-Hour-Hand', x1: 50, y1: 50, x2: 50, y2: 30 }),
       $el('line', { className: 'Analog-Minute-Hand', x1: 50, y1: 50, x2: 50, y2: 22 }),
@@ -587,8 +596,7 @@
     );
     const toggleCalendarInfo = () => {
       const hidden = clockInfo.classList.toggle('hidden');
-      dateText.classList.toggle('hidden', !hidden);
-      timeText.classList.toggle('hidden', !hidden);
+      dateTimeGroup.classList.toggle('hidden', !hidden);
       GM_setValue('calendarInfo', !hidden);
     };
     const anaCalBtn = $el('button', {
@@ -677,8 +685,8 @@
       Clock.style.setProperty('--secondDeg', `${displayedSecondDeg}deg`);
       Clock.style.setProperty('--minuteDeg', `${minuteDeg}deg`);
       Clock.style.setProperty('--hourDeg', `${hourDeg}deg`);
-      const dy = now.getDay(), dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear();
-      const dayAbbr = DAY_ABBR[dy], dayFull = DAY_FULL[dy], monthAbbr = MONTH_ABBR[mth], monthFull = MONTH_FULL[mth];
+      const dt = now.getDate(), mth = now.getMonth(), yr = now.getFullYear();
+      const dayAbbr = DAY_ABBR[day], dayFull = DAY_FULL[day], monthAbbr = MONTH_ABBR[mth], monthFull = MONTH_FULL[mth];
       const suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th';
       const ordinal = dt + suffix;
       const h12 = String(now.getHours() % 12 || 12);
@@ -687,12 +695,11 @@
       const month = String(now.getMonth() + 1).padStart(2, '0');
       const monthday = String(now.getDate()).padStart(2, '0');
       dateText.textContent = `${month}/${monthday}`;
-      const ampm = now.getHours() < 12 ? _Text.amText : _Text.pmText;
-      const secView = GM_getValue('secondsView', false);
-      const timeText = $id('timeText');
       timeText.textContent = `${h12}:${min}`;
+      const ampm = now.getHours() < 12 ? _Text.amText : _Text.pmText;
       ampmText.textContent = ampm;
       calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑 ${h12}:${min}`;
+      const secView = GM_getValue('secondsView', false);
       const digitalClock = $id('dateTime');
       if (digitalClock) {
         digitalClock.textContent = secView
@@ -700,11 +707,11 @@
           : `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑 ${h12}:${min} ${ampm}`;
       }
     };
-	   const showCalendarInfo = GM_getValue('calendarInfo', false);
-    if (!showCalendarInfo) {
+	   const showCalendarPref = GM_getValue('calendarInfo', false);
+    if (!showCalendarPref) {
       clockInfo.classList.add('hidden');
     }
-    const hidden = GM_getValue('calendarInfo', false);
+    const hidden = showCalendarPref
     dateText.classList.toggle('hidden', hidden);
     timeText.classList.toggle('hidden', hidden);
     const startAnalogClock = () => {
