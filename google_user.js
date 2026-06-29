@@ -167,6 +167,13 @@
   const _githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image';
 
   const _Icon = {
+    Sunday: _aURL + 'Sunday.png',
+    Monday: _aURL + 'Monday.png',
+    Tuesday: _aURL + 'Tuesday.png',
+    Wednesday: _aURL + 'Wednesday.png',
+    Thursday: _aURL + 'Thursday.png',
+    Friday: _aURL + 'Friday.png',
+    Saturday: _aURL + 'Saturday.png',
     ampm22: _aURL + 'AMPM2.png',
     calendar16: _aURL + 'calendar16.png',
     calendar22: _aURL + 'calendar22.png',
@@ -177,28 +184,18 @@
     clock26: _aURL + 'clock26.png',
     moon16: _aURL + 'moon16.png',
     moon22: _aURL + 'moon22.png',
-    rolex2: _aURL + 'rolex2.png',
     sun16: _aURL + 'sun16.png',
     sun22: _aURL + 'sun22.png',
-    Monday: _aURL + 'Monday.png',
-    Tuesday: _aURL + 'Tuesday.png',
-    Wednesday: _aURL + 'Wednesday.png',
-    Thursday: _aURL + 'Thursday.png',
-    Friday: _aURL + 'Friday.png',
-    Saturday: _aURL + 'Saturday.png',
-    Sunday: _aURL + 'Sunday.png',
-    MonthDate: _aURL + 'MonthDate.png',
-    AMPM: _aURL + 'AMPM.png',
   };
 
   const DAY_IMAGES = [
-    _Icon.Sunday, // 0
-    _Icon.Monday, // 1
-    _Icon.Tuesday, // 2
-    _Icon.Wednesday, // 3
-    _Icon.Thursday, // 4
-    _Icon.Friday, // 5
-    _Icon.Saturday, // 6
+    _Icon.Sunday,
+    _Icon.Monday,
+    _Icon.Tuesday,
+    _Icon.Wednesday,
+    _Icon.Thursday,
+    _Icon.Friday,
+    _Icon.Saturday,
   ];
 
   const _Image = {
@@ -456,27 +453,32 @@
     const dateText = $el('text', {
       id: 'dateText',
       className: 'Analog-MonthDateText',
+      // Vertical Positioning
       //x: 44,
       //y: 27,
       x: 37,
-      y: 27,
+      y: 28,
       textAnchor: 'middle',
       dominantBaseline: 'middle'
     });
     const timeText = $el('text', {
       id: 'timeText',
       className: 'Analog-timeText',
+      // Vertical Positioning
       //x: 45,
       //y: 32,
       x: 53,
-      y: 27,
+      y: 28,
       textAnchor: 'middle',
       dominantBaseline: 'middle'
     });
     const ampmBorder = $el('rect', {
       className: 'Analog-AMPMBorder',
+      // Bottom Positioning
+      //x: 46,
+      //y: 78,
       x: 46,
-      y: 78,
+      y: 30,
       width: 8,
       height: 5,
       rx: 1,
@@ -484,8 +486,11 @@
     });
     const ampmText = $el('text', {
       className: 'Analog-AMPMText',
+      // Bottom Positioning
+      //x: 47,
+      //y: 82,
       x: 47,
-      y: 82,
+      y: 34,
       textAnchor: 'middle',
       dominantBaseline: 'middle'
     });
