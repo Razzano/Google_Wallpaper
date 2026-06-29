@@ -174,7 +174,8 @@
     Thursday: _aURL + 'Thursday.png',
     Friday: _aURL + 'Friday.png',
     Saturday: _aURL + 'Saturday.png',
-    ampm22: _aURL + 'AMPM2.png',
+    AMPM1: _aURL + 'AMPM1.png',
+    AMPM2: _aURL + 'AMPM2.png',
     calendar16: _aURL + 'calendar16.png',
     calendar22: _aURL + 'calendar22.png',
     calendar32D: _aURL + 'calendar32D.png',
@@ -453,10 +454,10 @@
     const dateText = $el('text', {
       id: 'dateText',
       className: 'Analog-MonthDateText',
-      // Horizontal Positioning
+      // Inline Positioning
       x: 37,
       y: 28,
-      // Vertical Positioning
+      // Stack Positioning
       //x: 44,
       //y: 27,
       textAnchor: 'middle',
@@ -465,10 +466,10 @@
     const timeText = $el('text', {
       id: 'timeText',
       className: 'Analog-timeText',
-      // Horizontal Positioning
+      // Inline Positioning
       x: 53,
       y: 28,
-      // Vertical Positioning
+      // Stack Positioning
       //x: 45,
       //y: 32,
       textAnchor: 'middle',
@@ -482,10 +483,10 @@
     ]);
     const ampmBorder = $el('rect', {
       className: 'Analog-AMPMBorder',
-      // Top Positioning
+      // Top Positioning Below Date / Time
       //x: 46,
       //y: 30,
-      // Bottom Positioning
+      // Bottom Positioning Above Number 6
       x: 46,
       y: 78,
       width: 8,
@@ -495,10 +496,10 @@
     });
     const ampmText = $el('text', {
       className: 'Analog-AMPMText',
-      // Top Positioning
+      // Top Positioning Below Date / Time
       //x: 47,
       //y: 34,
-      // Bottom Positioning
+      // Bottom Positioning Above Number 6
       x: 47,
       y: 82,
       textAnchor: 'middle',
@@ -607,7 +608,7 @@
     }, calendarImg);
     const ampmImg = $el('img', {
       id: 'ampmImg',
-      src: _Icon.ampm22
+      src: _Icon.AMPM1
     });
     const ampmBtn = $el('button', {
       className: 'am-pm',
@@ -787,7 +788,7 @@
     dtContainer.style.transform = 'translateX(-50%)';
     makeDraggable(dtContainer, 'dtContainer');
     restorePosition(dtContainer, 'dtContainer');
- };
+  };
 
   const updateDigitalClock = () => {
     const digitalClock = $id('dateTime');
