@@ -455,7 +455,7 @@
       id: 'dateText',
       className: 'Analog-MonthDateText',
       // Inline Positioning
-      x: 37,
+      x: 35,
       y: 28,
       // Stack Positioning
       //x: 44,
@@ -467,13 +467,14 @@
       id: 'timeText',
       className: 'Analog-timeText',
       // Inline Positioning
-      x: 54,
+      x: 56,
       y: 28,
       // Stack Positioning
       //x: 45,
       //y: 32,
       textAnchor: 'middle',
-      dominantBaseline: 'middle'
+      dominantBaseline: 'middle',
+       'xml:space': 'preserve'
     });
     const dateTimeGroup = $el('g', {
       id: 'dateTimeGroup'
@@ -694,7 +695,7 @@
       const dayAbbr = DAY_ABBR[day], dayFull = DAY_FULL[day], monthAbbr = MONTH_ABBR[mth], monthFull = MONTH_FULL[mth];
       const suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th';
       const ordinal = dt + suffix;
-      const h12 = String(now.getHours() % 12 || 12);
+      const h12 = String(now.getHours() % 12 || 12).padStart(2, ' ');
       const min = String(now.getMinutes()).padStart(2, '0');
       const sec = String(now.getSeconds()).padStart(2, '0');
       const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -1345,10 +1346,12 @@
     .Analog-Bigclock.dark .Analog-MonthDateText {
       color: #FFF !important;
       fill: #FFF !important;
+      font-family: monospace;
     }
     .Analog-timeText {
       color: #000 !important;
       fill: #000 !important;
+      font-family: monospace;
       font-size: 5px !important;
       font-weight: 600 !important;
     }
