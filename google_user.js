@@ -30,8 +30,8 @@
 
   const SVG_NS = "http://www.w3.org/2000/svg";
   const SVG_TAGS = new Set([
-    "svg","g","path","circle","text","line","rect","polyline","polygon",
-    "foreignObject","defs","marker","stop","use"
+    "circle","defs","foreignObject","g","image","line","marker","path","polyline",
+    "polygon","rect","script","stop","style","svg","text","textPath","use"
   ]);
 
   const $el = (tag, props = {}, ...children) => {
@@ -177,9 +177,29 @@
     clock26: _aURL + 'clock26.png',
     moon16: _aURL + 'moon16.png',
     moon22: _aURL + 'moon22.png',
+    rolex2: _aURL + 'rolex2.png',
     sun16: _aURL + 'sun16.png',
     sun22: _aURL + 'sun22.png',
+    Monday: _aURL + 'Monday.png',
+    Tuesday: _aURL + 'Tuesday.png',
+    Wednesday: _aURL + 'Wednesday.png',
+    Thursday: _aURL + 'Thursday.png',
+    Friday: _aURL + 'Friday.png',
+    Saturday: _aURL + 'Saturday.png',
+    Sunday: _aURL + 'Sunday.png',
+    MonthDate: _aURL + 'MonthDate.png',
+    AMPM: _aURL + 'AMPM.png',
   };
+
+  const DAY_IMAGES = [
+    _Icon.Sunday, // 0
+    _Icon.Monday, // 1
+    _Icon.Tuesday, // 2
+    _Icon.Wednesday, // 3
+    _Icon.Thursday, // 4
+    _Icon.Friday, // 5
+    _Icon.Saturday, // 6
+  ];
 
   const _Image = {
     logo1: _aURL + 'logoGoogle.png',
@@ -383,6 +403,8 @@
 
   const applyAnalogClock = () => {
     if (!GM_getValue('analogClock', true)) return;
+    const date = new Date();
+    let currentDay = -1;
 	   let displayedSecondDeg = 0;
     const smoothSecondHand = GM_getValue('smoothSecondHand', true);
     const ticks = [];
@@ -423,19 +445,47 @@
     const calendarText = $el('div', {
       className: 'Analog-CalendarText'
     });
+    const dayImg = $el('image', {
+      className: 'Analog-Image',
+      x: 37,
+      y: 14,
+      href: DAY_IMAGES[new Date().getDay()],
+      height: 11,
+      width: 28
+    });
+    const dateText = $el('text', {
+      id: 'dateText',
+      className: 'Analog-MonthDateText',
+      //x: 44,
+      //y: 27,
+      x: 37,
+      y: 27,
+      textAnchor: 'middle',
+      dominantBaseline: 'middle'
+    });
+    const timeText = $el('text', {
+      id: 'timeText',
+      className: 'Analog-timeText',
+      //x: 45,
+      //y: 32,
+      x: 53,
+      y: 27,
+      textAnchor: 'middle',
+      dominantBaseline: 'middle'
+    });
     const ampmBorder = $el('rect', {
       className: 'Analog-AMPMBorder',
-      x: 44,
-      y: 75,
-      width: 12,
-      height: 7,
-      rx: 2,
-      ry: 2
+      x: 46,
+      y: 78,
+      width: 8,
+      height: 5,
+      rx: 1,
+      ry: 1
     });
     const ampmText = $el('text', {
       className: 'Analog-AMPMText',
-      x: 45,
-      y: 81,
+      x: 47,
+      y: 82,
       textAnchor: 'middle',
       dominantBaseline: 'middle'
     });
@@ -451,6 +501,9 @@
       ...ticks,
       ...hourNumbers,
       ampmBorder,
+      dayImg,
+      dateText,
+      timeText,
       ampmText,
       $el('line', { className: 'Analog-Hour-Hand', x1: 50, y1: 50, x2: 50, y2: 30 }),
       $el('line', { className: 'Analog-Minute-Hand', x1: 50, y1: 50, x2: 50, y2: 22 }),
@@ -523,17 +576,21 @@
       src: _Icon.calendar22
     });
     const clockInfo = $el('div', {
+      id: 'clockInfo',
 	     className: 'Analog-Info' },
       calendarText
     );
+    const toggleCalendarInfo = () => {
+      const hidden = clockInfo.classList.toggle('hidden');
+      dateText.classList.toggle('hidden', !hidden);
+      timeText.classList.toggle('hidden', !hidden);
+      GM_setValue('calendarInfo', !hidden);
+    };
     const anaCalBtn = $el('button', {
       id: 'anaCalBtn',
       className: 'scaler-info',
       title: _Title.anaCalBtnTitle,
-      onclick() {
-        clockInfo.classList.toggle('hidden');
-        GM_setValue('calendarInfo', !clockInfo.classList.contains('hidden'));
-      }
+      onclick: () => toggleCalendarInfo()
     }, calendarImg);
     const ampmImg = $el('img', {
       id: 'ampmImg',
@@ -600,6 +657,11 @@
       if (!$id('analogClockContainer')) return;
       const smoothSecondHand = GM_getValue('smoothSecondHand', true);
       const now = new Date();
+      const day = now.getDay();
+      if (day !== currentDay) {
+        currentDay = day;
+        dayImg.setAttribute('href', DAY_IMAGES[day]);
+      }
       const seconds = smoothSecondHand ? now.getSeconds() + now.getMilliseconds() / 1000 : now.getSeconds();
       const secondDeg = seconds * 6;
       const minuteDeg = now.getMinutes() * 6 + seconds * 0.1;
@@ -617,8 +679,13 @@
       const h12 = String(now.getHours() % 12 || 12);
       const min = String(now.getMinutes()).padStart(2, '0');
       const sec = String(now.getSeconds()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const monthday = String(now.getDate()).padStart(2, '0');
+      dateText.textContent = `${month}/${monthday}`;
       const ampm = now.getHours() < 12 ? _Text.amText : _Text.pmText;
       const secView = GM_getValue('secondsView', false);
+      const timeText = $id('timeText');
+      timeText.textContent = `${h12}:${min}`;
       ampmText.textContent = ampm;
       calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑 ${h12}:${min}`;
       const digitalClock = $id('dateTime');
@@ -632,6 +699,9 @@
     if (!showCalendarInfo) {
       clockInfo.classList.add('hidden');
     }
+    const hidden = GM_getValue('calendarInfo', false);
+    dateText.classList.toggle('hidden', hidden);
+    timeText.classList.toggle('hidden', hidden);
     const startAnalogClock = () => {
       stopAnalogClock();
       analogClockRunning = true;
@@ -1242,22 +1312,49 @@
       fill: #ecf0f1;
       stroke: #2c3e50;
     }
-    .Analog-AMPMText {
-      fill: #2A3A4B;
-      font-size: 7px;
-      font-weight: 300;
+    .Analog-MonthDateText {
+      color: #000 !important;
+      fill: #000 !important;
+      font-size: 5px !important;
+      font-weight: 600 !important;
     }
-    .Analog-Bigclock.dark .Analog-AMPMText {
-      fill: #fff;
+    .Analog-Bigclock.dark .Analog-MonthDateText {
+      color: #FFF !important;
+      fill: #FFF !important;
     }
-    .Analog-AMPMBorder {
+    .Analog-DateBorder {
       fill: none;
       stroke: #2A3A4B;
       stroke-width: 0.25;
     }
+    .Analog-timeText {
+      color: #000 !important;
+      fill: #000 !important;
+      font-size: 5px !important;
+      font-weight: 600 !important;
+    }
+    .Analog-Bigclock.dark .Analog-timeText {
+      color: #FFF !important;
+      fill: #FFF !important;
+    }
+    .Analog-AMPMText {
+      color: #000 !important;
+      fill: #000 !important;
+      font-size: 4px !important;
+      font-weight: 600 !important;
+    }
+    .Analog-Bigclock.dark .Analog-AMPMText {
+      color: #FFF !important;
+      fill: #fff !important;
+    }
+    .Analog-AMPMBorder {
+      fill: none;
+      stroke: #000;
+      stroke-width: 0.25;
+    }
     .Analog-Bigclock.dark .Analog-AMPMBorder {
       fill: none;
-      stroke: #2A3A4B;
+      stroke: #FFF;
       stroke-width: 0.25;
     }
     .ControlsRow * {
