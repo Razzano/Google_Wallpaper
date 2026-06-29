@@ -467,7 +467,7 @@
       id: 'timeText',
       className: 'Analog-timeText',
       // Inline Positioning
-      x: 53,
+      x: 54,
       y: 28,
       // Stack Positioning
       //x: 45,
@@ -477,7 +477,7 @@
     });
     const dateTimeGroup = $el('g', {
       id: 'dateTimeGroup'
-      }, [
+    }, [
       dateText,
       timeText
     ]);
@@ -518,6 +518,8 @@
       ...hourNumbers,
       ampmBorder,
       dayImg,
+      //dateText,
+      //timeText,
       dateTimeGroup,
       ampmText,
       $el('line', { className: 'Analog-Hour-Hand', x1: 50, y1: 50, x2: 50, y2: 30 }),
@@ -597,6 +599,8 @@
     );
     const toggleCalendarInfo = () => {
       const hidden = clockInfo.classList.toggle('hidden');
+      //dateText.classList.toggle('hidden', !hidden);
+      //timeText.classList.toggle('hidden', !hidden);
       dateTimeGroup.classList.toggle('hidden', !hidden);
       GM_setValue('calendarInfo', !hidden);
     };
@@ -713,8 +717,9 @@
       clockInfo.classList.add('hidden');
     }
     const hidden = showCalendarPref
-    dateText.classList.toggle('hidden', hidden);
-    timeText.classList.toggle('hidden', hidden);
+    //dateText.classList.toggle('hidden', hidden);
+    //timeText.classList.toggle('hidden', hidden);
+    dateTimeGroup.classList.toggle('hidden', hidden);
     const startAnalogClock = () => {
       stopAnalogClock();
       analogClockRunning = true;
@@ -989,6 +994,7 @@
   // CSS
   // ===========================================================================
 
+  // GOOGLE PAGE
   GM_addStyle(`
     #gWP1 > div.L3eUgb > div.o3j99.n1xJcf.CoM3Df > a.w5hRs,
     #gWP1 #gb > div.gb_Q.gb_6.gb_Vf.gb_3f > div:nth-child(2) > a,
@@ -1044,6 +1050,8 @@
       height: calc(-70px + 100vh) !important;
     }
   `);
+
+  // LOGOS
   GM_addStyle(`
     #logoGoogle {
       filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
@@ -1055,6 +1063,10 @@
       top: 0px;
       z-index: 999;
     }
+  `);
+
+  // DATE/TIME CONTAINER
+  GM_addStyle(`
     #dateTimeContainer {
       align-items: center;
       border-radius: 8px;
@@ -1110,6 +1122,10 @@
     }
     #dateTime:hover {
     }
+  `);
+
+  // CONTROL CONTAINER
+  GM_addStyle(`
     #controlContainer {
       align-items: center;
       background: #2A3A4B;
@@ -1229,12 +1245,10 @@
       filter: brightness(2);
       opacity: 1;
     }
-    ::-webkit-inner-spin-button,
-    ::-webkit-outer-spin-button,
-    ::-webkit-inner-spin-button,
-    ::-webkit-outer-spin-button {
-      display: none;
-    }
+  `);
+
+  // ANALOG CLOCK
+  GM_addStyle(`
     .ClockContainer {
       align-items: center;
       display: flex;
@@ -1262,6 +1276,10 @@
       height: 100%;
       width: 100%;
     }
+    .Analog-Bigclock.dark .Analog {
+      background: radial-gradient(circle at 50% 50%, #2c3e50 0%, #1a252f 100%);
+      border-color: #ecf0f1;
+    }
     .Analog-Second-Hand,
     .Analog-Minute-Hand,
     .Analog-Hour-Hand {
@@ -1269,28 +1287,34 @@
       transform-origin: 50% 50%;
     }
     .Analog-Second-Hand {
-      transform: rotate(var(--secondDeg, 0deg));
-    }
-    .Analog-Minute-Hand {
-      transform: rotate(var(--minuteDeg, 0deg));
-    }
-    .Analog-Hour-Hand {
-      transform: rotate(var(--hourDeg, 0deg));
-    }
-    .Analog-Second-Hand {
       fill: #e74c3c;
       stroke: #e74c3c;
       stroke-width: 1;
+      transform: rotate(var(--secondDeg, 0deg));
+    }
+    .Analog-Bigclock.dark .Analog-Second-Hand {
+      fill: #ff6b6b;
+      stroke: #ff6b6b;
     }
     .Analog-Minute-Hand {
       fill: #34495e;
       stroke: #34495e;
       stroke-width: 2;
+      transform: rotate(var(--minuteDeg, 0deg));
+    }
+    .Analog-Bigclock.dark .Analog-Minute-Hand {
+      fill: #ecf0f1;
+      stroke: #ecf0f1;
     }
     .Analog-Hour-Hand {
       fill: #2c3e50;
       stroke: #2c3e50;
       stroke-width: 3;
+      transform: rotate(var(--hourDeg, 0deg));
+    }
+    .Analog-Bigclock.dark .Analog-Hour-Hand {
+      fill: #ecf0f1;
+      stroke: #ecf0f1;
     }
     .Analog-Number {
       fill: #2c3e50;
@@ -1300,26 +1324,13 @@
       paint-order: stroke fill;
       stroke: none;
     }
+    .Analog-Bigclock.dark .Analog-Number {
+      fill: #fff;
+    }
     .Analog-CenterCutout {
       fill: #2c3e50;
       stroke: white;
       stroke-width: 3;
-    }
-    .Analog-Bigclock.dark .Analog {
-      background: radial-gradient(circle at 50% 50%, #2c3e50 0%, #1a252f 100%);
-      border-color: #ecf0f1;
-    }
-    .Analog-Bigclock.dark .Analog-Second-Hand {
-      fill: #ff6b6b;
-      stroke: #ff6b6b;
-    }
-    .Analog-Bigclock.dark .Analog-Minute-Hand,
-    .Analog-Bigclock.dark .Analog-Hour-Hand {
-      fill: #ecf0f1;
-      stroke: #ecf0f1;
-    }
-    .Analog-Bigclock.dark .Analog-Number {
-      fill: #fff;
     }
     .Analog-Bigclock.dark .Analog-CenterCutout {
       fill: #ecf0f1;
@@ -1334,11 +1345,6 @@
     .Analog-Bigclock.dark .Analog-MonthDateText {
       color: #FFF !important;
       fill: #FFF !important;
-    }
-    .Analog-DateBorder {
-      fill: none;
-      stroke: #2A3A4B;
-      stroke-width: 0.25;
     }
     .Analog-timeText {
       color: #000 !important;
@@ -1370,6 +1376,10 @@
       stroke: #FFF;
       stroke-width: 0.25;
     }
+  `);
+
+  // CONTROLS ROW
+  GM_addStyle(`
     .ControlsRow * {
       text-shadow: 1px 1px 2px #000;
     }
@@ -1402,6 +1412,13 @@
     .ClockThemeToggle {
     }
     .scaler-info {
+    }
+    #spacer3 {
+      color: #666;
+      margin: 0px 6px 0px 0px;
+      opacity: 1;
+      pointer-events: none;
+      text-align: center;
     }
     .scaler-reset {
       background: none;
@@ -1438,29 +1455,18 @@
       min-width: 32px;
       padding: 2px 2px 0px 0px;
     }
-    .ClockThemeToggle,
-    .ClockSecondToggle,
-    .scaler-info,
-    .am-pm,
-    .scaler-reset {
+    .scaler-controls > button {
       color: #ffffff;
       opacity: .7;
     }
-    .ClockThemeToggle:hover,
-    .ClockSecondToggle:hover,
-    .scaler-info:hover,
-    .am-pm:hover,
-    .scaler-reset:hover {
+    .scaler-controls > button:hover {
       cursor: pointer;
       opacity: 1;
     }
-    #spacer3 {
-      color: #666;
-      margin: 0px 6px 0px 0px;
-      opacity: 1;
-      pointer-events: none;
-      text-align: center;
-    }
+  `);
+
+  // CLOCK/CALENDAR INFO
+  GM_addStyle(`
     .Analog-Info {
       align-items: center;
       background: #2A3A4B;
@@ -1493,10 +1499,17 @@
       border-color: #ffffff;
       color: #ffffff;
     }
-    .scaler-text::-webkit-inner-spin-button,
-    .scaler-text::-webkit-outer-spin-button,
+  `);
+
+  // GLOBAL
+  GM_addStyle(`
     .hidden {
       display: none;
     }
+    ::-webkit-inner-spin-button,
+    ::-webkit-outer-spin-button {
+      display: none;
+    }
   `);
+
 })();
