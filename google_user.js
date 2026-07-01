@@ -76,6 +76,17 @@
   const $q = (sel, ctx = document) => ctx?.querySelector(sel) ?? null;
   const $qa = (sel, ctx = document) => Array.from(ctx?.querySelectorAll(sel) ?? []);
 
+  const getCurrentWallpaperNumber = () => {
+    switch (GM_getValue('wallpaperMode', WALLPAPER_MANUAL)) {
+      case WALLPAPER_DAILY:
+        return getDailyWallpaper();
+      case WALLPAPER_HOURLY:
+        return getHourlyWallpaper();
+      default:
+        return GM_getValue('wallpaperImage', 0);
+    }
+  };
+
   const insertAfter = (newEl, refEl) => {
     if (!refEl || !refEl.parentNode) {
       console.warn('insertAfter: refEl is null or has no parentNode', refEl);
@@ -151,6 +162,15 @@
     }
   };
 
+  const setThemerState = enabled => {
+    ['buttonThemer', 'inputThemer', 'downThemer'].forEach(id => {
+      const el = $id(id);
+      if (!el) return;
+      el.style.pointerEvents = enabled ? 'all' : 'none';
+      el.style.opacity = enabled ? '1' : '0.3';
+    });
+  };
+
   // ===========================================================================
   // ORIGINAL CODE
   // ===========================================================================
@@ -163,6 +183,11 @@
   const MONTH_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const _SECOND = 1000;
   const _SECONDS = 5000;
+  const WALLPAPER_MANUAL = 0;
+  const WALLPAPER_DAILY = 1;
+  const WALLPAPER_HOURLY = 2;
+  const WALLPAPER_START_DATE = new Date(2026, 0, 1);
+  WALLPAPER_START_DATE.setHours(0, 0, 0, 0);
   const _aURL = 'https://raw.githubusercontent.com/Razzano/My_Images/master/';
   const _githubSite = 'https://raw.githubusercontent.com/Razzano/My_Wallpaper_Images/master/image';
 
@@ -178,13 +203,18 @@
     AMPM2: _aURL + 'AMPM2.png',
     calendar16: _aURL + 'calendar16.png',
     calendar22: _aURL + 'calendar22.png',
+    calendarWP: _aURL + 'calendarWP.png',
     calendar32D: _aURL + 'calendar32D.png',
     clock16: _aURL + 'clock16.png',
     clock22: _aURL + 'clock22.png',
     clock22L: _aURL + 'clock22L.png',
     clock26: _aURL + 'clock26.png',
+    hand22: _aURL + 'hand22.png',
+    hourglass22: _aURL + 'hourglass22.png',
     moon16: _aURL + 'moon16.png',
     moon22: _aURL + 'moon22.png',
+    off: _aURL + 'off.png',
+    on: _aURL + 'on.png',
     sun16: _aURL + 'sun16.png',
     sun22: _aURL + 'sun22.png',
   };
@@ -199,7 +229,7 @@
     _Icon.Saturday,
   ];
 
-  const _Image = {
+  const _Images = {
     logo1: _aURL + 'logoGoogle.png',
     logo2: _aURL + 'imageGoogle.png',
     logo3: _aURL + 'world.png',
@@ -219,7 +249,7 @@
     logo17: '',
   };
 
-  const _Text = {
+  const _Texts = {
     amText: 'AM',
     bodyIdText: 'gWP1',
     buttonLogoText: 'Logo 🠉',
@@ -236,16 +266,16 @@
     spacerXText: '|',
   };
 
-  const _Title = {
+  const _Titles = {
     anaCalBtnTitle: 'Show/Hide Calendar Info',
     ampmBtnTitle: 'Show/Hide Clock AMPM',
     analogClockBtnTitle: 'Analog Clock',
-    buttonLogoTitle: 'Left-click to change logos',
-    buttonThemerTitle: 'Left-click to change wallpaper',
+    buttonLogoTitle: 'Left-click To Change Logos',
+    buttonThemerTitle: 'Left-click To Change Wallpaper',
     dateTimeElTitle: 'Left-click → Show/Hide Seconds',
     digCalBtnTitle: 'Left-click → Show/Hide Calendar & Digital Time',
-    downLogoTitle: 'Left-click to change logos',
-    downThemerTitle: 'Left-click to change wallpaper',
+    downLogoTitle: 'Left-click To Change Logos',
+    downThemerTitle: 'Left-click To Change Wallpaper',
     inputLogoTitle: 'Manually Enter:\n • 1 - 17 (0 = Default Google Logo, 17 = No Logo)',
     inputThemerTitle: 'Manually Enter:\n • 1 - 52 (0 = Default Google Background)',
     percentageDisplayTitle: 'Manually Enter Percentage:\n • Min. 30% = 90px Ø\n • Reset 100% = 300px Ø\n • Max. 200% = 600px Ø',
@@ -256,6 +286,12 @@
     themeBtnTitle: 'Toggle Between Dark/Light Theme',
   };
 
+  const WALLPAPER_MODES = [
+    { src: _Icon.hand22, title: 'Manually Change Wallpaper' },
+    { src: _Icon.calendarWP, title: 'Daily Change Wallpaper' },
+    { src: _Icon.hourglass22, title: 'Hourly Change Wallpaper' }
+  ];
+
   // ===========================================================================
   // GLOBAL VARIABLES
   // ===========================================================================
@@ -263,6 +299,7 @@
   let analogAnimationId = null;
   let analogClockRunning = false;
   let analogIntervalId = null;
+  let wallpaperTimer = null;
   let _currentWallpaperStyle = null;
   let _interval = null;
 
@@ -273,7 +310,7 @@
   const _Logo = [null];
 
   for (let i = 1; i <= 16; i++) {
-    _Logo.push($el('img', {id: 'logoGoogle', class: 'logo', src: _Image[`logo${i}`]}));
+    _Logo.push($el('img', {id: 'logoGoogle', class: 'logo', src: _Images[`logo${i}`]}));
   }
 
   const applyLogo = (num) => {
@@ -349,14 +386,63 @@
       _currentWallpaperStyle.remove();
       _currentWallpaperStyle = null;
     }
-    num = parseInt(num) || 0;
+    num = parseInt(num, 10) || 0;
     if (num === 0) return;
     const css = `
-      #gWP1 {
+      body {
         background: url(${_githubSite}${num}.jpg) no-repeat center center / cover fixed !important;
       }
     `;
     _currentWallpaperStyle = GM_addStyle(css);
+  };
+
+  const getDailyWallpaper = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const days = Math.floor((today - WALLPAPER_START_DATE) / 86400000);
+    return ((days % 52 + 52) % 52) + 1;
+  };
+
+  const getHourlyWallpaper = () => {
+    const now = new Date();
+    const hours = Math.floor((now - WALLPAPER_START_DATE) / 3600000);
+    return ((hours % 52 + 52) % 52) + 1;
+  };
+
+  const applyCurrentWallpaper = () => {
+    const num = getCurrentWallpaperNumber();
+    applyWallpaper(num);
+    const inp = $id('inputThemer');
+    if (inp) {
+      inp.value = num;
+    }
+  };
+
+  const scheduleWallpaperUpdate = () => {
+    clearTimeout(wallpaperTimer);
+    const mode = GM_getValue('wallpaperMode', WALLPAPER_MANUAL);
+    if (mode === WALLPAPER_MANUAL) {
+      return;
+    }
+    const now = new Date();
+    const next = new Date(now);
+    switch (mode) {
+      case WALLPAPER_DAILY:
+        next.setDate(next.getDate() + 1);
+        next.setHours(0, 0, 0, 0);
+        break;
+      case WALLPAPER_HOURLY:
+        next.setHours(next.getHours() + 1, 0, 0, 0);
+        break;
+    }
+    wallpaperTimer = setTimeout(() => {
+      applyCurrentWallpaper();
+      const inp = $id('inputThemer');
+      if (inp) {
+        inp.value = getCurrentWallpaperNumber();
+      }
+      scheduleWallpaperUpdate();
+    }, next - now);
   };
 
   const wallpaperButtonChanger = (e) => {
@@ -370,8 +456,10 @@
       val = 52;
     }
     inp.value = val;
+    GM_setValue('wallpaperMode', WALLPAPER_MANUAL);
     GM_setValue('wallpaperImage', val);
-    applyWallpaper(val);
+    applyCurrentWallpaper();
+    scheduleWallpaperUpdate();
   };
 
   const wallpaperInputChanger = () => {
@@ -379,8 +467,21 @@
     let val = parseInt(inpThemer.value) || 0;
     val = Math.max(0, Math.min(52, val));
     inpThemer.value = val;
+    GM_setValue('wallpaperMode', WALLPAPER_MANUAL);
     GM_setValue('wallpaperImage', val);
-    applyWallpaper(val);
+    applyCurrentWallpaper();
+    scheduleWallpaperUpdate();
+  };
+
+  const wallpaperToggleHandler = () => {
+    const mode = (GM_getValue('wallpaperMode', WALLPAPER_MANUAL) + 1) % 3;
+    const tog = $id('toggleImg');
+    GM_setValue('wallpaperMode', mode);
+    setThemerState(mode === 0);
+    tog.src = WALLPAPER_MODES[mode].src;
+    tog.title = WALLPAPER_MODES[mode].title;
+    applyCurrentWallpaper();
+    scheduleWallpaperUpdate();
   };
 
   // ===========================================================================
@@ -407,7 +508,7 @@
     const smoothSecondHand = GM_getValue('smoothSecondHand', true);
     const ticks = [];
     const hourNumbers = [];
-    const spacer3 = $el('span', {id: 'spacer3', class: 'spacerX', textContent: _Text.spacerXText});
+    const spacer3 = $el('span', {id: 'spacer3', class: 'spacerX', textContent: _Texts.spacerXText});
     for (let i = 0; i < 60; i++) {
       const angleDeg = i * 6 - 90;
       const rad = angleDeg * Math.PI / 180;
@@ -540,7 +641,7 @@
       min: '30',
       max: '200',
       step: '1',
-      title: _Title.percentageDisplayTitle,
+      title: _Titles.percentageDisplayTitle,
       oninput(e) {
         const val = e.target.value;
         if (val === '') return;
@@ -562,7 +663,7 @@
     });
     const themeBtn = $el('button', {
       className: 'ClockThemeToggle',
-      title: _Title.themeBtnTitle
+      title: _Titles.themeBtnTitle
     }, moonImg);
     const setTheme = (dark) => {
       Clock.classList.toggle('dark', dark);
@@ -579,7 +680,7 @@
     });
     const secondHandBtn = $el('button', {
       className: 'ClockSecondToggle',
-      title: _Title.secondHandBtnTitle
+      title: _Titles.secondHandBtnTitle
     }, clockImg);
     const setSecondMode = (smooth) => {
       GM_setValue('smoothSecondHand', smooth);
@@ -608,7 +709,7 @@
     const anaCalBtn = $el('button', {
       id: 'anaCalBtn',
       className: 'scaler-info',
-      title: _Title.anaCalBtnTitle,
+      title: _Titles.anaCalBtnTitle,
       onclick: () => toggleCalendarInfo()
     }, calendarImg);
     const ampmImg = $el('img', {
@@ -617,7 +718,7 @@
     });
     const ampmBtn = $el('button', {
       className: 'am-pm',
-      title: _Title.ampmBtnTitle,
+      title: _Titles.ampmBtnTitle,
       onclick() {
         const visible = !GM_getValue('ampmView', true);
         ampmBorder.style.display = visible ? '' : 'none';
@@ -634,21 +735,21 @@
       spacer3,
       $el('button', {
         className: 'scaler-reset',
-        textContent: _Text.scalerBtnResetText,
-        title: _Title.scalerResetTitle,
+        textContent: _Texts.scalerBtnResetText,
+        title: _Titles.scalerResetTitle,
         onclick: () => setClockPercentage(100)
       }),
       $el('button', {
         className: 'scaler-btn',
-        textContent: _Text.scalerBtnMinusText,
-        title: _Title.scalerBtnDownTitle,
+        textContent: _Texts.scalerBtnMinusText,
+        title: _Titles.scalerBtnDownTitle,
         onclick: () => setClockPercentage(currentPercent - 5)
       }),
       percentageDisplay,
       $el('button', {
         className: 'scaler-btn',
-        textContent: _Text.scalerBtnPlusText,
-        title: _Title.scalerBtnUpTitle,
+        textContent: _Texts.scalerBtnPlusText,
+        title: _Titles.scalerBtnUpTitle,
         onclick: () => setClockPercentage(currentPercent + 5)
       })
     );
@@ -695,22 +796,23 @@
       const dayAbbr = DAY_ABBR[day], dayFull = DAY_FULL[day], monthAbbr = MONTH_ABBR[mth], monthFull = MONTH_FULL[mth];
       const suffix = ['th', 'st', 'nd', 'rd'][(dt % 10 > 3 || Math.floor(dt / 10) === 1 ? 0 : dt % 10)] || 'th';
       const ordinal = dt + suffix;
-      const h12 = String(now.getHours() % 12 || 12).padStart(2, ' ');
+      const h12a = String(now.getHours() % 12 || 12).padStart(2, ' ');
+      const h12d = String(now.getHours() % 12 || 12);
       const min = String(now.getMinutes()).padStart(2, '0');
       const sec = String(now.getSeconds()).padStart(2, '0');
       const month = String(now.getMonth() + 1).padStart(2, '0');
       const monthday = String(now.getDate()).padStart(2, '0');
       dateText.textContent = `${month}/${monthday}`;
-      timeText.textContent = `${h12}:${min}`;
-      const ampm = now.getHours() < 12 ? _Text.amText : _Text.pmText;
+      timeText.textContent = `${h12a}:${min}`;
+      const ampm = now.getHours() < 12 ? _Texts.amText : _Texts.pmText;
       ampmText.textContent = ampm;
-      calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑 ${h12}:${min}`;
+      calendarText.textContent = `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑 ${h12a}:${min}`;
       const secView = GM_getValue('secondsView', false);
       const digitalClock = $id('dateTime');
       if (digitalClock) {
         digitalClock.textContent = secView
-          ? `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑 ${h12}:${min}:${sec} ${ampm}`
-          : `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑 ${h12}:${min} ${ampm}`;
+          ? `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑 ${h12d}:${min}:${sec} ${ampm}`
+          : `${dayFull} ⇒ ${monthFull} ${ordinal}, ${yr} 🕑 ${h12d}:${min} ${ampm}`;
       }
     };
 	   const showCalendarPref = GM_getValue('calendarInfo', false);
@@ -758,7 +860,7 @@
         src: _Icon.clock26,
         alt: 'Clock'
       }),
-      GM_getValue('analogClock', true) ? _Text.hideText : _Text.showText
+      GM_getValue('analogClock', true) ? _Texts.hideText : _Texts.showText
     );
   };
 
@@ -776,14 +878,13 @@
     });
     const digCalBtn = $el('button', {
       id: 'digCalBtn',
-      src: _Icon.calendar32D,
-      title: _Title.digCalBtnTitle,
+      title: _Titles.digCalBtnTitle,
       onclick: dateTimeToggle},
       imageCalendar
     );
     const dateTimeEl = $el('span', {
       id: 'dateTime',
-      title: _Title.dateTimeElTitle,
+      title: _Titles.dateTimeElTitle,
       onclick: dateTimeToggleSeconds
     });
     dtContainer.append(digCalBtn, dateTimeEl);
@@ -864,57 +965,65 @@
     const controlContainer = $el('div', {
       id: 'controlContainer'
     });
+    const toggleImg = $el('img', {
+      id: 'toggleImg',
+      src: _Icon.hand22
+    });
+    const wallpaperToggler = $el('button', {
+      id: 'wallpaperToggler',
+      onclick: wallpaperToggleHandler
+    }, toggleImg);
     const buttonThemer = $el('button', {
       id: 'buttonThemer',
-      textContent: _Text.buttonThemerText,
-      title: _Title.buttonThemerTitle,
+      textContent: _Texts.buttonThemerText,
+      title: _Titles.buttonThemerTitle,
       onclick: wallpaperButtonChanger
     });
     const inputThemer = $el('input', {
       id: 'inputThemer',
       type: 'number',
       value: GM_getValue('wallpaperImage', 0),
-      title: _Title.inputThemerTitle,
+      title: _Titles.inputThemerTitle,
       oninput: wallpaperInputChanger
     });
     const downThemer = $el('button', {
       id: 'downThemer',
-      textContent: _Text.downThemerText,
-      title: _Title.downThemerTitle,
+      textContent: _Texts.downThemerText,
+      title: _Titles.downThemerTitle,
       onclick: wallpaperButtonChanger
+    });
+    const spacer1 = $el('span', {
+      id: 'spacer1',
+      class: 'spacerX',
+      textContent: _Texts.spacerXText
     });
     const buttonLogo = $el('button', {
       id: 'buttonLogo',
-      textContent: _Text.buttonLogoText,
-      title: _Title.buttonLogoTitle,
+      textContent: _Texts.buttonLogoText,
+      title: _Titles.buttonLogoTitle,
       onclick: e => logoClick(e.target.id)
     });
     const inputLogo = $el('input', {
       id: 'inputLogo',
       type: 'number',
       value: GM_getValue('logoImageNum', 1),
-      title: _Title.inputLogoTitle,
+      title: _Titles.inputLogoTitle,
       oninput: handleLogoInput
     });
     const downLogo = $el('button', {
       id: 'downLogo',
-      textContent: _Text.downLogoText,
-      title: _Title.downLogoTitle,
+      textContent: _Texts.downLogoText,
+      title: _Titles.downLogoTitle,
       onclick: e => logoClick(e.target.id)
-    });
-    const spacer1 = $el('span', {
-      id: 'spacer1',
-      class: 'spacerX',
-      textContent: _Text.spacerXText
     });
     const spacer2 = $el('span', {
       id: 'spacer2',
       class: 'spacerX',
-      textContent: _Text.spacerXText
+      textContent: _Texts.spacerXText
     });
     const analogClockBtn = $el('button', {
       id: 'analogClockBtn',
-      title: _Title.analogClockBtnTitle,
+      title: _Titles.analogClockBtnTitle,
       onclick: toggleAnalogClock},
       $el('img', {
         src: _Icon.clock26,
@@ -922,6 +1031,7 @@
       }), ' Show'
     );
     controlContainer.append(
+      wallpaperToggler,
       buttonThemer,
       inputThemer,
       downThemer,
@@ -947,10 +1057,11 @@
 
   const init = () => {
     if (!body) return;
-    body.id = _Text.bodyIdText;
+    body.id = _Texts.bodyIdText;
     const textArea = $id('APjFqb');
-    if (textArea) textArea.placeholder = _Text.placeholderText;
-    applyWallpaper(GM_getValue('wallpaperImage', 0));
+    if (textArea) textArea.placeholder = _Texts.placeholderText;
+    applyCurrentWallpaper();
+    scheduleWallpaperUpdate();
     applyLogo(GM_getValue('logoImageNum', 1));
     applyControlContainer();
     applyDateTime();
@@ -964,8 +1075,15 @@
     }
     const btn = $id('analogClockBtn');
     btn.replaceChildren($el('img', {src: _Icon.clock26, alt: 'Clock'}),
-      GM_getValue('analogClock', true) ? _Text.hideText : _Text.showText
+      GM_getValue('analogClock', true) ? _Texts.hideText : _Texts.showText
     );
+    setTimeout(() => {
+      const mode = GM_getValue('wallpaperMode', WALLPAPER_MANUAL);
+      const tog = $id('toggleImg');
+      setThemerState(mode === 0);
+      tog.src = WALLPAPER_MODES[mode].src;
+      tog.title = WALLPAPER_MODES[mode].title;
+    }, 200);
   };
 
   // ===========================================================================
@@ -1147,6 +1265,20 @@
     #controlContainer > * {
       pointer-events: auto;
     }
+    #wallpaperToggler {
+      height: 22px;
+      width: 22px;
+    }
+    #wallpaperToggler:hover {
+    }
+    #toggleImg {
+      height: 22px;
+      margin-left: 8px;
+      position: relative;
+      right: 14px;
+      top: 5px;
+      width: 22px;
+    }
     #buttonThemer {
       color: #FFF;
       cursor: pointer;
@@ -1234,7 +1366,7 @@
       color: orange;
       opacity: 1;
     }
-    #controlContainer > button:not(#analogClockBtn):hover {
+    #controlContainer > button:not(#analogClockBtn):not(#wallpaperToggler):hover {
       filter: brightness(2);
       opacity: 1;
     }
@@ -1340,20 +1472,16 @@
     .Analog-MonthDateText {
       color: #000 !important;
       fill: #000 !important;
-      font-size: 5px !important;
-      font-weight: 600 !important;
+      font: 400 5px Consolas !important;
     }
     .Analog-Bigclock.dark .Analog-MonthDateText {
       color: #FFF !important;
       fill: #FFF !important;
-      font-family: monospace;
     }
     .Analog-timeText {
       color: #000 !important;
       fill: #000 !important;
-      font-family: monospace;
-      font-size: 5px !important;
-      font-weight: 600 !important;
+      font: 400 5px Consolas !important;
     }
     .Analog-Bigclock.dark .Analog-timeText {
       color: #FFF !important;
@@ -1362,8 +1490,7 @@
     .Analog-AMPMText {
       color: #000 !important;
       fill: #000 !important;
-      font-size: 4px !important;
-      font-weight: 600 !important;
+      font: 400 5px Consolas !important;
     }
     .Analog-Bigclock.dark .Analog-AMPMText {
       color: #FFF !important;
@@ -1488,8 +1615,7 @@
     .Analog-CalendarText {
       display: inline-block;
       color: #fff;
-      font-family: monospace;
-      font-size: 16px;
+      font: 400 16px Consolas;
       white-space: nowrap;
     }
     .ClockThemeToggle:hover,
